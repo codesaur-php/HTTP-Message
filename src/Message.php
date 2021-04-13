@@ -17,8 +17,8 @@ abstract class Message implements MessageInterface
         '2.0',
     );
     
-    protected $protocolVersion = '1.1';    
-    protected $headers = array();    
+    protected $protocolVersion = '1.1';
+    protected $headers = array();
     protected $body;
 
     /**
