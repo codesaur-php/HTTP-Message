@@ -12,9 +12,8 @@ class Output implements StreamInterface
     
     public function __construct()
     {
-        $this->buffer = new OutputBuffer();
-        
-        if (getenv('OUTPUT_COMPRESS', true) === 'true') {
+        $this->buffer = new OutputBuffer();        
+        if (getenv('OUTPUT_COMPRESS', true) == 'true') {
             $this->buffer->startCompress();
         } else {
             $this->buffer->start();
@@ -118,8 +117,7 @@ class Output implements StreamInterface
      */
     public function write($string)
     {
-        $content = (string)$string;
-        
+        $content = (string)$string;        
         echo $content;
         
         return strlen($content);

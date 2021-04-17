@@ -13,8 +13,7 @@ class Uri implements UriInterface
     private $_port;
     private $_path;
     private $_query;
-    private $_fragment;    
-
+    private $_fragment;
     private $_user;
     private $_password;
 
@@ -63,11 +62,9 @@ class Uri implements UriInterface
     public function getUserInfo(): string
     {
         $info = $this->_user;
-
         if (!empty($this->_password)) {
             $info .= ":$this->_password";
         }
-
         return $info ?? '';
     }
     
@@ -173,7 +170,6 @@ class Uri implements UriInterface
     {
         $clone = clone $this;
         $clone->setScheme($scheme);
-
         return $clone;
     }
 
@@ -184,7 +180,6 @@ class Uri implements UriInterface
     {
         $clone = clone $this;
         $clone->setUserInfo($user, $password);
-
         return $clone;
     }
 
@@ -195,7 +190,6 @@ class Uri implements UriInterface
     {
         $clone = clone $this;
         $clone->setHost($host);
-
         return $clone;
     }
 
@@ -206,7 +200,6 @@ class Uri implements UriInterface
     {
         $clone = clone $this;
         $clone->setPort($port);
-
         return $clone;
     }
 
@@ -217,7 +210,6 @@ class Uri implements UriInterface
     {
         $clone = clone $this;
         $clone->setPath($path);
-
         return $clone;
     }
 
@@ -228,7 +220,6 @@ class Uri implements UriInterface
     {
         $clone = clone $this;
         $clone->setQuery($query);
-
         return $clone;
     }
 
@@ -239,7 +230,6 @@ class Uri implements UriInterface
     {
         $clone = clone $this;
         $clone->setFragment($fragment);
-
         return $clone;
     }
 

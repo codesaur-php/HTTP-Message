@@ -36,8 +36,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         } else {
             $this->uri->setScheme('http');
         }
-        $this->uri->setPort($port);
-        
+        $this->uri->setPort($port);        
         $this->uri->setHost($this->serverParams['HTTP_HOST']);
         $this->setHeader('Host', $this->uri->getHost());
 
@@ -104,7 +103,6 @@ class ServerRequest extends Request implements ServerRequestInterface
         
         $query = rawurldecode($this->getUri()->getQuery());
         parse_str($query, $this->queryParams);
-
         return $this->queryParams;
     }
 
@@ -115,7 +113,6 @@ class ServerRequest extends Request implements ServerRequestInterface
     {
         $clone = clone $this;
         $clone->queryParams = $query;
-
         return $clone;
     }
 
@@ -133,8 +130,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
         $clone = clone $this;
-        $clone->uploadedFiles = $uploadedFiles;
-        
+        $clone->uploadedFiles = $uploadedFiles;        
         return $clone;
     }
 
@@ -153,7 +149,6 @@ class ServerRequest extends Request implements ServerRequestInterface
     {
         $clone = clone $this;
         $clone->parsedBody = $data;
-
         return $clone;
     }
 
@@ -183,8 +178,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withAttribute($name, $value): ServerRequestInterface
     {
         $clone = clone $this;
-        $clone->attributes[$name] = $value;
-        
+        $clone->attributes[$name] = $value;        
         return $clone;
     }
 
@@ -194,8 +188,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withoutAttribute($name): ServerRequestInterface
     {
         $clone = clone $this;
-        unset($clone->attributes[$name]);
-        
+        unset($clone->attributes[$name]);        
         return $clone;
     }
 }

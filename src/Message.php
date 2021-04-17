@@ -40,7 +40,6 @@ abstract class Message implements MessageInterface
 
         $clone = clone $this;
         $clone->protocolVersion = $version;
-
         return $clone;
     }
 
@@ -73,8 +72,7 @@ abstract class Message implements MessageInterface
      */
     public function getHeaderLine($name): string
     {
-        $values = $this->getHeader($name);
-        
+        $values = $this->getHeader($name);        
         return implode(',', $values);
     }
 
@@ -90,7 +88,6 @@ abstract class Message implements MessageInterface
     {
         $clone = clone $this;
         $clone->setHeader($name, $value);
-
         return $clone;
     }
 
@@ -104,8 +101,7 @@ abstract class Message implements MessageInterface
             $this->headers[strtoupper($name)][] = $value;
         } else {
             $this->setHeader($name, $value);
-        }
-                
+        }                
         return $clone;
     }
 
@@ -118,7 +114,6 @@ abstract class Message implements MessageInterface
         if ($this->hasHeader($name)) {
             unset($this->headers[strtoupper($name)]);
         }
-
         return $clone;
     }
 
@@ -137,7 +132,6 @@ abstract class Message implements MessageInterface
     {
         $clone = clone $this;
         $clone->body = $body;
-
         return $clone;
     }
 }

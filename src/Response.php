@@ -41,14 +41,12 @@ class Response extends Message implements ResponseInterface
         }
         
         $clone = clone $this;
-        $clone->status = $code;
-        
+        $clone->status = $code;        
         if (empty($reasonPhrase)) {
             $clone->reasonPhrase = null;
         } else {
             $clone->reasonPhrase = (string)$reasonPhrase;
-        }
-        
+        }        
         return $clone;
     }
 
