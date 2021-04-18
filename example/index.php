@@ -1,5 +1,7 @@
 <?php
 
+namespace codesaur\Http\Message\Example;
+
 /* DEV: v1.2021.03.02
  * 
  * This is an example script!
