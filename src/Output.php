@@ -53,7 +53,7 @@ class Output implements StreamInterface
      */
     public function detach()
     {
-        return RuntimeException(__CLASS__ . ' is not detachable!');
+        return RuntimeException(__CLASS__ . ' is not detachable');
     }
 
     /**
@@ -93,7 +93,7 @@ class Output implements StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-        return RuntimeException(__CLASS__ . ' is not seekable!');
+        return RuntimeException(__CLASS__ . ' is not seekable');
     }
 
     /**
@@ -101,7 +101,7 @@ class Output implements StreamInterface
      */
     public function rewind()
     {
-        return RuntimeException(__CLASS__ . ' is not rewindable!');
+        return RuntimeException(__CLASS__ . ' is not rewindable');
     }
 
     /**
@@ -136,7 +136,7 @@ class Output implements StreamInterface
      */
     public function read($length)
     {
-        throw new RuntimeException(__CLASS__ . ' is not readable!');
+        throw new RuntimeException(__CLASS__ . ' is not readable');
     }
 
     /**

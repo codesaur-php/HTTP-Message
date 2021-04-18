@@ -28,7 +28,7 @@ class Uri implements UriInterface
     public function setScheme(string $scheme)
     {
         if (!in_array($scheme, array('http', 'https'))) {
-            throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP scheme!');
+            throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP scheme');
         }
         
         $this->_scheme = strtolower($scheme);
@@ -118,7 +118,7 @@ class Uri implements UriInterface
     public function setPort(int $port)
     {
         if ($port < 1 || $port > 65535) {
-            throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP port!');
+            throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP port');
         }
         
         $this->_port = $port;

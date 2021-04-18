@@ -31,13 +31,13 @@ class Response extends Message implements ResponseInterface
     public function withStatus($code, $reasonPhrase = ''): ResponseInterface
     {
         if (!is_int($code)) {
-            throw new InvalidArgumentException(__CLASS__ . ': HTTP status code must be an integer!');
+            throw new InvalidArgumentException(__CLASS__ . ': HTTP status code must be an integer');
         }
         
         $status = "STATUS_$code";
         $reasonPhraseInterface = ReasonPrhaseInterface::class;
         if (!defined("$reasonPhraseInterface::$status")) {
-            throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response!');
+            throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
         }
         
         $clone = clone $this;

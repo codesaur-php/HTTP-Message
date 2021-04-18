@@ -67,7 +67,7 @@ class Request extends Message implements RequestInterface
         $uMethod = strtoupper($method);
         $commonHTTPmethod = RequestMethodInterface::class . "::METHOD_$uMethod";
         if (!defined($commonHTTPmethod)) {
-            throw new InvalidArgumentException(__CLASS__ . ": Invalid HTTP method [$method]!");
+            throw new InvalidArgumentException(__CLASS__ . ": Invalid HTTP method [$method]");
         }
         
         $clone = clone $this;

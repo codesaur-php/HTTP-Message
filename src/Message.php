@@ -35,7 +35,7 @@ abstract class Message implements MessageInterface
     public function withProtocolVersion($version): MessageInterface
     {
         if (!in_array($version, self::HTTP_PROTOCOL_VERSIONS, true)) {
-            throw new InvalidArgumentException(__CLASS__ . ": Invalid HTTP protocol version [$version]!");
+            throw new InvalidArgumentException(__CLASS__ . ": Invalid HTTP protocol version [$version]");
         }
 
         $clone = clone $this;
