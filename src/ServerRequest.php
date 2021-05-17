@@ -57,7 +57,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         if (!empty($input)) {
             $this->parsedBody = json_decode($input, true);
         }
-        
+    
         return $this;
     }
     
