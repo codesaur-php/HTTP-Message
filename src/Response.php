@@ -46,7 +46,7 @@ class Response extends Message implements ResponseInterface
             $clone->reasonPhrase = null;
         } else {
             $clone->reasonPhrase = (string)$reasonPhrase;
-        }        
+        }
         return $clone;
     }
 
