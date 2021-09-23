@@ -2,7 +2,7 @@
 
 namespace codesaur\Http\Message;
 
-interface ReasonPrhaseInterface
+class ReasonPrhase
 {
     // Informational
     const STATUS_100 = 'Continue';

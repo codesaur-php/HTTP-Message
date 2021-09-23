@@ -35,8 +35,8 @@ class Response extends Message implements ResponseInterface
         }
         
         $status = "STATUS_$code";
-        $reasonPhraseInterface = ReasonPrhaseInterface::class;
-        if (!defined("$reasonPhraseInterface::$status")) {
+        $reasonPhraseClass = ReasonPrhase::class;
+        if (!defined("$reasonPhraseClass::$status")) {
             throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
         }
         
@@ -60,9 +60,9 @@ class Response extends Message implements ResponseInterface
         }
         
         $status = "STATUS_$this->status";
-        $reasonPhraseInterface = ReasonPrhaseInterface::class;
-        if (defined("$reasonPhraseInterface::$status")) {
-            return constant("$reasonPhraseInterface::$status");
+        $reasonPhrase = ReasonPrhase::class;
+        if (defined("$reasonPhrase::$status")) {
+            return constant("$reasonPhrase::$status");
         }
         
         return '';
