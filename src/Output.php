@@ -13,7 +13,7 @@ class Output implements StreamInterface
     public function __construct()
     {
         $this->buffer = new OutputBuffer();        
-        if (getenv('OUTPUT_COMPRESS', true) == 'true') {
+        if ($_ENV['CODESAUR_OUTPUT_COMPRESS'] ?? false) {
             $this->buffer->startCompress();
         } else {
             $this->buffer->start();
