@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace codesaur\Http\Message;
 
@@ -29,8 +29,8 @@ class ServerRequest extends Request implements ServerRequestInterface
         $this->uri = new Uri();        
         $https = $this->serverParams['HTTPS'] ?? 'off';
         $port = (int)$this->serverParams['SERVER_PORT'];
-        if ((!empty($https) && strtolower($https) !== 'off')
-                || $port === 443
+        if ((!empty($https) && strtolower($https) != 'off')
+                || $port == 443
         ) {
             $this->uri->setScheme('https');
         } else {
@@ -53,9 +53,58 @@ class ServerRequest extends Request implements ServerRequestInterface
             $this->requestTarget .= "?{$this->serverParams['QUERY_STRING']}";
         }
         
-        $input = file_get_contents('php://input');
-        if (!empty($input)) {
-            $this->parsedBody = json_decode($input, true);
+        if ($this->serverParams['CONTENT_LENGTH'] ?? 0 > 0) {
+            if (!empty($_POST)) {
+                $this->parsedBody = $_POST;
+            } else {
+                $input = file_get_contents('php://input');
+                if (!empty($input)) {
+                    $data = json_decode($input, true);
+                    if (json_last_error() == JSON_ERROR_NONE) {
+                        $this->parsedBody = $data;
+                    } else {
+                        $boundary = substr($input, 0, strpos($input, "\r\n"));
+                        if (empty($boundary)) {
+                             parse_str($input, $data);
+                        } else {
+                            $parts = array_slice(explode($boundary, $input), 1);
+                            $data = array();
+                            foreach ($parts as $part) {
+                                if ($part == "--\r\n") {
+                                    break;
+                                }
+
+                                $part = ltrim($part, "\r\n");
+                                list($raw_headers, $body) = explode("\r\n\r\n", $part, 2);
+
+                                $raw_headers = explode("\r\n", $raw_headers);
+                                $headers = array();
+                                foreach ($raw_headers as $header) {
+                                    list($name, $value) = explode(':', $header);
+                                    $headers[strtolower($name)] = ltrim($value, ' ');
+                                }
+
+                                if (isset($headers['content-disposition'])) {
+                                    $filename = null;
+                                    preg_match(
+                                        '/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/',
+                                        $headers['content-disposition'],
+                                        $matches
+                                    );
+                                    list(, $type, $name) = $matches;
+                                    isset($matches[4]) and $filename = $matches[4];
+
+                                    switch ($name) {
+                                        case 'userfile': file_put_contents($filename, $body); break;
+                                        default: $data[$name] = substr($body, 0, strlen($body) - 2); break;
+                                    }
+                                }
+                            }
+                        }                        
+                    }
+                    $this->parsedBody = $data;
+                }
+            }
         }
     
         return $this;
@@ -183,7 +232,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withAttribute($name, $value): ServerRequestInterface
     {
         $clone = clone $this;
-        $clone->attributes[$name] = $value;        
+        $clone->attributes[$name] = $value;
         return $clone;
     }
 
@@ -193,7 +242,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withoutAttribute($name): ServerRequestInterface
     {
         $clone = clone $this;
-        unset($clone->attributes[$name]);        
+        unset($clone->attributes[$name]);
         return $clone;
     }
 }
