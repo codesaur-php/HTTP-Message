@@ -2,8 +2,11 @@
 
 namespace codesaur\Http\Message;
 
+use InvalidArgumentException;
+
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 class ServerRequest extends Request implements ServerRequestInterface
 {
@@ -54,58 +57,9 @@ class ServerRequest extends Request implements ServerRequestInterface
         }
         
         if ($this->serverParams['CONTENT_LENGTH'] ?? 0 > 0) {
-            if (!empty($_POST)) {
-                $this->parsedBody = $_POST;
-            } else {
-                $input = file_get_contents('php://input');
-                if (!empty($input)) {
-                    $data = json_decode($input, true);
-                    if (json_last_error() == JSON_ERROR_NONE) {
-                        $this->parsedBody = $data;
-                    } else {
-                        $boundary = substr($input, 0, strpos($input, "\r\n"));
-                        if (empty($boundary)) {
-                             parse_str($input, $data);
-                        } else {
-                            $parts = array_slice(explode($boundary, $input), 1);
-                            $data = array();
-                            foreach ($parts as $part) {
-                                if ($part == "--\r\n") {
-                                    break;
-                                }
-
-                                $part = ltrim($part, "\r\n");
-                                list($raw_headers, $body) = explode("\r\n\r\n", $part, 2);
-
-                                $raw_headers = explode("\r\n", $raw_headers);
-                                $headers = array();
-                                foreach ($raw_headers as $header) {
-                                    list($name, $value) = explode(':', $header);
-                                    $headers[strtolower($name)] = ltrim($value, ' ');
-                                }
-
-                                if (isset($headers['content-disposition'])) {
-                                    $filename = null;
-                                    preg_match(
-                                        '/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/',
-                                        $headers['content-disposition'],
-                                        $matches
-                                    );
-                                    list(, $type, $name) = $matches;
-                                    isset($matches[4]) and $filename = $matches[4];
-
-                                    switch ($name) {
-                                        case 'userfile': file_put_contents($filename, $body); break;
-                                        default: $data[$name] = substr($body, 0, strlen($body) - 2); break;
-                                    }
-                                }
-                            }
-                        }                        
-                    }
-                    $this->parsedBody = $data;
-                }
-            }
+            $this->parsedBody = empty($_POST) ? $this->getParsedBodyFrom(file_get_contents('php://input')) : $_POST;
         }
+        $this->uploadedFiles = $this->getNormalizedUploadedFiles($_FILES);
     
         return $this;
     }
@@ -244,5 +198,185 @@ class ServerRequest extends Request implements ServerRequestInterface
         $clone = clone $this;
         unset($clone->attributes[$name]);
         return $clone;
+    }
+    
+    private function getParsedBodyFrom($input)
+    {
+        if (empty($input)) {
+            return array();
+        }
+        
+        $decoded = json_decode($input, true);
+        if (json_last_error() == JSON_ERROR_NONE) {
+            return $decoded;
+        }
+        
+        $boundary = substr($input, 0, strpos($input, "\r\n"));
+        if (empty($boundary)) {
+            $parsed = array();
+            parse_str($input, $parsed);
+            return $parsed;
+        }
+        
+        $parts = array_slice(explode($boundary, $input), 1);
+        $data = array();
+        foreach ($parts as $part) {
+            if ($part == "--\r\n") {
+                break;
+            }
+
+            $part = ltrim($part, "\r\n");
+            list($raw_headers_inline, $body) = explode("\r\n\r\n", $part, 2);
+            $raw_headers = explode("\r\n", $raw_headers_inline);
+
+            $headers = array();
+            foreach ($raw_headers as $header) {
+                list($name, $value) = explode(':', $header);
+                $headers[strtolower($name)] = ltrim($value, ' ');
+            }
+
+            if (isset($headers['content-disposition'])) {
+                $matches = array();
+                preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);                
+                list(/*$content_header*/, /*$content_type*/, $name) = $matches;
+                if (!empty($matches[4]) && isset($headers['content-type'])) {
+                    $this->putUploadedFile($name, $matches[4], $body, $headers['content-type']);
+                } else {
+                    $data[$name] = substr($body, 0, strlen($body) - 2);
+                }
+            }
+        }
+        
+        return $data;
+    }
+    
+    private function putUploadedFile(string $keyName, string $fileName, $fileData, $contentType)
+    {
+        $unique_tmp = uniqid('php_') . '.tmp';
+        $tmp_dir = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
+        $tmp_name = "$tmp_dir/$unique_tmp";
+        $size = file_put_contents($tmp_name, $fileData);
+        if ($size !== false) {
+            // TODO: if $keyName represents array key index, we should assign $_FILES array key indexes
+            $_FILES[$keyName] = array(
+                'name' => $fileName,
+                'type' => $contentType,
+                'size' => $size,
+                'tmp_name' => $tmp_name,
+                'error' => 0
+            );
+        }
+    }
+    
+    // Normalizing
+    // Thank dakis for sharing excelent code
+    // see reference => https://stackoverflow.com/questions/52027412/files-key-used-for-building-a-psr-7-uploaded-files-list
+    
+    /**
+     * Normalize - if not already - the list of uploaded files as a tree of upload
+     * metadata, with each leaf an instance of Psr\Http\Message\UploadedFileInterface.
+     *
+     *
+     * IMPORTANT: For a correct normalization of the uploaded files list, the FIRST OCCURRENCE
+     *            of the key "tmp_name" is checked against. See "POST method uploads" link.
+     *            As soon as the key will be found in an item of the uploaded files list, it
+     *            will be supposed that the array item to which it belongs is an array with
+     *            a structure similar to the one saved in the global variable $_FILES when a
+     *            standard file upload is executed.
+     *
+     * @link https://secure.php.net/manual/en/features.file-upload.post-method.php POST method uploads.
+     * @link https://secure.php.net/manual/en/reserved.variables.files.php $_FILES.
+     * @link https://tools.ietf.org/html/rfc1867 Form-based File Upload in HTML.
+     * @link https://tools.ietf.org/html/rfc2854 The 'text/html' Media Type.
+     *
+     * @param array $uploadedFiles The list of uploaded files (normalized or not). Data MAY come from $_FILES or the message body.
+     * @return array A tree of upload files in a normalized structure, with each leaf an instance of UploadedFileInterface.
+     * @throws InvalidArgumentException An invalid structure of uploaded files list is provided.
+     */
+    private function getNormalizedUploadedFiles(array $uploadedFiles)
+    {
+        $normalizedUploadedFiles = array();
+        foreach ($uploadedFiles as $index => $item) {
+            if (isset($item['tmp_name'])) {
+                $normalizedUploadedFiles[$index] = $this->normalizeUploadedFile($item);
+            } elseif (is_array($item)) {
+                $normalizedUploadedFiles[$index] = $this->getNormalizedUploadedFiles($item);
+            } elseif ($item instanceof UploadedFileInterface) {
+                $normalizedUploadedFiles[$index] = $item;
+            } else {
+                throw new InvalidArgumentException('The structure of the uploaded files list is not valid.');
+            }
+        }
+        
+        return $normalizedUploadedFiles;
+    }
+    
+    /**
+     * Normalize the file upload item which contains the FIRST OCCURRENCE of the key "tmp_name".
+     *
+     * This method returns a tree structure, with each leaf
+     * an instance of Psr\Http\Message\UploadedFileInterface.
+     *
+     * Not part of PSR-17.
+     *
+     * @param array $item The file upload item.
+     * @return array The file upload item as a tree structure, with each leaf an instance of UploadedFileInterface.
+     * @throws InvalidArgumentException The value at the key "tmp_name" is empty.
+     */
+    private function normalizeUploadedFile(array $item)
+    {
+        if (empty($item['tmp_name'])) {
+            throw new InvalidArgumentException('The value of the key "tmp_name" in the uploaded files list must be a non-empty value or a non-empty array.');
+        }
+
+        $filename = $item['tmp_name'];
+        if (is_array($filename)) {
+            return $this->normalizeFileUploadTmpNameItem($filename, $item);
+        }
+        
+        return new UploadedFile($filename, $item['name'] ?? null, $item['type'] ?? null, $item['size'] ?? null, $item['error'] ?? 0);
+    }
+    
+    /**
+     * Normalize the array assigned as value to the FIRST OCCURRENCE of the key "tmp_name" in a
+     * file upload item of the uploaded files list. It is recursively iterated, in order to build
+     * a tree structure, with each leaf an instance of Psr\Http\Message\UploadedFileInterface.
+     *
+     * Not part of PSR-17.
+     *
+     * @param array $item The array assigned as value to the FIRST OCCURRENCE of the key "tmp_name".
+     * @param array $currentElements An array holding the file upload key/value pairs of the current item.
+     * @return array A tree structure, with each leaf an instance of UploadedFileInterface.
+     * @throws InvalidArgumentException
+     */
+    private function normalizeFileUploadTmpNameItem(array $item, array $currentElements)
+    {
+        $normalizedItem = array();
+        foreach ($item as $key => $value) {
+            if (is_array($value)) {
+                if (!isset($currentElements['size'][$key]) || !is_array($currentElements['size'][$key])
+                        || !isset($currentElements['error'][$key]) || !is_array($currentElements['error'][$key])
+                ) {
+                    throw new InvalidArgumentException('The structure of the items assigned to the keys "size" and "error" in the uploaded files list must be identical with the one of the  item assigned to the key "tmp_name". This restriction does not  apply to the leaf elements.');
+                }
+                
+                $filename = $currentElements['tmp_name'][$key];
+                $size = $currentElements['size'][$key];
+                $error = $currentElements['error'][$key];
+                $clientFilename = isset($currentElements['name'][$key]) && is_array($currentElements['name'][$key]) ? $currentElements['name'][$key] : null;
+                $clientMediaType = isset($currentElements['type'][$key]) && is_array($currentElements['type'][$key]) ? $currentElements['type'][$key] : null;
+                $normalizedItem[$key] = $this->normalizeFileUploadTmpNameItem($value, array('tmp_name' => $filename, 'size' => $size, 'error' => $error, 'name' => $clientFilename, 'type' => $clientMediaType));
+            } else {
+                $normalizedItem[$key] = new UploadedFile(
+                        $currentElements['tmp_name'][$key],
+                        $currentElements['name'][$key] ?? null,
+                        $currentElements['type'][$key] ?? null,
+                        $currentElements['size'][$key] ?? null,
+                        $currentElements['error'][$key] ?? 0
+                );
+            }
+        }
+
+        return $normalizedItem;
     }
 }
