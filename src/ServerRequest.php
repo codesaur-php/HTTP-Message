@@ -21,6 +21,28 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function initFromGlobal()
     {
         $this->serverParams = $_SERVER;
+        
+        if (function_exists('getallheaders')) {
+            foreach (getallheaders() as $key => $value) {
+                if (in_array($key, array(
+                    'Content-Type',
+                    'Host',
+                    'User-Agent',
+                    'Accept',
+                    'Accept-Encoding',
+                    'Connection',
+                    'Content-Length',
+                ))) {
+                    continue;
+                }
+                $key = strtoupper($key);
+                $key = 'HTTP_' . str_replace('-', '_', $key);
+                if (!isset($this->serverParams[$key])) {
+                    $this->serverParams[$key] = $value;
+                }
+            }
+        }
+        
         if (isset($this->serverParams['SERVER_PROTOCOL'])) {
             $this->protocolVersion = str_replace('HTTP/', '', $this->serverParams['SERVER_PROTOCOL']);
         }
@@ -218,8 +240,8 @@ class ServerRequest extends Request implements ServerRequestInterface
             return $parsed;
         }
         
+        $payload = array();
         $parts = array_slice(explode($boundary, $input), 1);
-        $data = array();
         foreach ($parts as $part) {
             if ($part == "--\r\n") {
                 break;
@@ -237,39 +259,30 @@ class ServerRequest extends Request implements ServerRequestInterface
 
             if (isset($headers['content-disposition'])) {
                 $matches = array();
-                preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);                
+                preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
                 list(/*$content_header*/, /*$content_type*/, $name) = $matches;
+                $data = substr($body, 0, strlen($body) - 2);
                 if (!empty($matches[4]) && isset($headers['content-type'])) {
-                    $this->putUploadedFile($name, $matches[4], $body, $headers['content-type']);
+                    $this->putUploadedFile($name, $matches[4], $data, $headers['content-type']);
                 } else {
-                    $data[$name] = substr($body, 0, strlen($body) - 2);
+                    $payload[$name] = $data;
                 }
             }
         }
         
-        return $data;
+        return $payload;
     }
     
-    private function putUploadedFile(string $keyName, string $fileName, $fileData, $contentType)
+    private function putUploadedFile(string $key, string $name, $content, $type)
     {
-        $unique_tmp = uniqid('php_') . '.tmp';
-        $tmp_dir = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
-        $tmp_name = "$tmp_dir/$unique_tmp";
-        $size = file_put_contents($tmp_name, $fileData);
-        if ($size !== false) {
-            // TODO: if $keyName represents array key index, we should assign $_FILES array key indexes
-            $_FILES[$keyName] = array(
-                'name' => $fileName,
-                'type' => $contentType,
-                'size' => $size,
-                'tmp_name' => $tmp_name,
-                'error' => 0
-            );
-        }
+    }
+    
+    private function setFilesSuperglobal(string $key, array $item, array $depth = null)
+    {
     }
     
     // Normalizing
-    // Thank dakis for sharing excelent code
+    // Thank dakis for sharing excellent code
     // see reference => https://stackoverflow.com/questions/52027412/files-key-used-for-building-a-psr-7-uploaded-files-list
     
     /**
@@ -367,13 +380,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                 $clientMediaType = isset($currentElements['type'][$key]) && is_array($currentElements['type'][$key]) ? $currentElements['type'][$key] : null;
                 $normalizedItem[$key] = $this->normalizeFileUploadTmpNameItem($value, array('tmp_name' => $filename, 'size' => $size, 'error' => $error, 'name' => $clientFilename, 'type' => $clientMediaType));
             } else {
-                $normalizedItem[$key] = new UploadedFile(
-                        $currentElements['tmp_name'][$key],
-                        $currentElements['name'][$key] ?? null,
-                        $currentElements['type'][$key] ?? null,
-                        $currentElements['size'][$key] ?? null,
-                        $currentElements['error'][$key] ?? 0
-                );
+                $normalizedItem[$key] = new UploadedFile($currentElements['tmp_name'][$key], $currentElements['name'][$key] ?? null, $currentElements['type'][$key] ?? null, $currentElements['size'][$key] ?? null, $currentElements['error'][$key] ?? 0);
             }
         }
 
