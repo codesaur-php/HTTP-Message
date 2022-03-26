@@ -275,6 +275,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     
     private function putUploadedFile(string $key, string $name, $content, $type)
     {
+        $this->setFilesSuperglobal($key, array(), array());
     }
     
     private function setFilesSuperglobal(string $key, array $item, array $depth = null)
