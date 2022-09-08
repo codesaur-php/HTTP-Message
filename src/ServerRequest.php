@@ -26,7 +26,7 @@ class ServerRequest extends Request implements ServerRequestInterface
             foreach (getallheaders() as $key => $value) {
                 if (in_array($key, array(
                     'Content-Type',
-                    'Host',
+                    'Host',                        
                     'User-Agent',
                     'Accept',
                     'Accept-Encoding',
@@ -69,20 +69,36 @@ class ServerRequest extends Request implements ServerRequestInterface
         if (($pos = strpos($request_uri, '?')) !== false) {
             $request_uri = substr($request_uri, 0, $pos);
         }
-        $this->requestTarget = rtrim($request_uri, '/');
-        
+        $this->requestTarget = rtrim($request_uri, '/');        
         $this->uri->setPath($this->requestTarget);
         
         if (!empty($this->serverParams['QUERY_STRING'])) {
-            $this->uri->setQuery($this->serverParams['QUERY_STRING']);
-            $this->requestTarget .= "?{$this->serverParams['QUERY_STRING']}";
+            $query = $this->serverParams['QUERY_STRING'];
+            $this->uri->setQuery($query);
+            $this->requestTarget .= "?$query";
+            parse_str($query, $this->queryParams);
         }
         
-        if ($this->serverParams['CONTENT_LENGTH'] ?? 0 > 0) {
-            $this->parsedBody = empty($_POST) ? $this->getParsedBodyFrom(file_get_contents('php://input')) : $_POST;
-        }
         $this->uploadedFiles = $this->getNormalizedUploadedFiles($_FILES);
-    
+        
+        if ($this->serverParams['CONTENT_LENGTH'] ?? 0 > 0) {
+            if (empty($_POST)) {
+                $input = file_get_contents('php://input');
+                if (empty($input)) {
+                    $this->parsedBody = array();            
+                } else {
+                    $decoded = json_decode($input, true);
+                    if (json_last_error() == JSON_ERROR_NONE) {
+                        $this->parsedBody = $decoded;
+                    } else {
+                        $this->parseFormData($input);
+                    }
+                }
+            } else {
+                $this->parsedBody = $_POST;
+            }
+        }        
+        
         return $this;
     }
     
@@ -222,25 +238,24 @@ class ServerRequest extends Request implements ServerRequestInterface
         return $clone;
     }
     
-    private function getParsedBodyFrom($input)
+    private function parseFormData($input)
     {
-        if (empty($input)) {
-            return array();
-        }
-        
-        $decoded = json_decode($input, true);
-        if (json_last_error() == JSON_ERROR_NONE) {
-            return $decoded;
-        }
-        
         $boundary = substr($input, 0, strpos($input, "\r\n"));
         if (empty($boundary)) {
-            $parsed = array();
-            parse_str($input, $parsed);
-            return $parsed;
+            parse_str($input, $parsedBody);
+            if (count($parsedBody) != 1
+                    || strlen(key($parsedBody)) != strlen($input)) {
+                $this->parsedBody = $parsedBody;
+            }
+            return;
         }
         
-        $payload = array();
+        $index = 0;
+        $datas = array();
+        $varNamesEncoded = '';
+        $fileNamesEncoded = '';
+        $tmp_dir = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
+        
         $parts = array_slice(explode($boundary, $input), 1);
         foreach ($parts as $part) {
             if ($part == "--\r\n") {
@@ -248,38 +263,72 @@ class ServerRequest extends Request implements ServerRequestInterface
             }
 
             $part = ltrim($part, "\r\n");
-            list($raw_headers_inline, $body) = explode("\r\n\r\n", $part, 2);
+            $raw_parts = explode("\r\n\r\n", $part, 2);
+            if (!isset($raw_parts[1])) {
+                continue;
+            }
+            
+            list($raw_headers_inline, $body) = $raw_parts;
             $raw_headers = explode("\r\n", $raw_headers_inline);
 
             $headers = array();
             foreach ($raw_headers as $header) {
-                list($name, $value) = explode(':', $header);
-                $headers[strtolower($name)] = ltrim($value, ' ');
+                list($content, $value) = explode(':', $header);
+                $headers[strtolower($content)] = ltrim($value, ' ');
             }
 
-            if (isset($headers['content-disposition'])) {
-                $matches = array();
-                preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
-                list(/*$content_header*/, /*$content_type*/, $name) = $matches;
-                $data = substr($body, 0, strlen($body) - 2);
-                if (!empty($matches[4]) && isset($headers['content-type'])) {
-                    $this->putUploadedFile($name, $matches[4], $data, $headers['content-type']);
-                } else {
-                    $payload[$name] = $data;
-                }
+            if (!isset($headers['content-disposition'])) {
+                continue;
             }
+            
+            $index++;
+            
+            $matches = array();
+            preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
+            list(/*$content_header*/, /*$content_type*/, $name) = $matches;
+            $encodedNameIndex = urlencode($name) . '=' . $index;
+            $data = substr($body, 0, strlen($body) - 2);
+            if (!empty($matches[4]) && isset($headers['content-type'])) {
+                $unique_tmp_name = uniqid('php_') . '.tmp';
+                $tmp_path = "$tmp_dir/$unique_tmp_name";
+                $size = file_put_contents($tmp_path, $data);
+                if ($size === false) {
+                    continue;
+                }
+                
+                $data = new UploadedFile($tmp_path, $matches[4], $headers['content-type'], $size, 0);
+                if ($fileNamesEncoded != '') {
+                    $fileNamesEncoded .= '&';
+                }
+                $fileNamesEncoded .= $encodedNameIndex;
+            } else {
+                if ($varNamesEncoded != '') {
+                    $varNamesEncoded .= '&';
+                }
+                $varNamesEncoded .= $encodedNameIndex;
+            }
+            
+            $datas[$index] = $data;
         }
         
-        return $payload;
+        parse_str($varNamesEncoded, $parsedBody);
+        $this->arraySetLeafs($parsedBody, $datas);
+        $this->parsedBody = $parsedBody;
+        
+        parse_str($fileNamesEncoded, $uploadedFiles);
+        $this->arraySetLeafs($uploadedFiles, $datas);
+        $this->uploadedFiles = $uploadedFiles;
     }
     
-    private function putUploadedFile(string $key, string $name, $content, $type)
+    private function arraySetLeafs(array &$tree, array $leafs)
     {
-        $this->setFilesSuperglobal($key, array(), array());
-    }
-    
-    private function setFilesSuperglobal(string $key, array $item, array $depth = null)
-    {
+        foreach ($tree as $key => &$value) {
+            if (is_array($value)) {
+                $this->arraySetLeafs($value, $leafs);
+            } else {
+                $tree[$key] = $leafs[$value];
+            }
+        }
     }
     
     // Normalizing
@@ -307,7 +356,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @return array A tree of upload files in a normalized structure, with each leaf an instance of UploadedFileInterface.
      * @throws InvalidArgumentException An invalid structure of uploaded files list is provided.
      */
-    private function getNormalizedUploadedFiles(array $uploadedFiles)
+    private function getNormalizedUploadedFiles(array $uploadedFiles): array
     {
         $normalizedUploadedFiles = array();
         foreach ($uploadedFiles as $index => $item) {
@@ -363,7 +412,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @return array A tree structure, with each leaf an instance of UploadedFileInterface.
      * @throws InvalidArgumentException
      */
-    private function normalizeFileUploadTmpNameItem(array $item, array $currentElements)
+    private function normalizeFileUploadTmpNameItem(array $item, array $currentElements): array
     {
         $normalizedItem = array();
         foreach ($item as $key => $value) {
