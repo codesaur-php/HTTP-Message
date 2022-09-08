@@ -244,7 +244,8 @@ class ServerRequest extends Request implements ServerRequestInterface
         if (empty($boundary)) {
             parse_str($input, $parsedBody);
             if (count($parsedBody) != 1
-                    || strlen(key($parsedBody)) != strlen($input)) {
+                    || strlen(key($parsedBody)) != strlen($input)
+            ) {
                 $this->parsedBody = $parsedBody;
             }
             return;
