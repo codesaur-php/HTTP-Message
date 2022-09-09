@@ -313,19 +313,19 @@ class ServerRequest extends Request implements ServerRequestInterface
         }
         
         parse_str($varNamesEncoded, $parsedBody);
-        $this->arraySetLeafs($parsedBody, $datas);
+        $this->arrayTreeLeafs($parsedBody, $datas);
         $this->parsedBody = $parsedBody;
         
         parse_str($fileNamesEncoded, $uploadedFiles);
-        $this->arraySetLeafs($uploadedFiles, $datas);
+        $this->arrayTreeLeafs($uploadedFiles, $datas);
         $this->uploadedFiles = $uploadedFiles;
     }
     
-    private function arraySetLeafs(array &$tree, array $leafs)
+    private function arrayTreeLeafs(array &$tree, array $leafs)
     {
         foreach ($tree as $key => &$value) {
             if (is_array($value)) {
-                $this->arraySetLeafs($value, $leafs);
+                $this->arrayTreeLeafs($value, $leafs);
             } else {
                 $tree[$key] = $leafs[$value];
             }
