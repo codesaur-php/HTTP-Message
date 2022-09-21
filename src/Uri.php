@@ -106,7 +106,7 @@ class Uri implements UriInterface
         } else {
             $scheme = $this->getScheme();
             if (($scheme === 'https' && $this->_port === 443)
-                    || ($scheme === 'http' && ($this->_port === 80 || $this->_port === 8080))
+                || ($scheme === 'http' && ($this->_port === 80 || $this->_port === 8080))
             ) {
                 return null;
             }

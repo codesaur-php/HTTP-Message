@@ -55,7 +55,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         $https = $this->serverParams['HTTPS'] ?? 'off';
         $port = (int)$this->serverParams['SERVER_PORT'];
         if ((!empty($https) && strtolower($https) != 'off')
-                || $port == 443
+            || $port == 443
         ) {
             $this->uri->setScheme('https');
         } else {
@@ -244,7 +244,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         if (empty($boundary)) {
             parse_str($input, $parsedBody);
             if (count($parsedBody) != 1
-                    || strlen(key($parsedBody)) != strlen($input)
+                || strlen(key($parsedBody)) != strlen($input)
             ) {
                 $this->parsedBody = $parsedBody;
             }
@@ -418,8 +418,10 @@ class ServerRequest extends Request implements ServerRequestInterface
         $normalizedItem = array();
         foreach ($item as $key => $value) {
             if (is_array($value)) {
-                if (!isset($currentElements['size'][$key]) || !is_array($currentElements['size'][$key])
-                        || !isset($currentElements['error'][$key]) || !is_array($currentElements['error'][$key])
+                if (!isset($currentElements['size'][$key])
+                    || !is_array($currentElements['size'][$key])
+                    || !isset($currentElements['error'][$key])
+                    || !is_array($currentElements['error'][$key])
                 ) {
                     throw new InvalidArgumentException('The structure of the items assigned to the keys "size" and "error" in the uploaded files list must be identical with the one of the  item assigned to the key "tmp_name". This restriction does not  apply to the leaf elements.');
                 }

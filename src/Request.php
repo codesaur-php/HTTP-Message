@@ -100,7 +100,7 @@ class Request extends Message implements RequestInterface
         }
 
         if ($this->getHeaderLine('Host') === ''
-                && $uri->getHost() !== ''
+            && $uri->getHost() !== ''
         ) {
             $clone->setHeader('Host', $uri->getHost());
         }
