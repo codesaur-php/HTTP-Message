@@ -234,7 +234,9 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withoutAttribute($name): ServerRequestInterface
     {
         $clone = clone $this;
-        unset($clone->attributes[$name]);
+        if (isset($clone->attributes[$name])) {
+            unset($clone->attributes[$name]);
+        }
         return $clone;
     }
     
