@@ -258,6 +258,8 @@ class ServerRequest extends Request implements ServerRequestInterface
         $varNamesEncoded = '';
         $fileNamesEncoded = '';
         $tmp_dir = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
+        $needle = '; filename=""';
+        $length = strlen($needle);
         
         $parts = array_slice(explode($boundary, $input), 1);
         foreach ($parts as $part) {
@@ -300,6 +302,12 @@ class ServerRequest extends Request implements ServerRequestInterface
                 }
                 
                 $data = new UploadedFile($tmp_path, $matches[4], $headers['content-type'], $size, 0);
+                if ($fileNamesEncoded != '') {
+                    $fileNamesEncoded .= '&';
+                }
+                $fileNamesEncoded .= $encodedNameIndex;
+            } else if (substr($headers['content-disposition'], -$length) === $needle) {
+                $data = new UploadedFile("", "", "", 0, UPLOAD_ERR_NO_FILE);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
                 }
@@ -391,12 +399,11 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     private function normalizeUploadedFile(array $item)
     {
-        if (empty($item['tmp_name'])) {
-            throw new InvalidArgumentException('The value of the key "tmp_name" in the uploaded files list must be a non-empty value or a non-empty array.');
-        }
-
         $filename = $item['tmp_name'];
         if (is_array($filename)) {
+            if (empty($filename)) {
+                throw new InvalidArgumentException('The value of the key "tmp_name" in the uploaded files list must be a non-empty array.');
+            }
             return $this->normalizeFileUploadTmpNameItem($filename, $item);
         }
         
