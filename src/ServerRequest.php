@@ -306,7 +306,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                     $fileNamesEncoded .= '&';
                 }
                 $fileNamesEncoded .= $encodedNameIndex;
-            } else if (substr($headers['content-disposition'], -$length) === $needle) {
+            } elseif (substr($headers['content-disposition'], -$length) === $needle) {
                 $data = new UploadedFile("", "", "", 0, UPLOAD_ERR_NO_FILE);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
