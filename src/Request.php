@@ -2,22 +2,20 @@
 
 namespace codesaur\Http\Message;
 
-use InvalidArgumentException;
-
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 use Fig\Http\Message\RequestMethodInterface;
 
 class Request extends Message implements RequestInterface
 {
-    protected $method;
-    protected $uri;
-    protected $requestTarget;
+    protected Uri $uri;
+    protected string $method = '';
+    protected string $requestTarget = '';
     
     /**
      * {@inheritdoc}
      */
-    public function getRequestTarget(): string
+    public function getRequestTarget()
     {
         if (!empty($this->requestTarget)) {
             return $this->requestTarget;
@@ -44,7 +42,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withRequestTarget($requestTarget): RequestInterface
+    public function withRequestTarget($requestTarget)
     {
         $clone = clone $this;
         $clone->requestTarget = $requestTarget;
@@ -54,20 +52,20 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getMethod(): string
+    public function getMethod()
     {
-        return $this->method ?? '';
+        return $this->method;
     }
     
     /**
      * {@inheritdoc}
      */
-    public function withMethod($method): RequestInterface
+    public function withMethod($method)
     {
         $uMethod = strtoupper($method);
         $commonHTTPmethod = RequestMethodInterface::class . "::METHOD_$uMethod";
         if (!defined($commonHTTPmethod)) {
-            throw new InvalidArgumentException(__CLASS__ . ": Invalid HTTP method [$method]");
+            throw new \InvalidArgumentException(__CLASS__ . ": Invalid HTTP method [$method]");
         }
         
         $clone = clone $this;
@@ -78,7 +76,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getUri(): ?UriInterface
+    public function getUri()
     {
         return $this->uri;
     }
@@ -86,12 +84,12 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withUri(UriInterface $uri, $preserveHost = false): RequestInterface
+    public function withUri(UriInterface $uri, $preserveHost = false)
     {
         $clone = clone $this;
         $clone->uri = $uri;
         
-        if (!$preserveHost) {
+        if ($preserveHost === false) {
             if ($uri->getHost() !== '') {
                 $clone->setHeader('Host', $uri->getHost());
             }
@@ -99,8 +97,8 @@ class Request extends Message implements RequestInterface
             return $clone;
         }
 
-        if ($this->getHeaderLine('Host') === ''
-            && $uri->getHost() !== ''
+        if ($this->getHeaderLine('Host') == ''
+            && $uri->getHost() != ''
         ) {
             $clone->setHeader('Host', $uri->getHost());
         }

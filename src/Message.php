@@ -2,29 +2,27 @@
 
 namespace codesaur\Http\Message;
 
-use InvalidArgumentException;
-
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
 abstract class Message implements MessageInterface
 {
-    const HTTP_PROTOCOL_VERSIONS = array(
+    const HTTP_PROTOCOL_VERSIONS = [
         '1',
         '1.0',
         '1.1',
         '2',
-        '2.0',
-    );
+        '2.0'
+    ];
     
-    protected $protocolVersion = '1.1';
-    protected $headers = array();
-    protected $body;
+    protected string $protocolVersion = '1.1';
+    protected array $headers = [];
+    protected ?StreamInterface $body = null;
 
     /**
      * {@inheritdoc}
      */
-    public function getProtocolVersion(): string
+    public function getProtocolVersion()
     {
         return $this->protocolVersion;
     }
@@ -32,10 +30,10 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function withProtocolVersion($version): MessageInterface
+    public function withProtocolVersion($version)
     {
-        if (!in_array($version, self::HTTP_PROTOCOL_VERSIONS, true)) {
-            throw new InvalidArgumentException(__CLASS__ . ": Invalid HTTP protocol version [$version]");
+        if (!in_array($version, self::HTTP_PROTOCOL_VERSIONS)) {
+            throw new \InvalidArgumentException(__CLASS__ . ": Invalid HTTP protocol version [$version]");
         }
 
         $clone = clone $this;
@@ -46,7 +44,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getHeaders(): array
+    public function getHeaders()
     {
         return $this->headers;
     }
@@ -54,7 +52,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function hasHeader($name): bool
+    public function hasHeader($name)
     {
         return isset($this->headers[strtoupper($name)]);
     }
@@ -62,29 +60,33 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getHeader($name): array
+    public function getHeader($name)
     {
-        return $this->headers[strtoupper($name)] ?? array();
+        return $this->headers[strtoupper($name)] ?? [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getHeaderLine($name): string
+    public function getHeaderLine($name)
     {
-        $values = $this->getHeader($name);        
+        $values = $this->getHeader($name);
         return implode(',', $values);
     }
 
     function setHeader($name, $value)
     {
-        $this->headers[strtoupper($name)] = array($value);
+        if (is_array($value)) {
+            $this->headers[strtoupper($name)] = $value;
+        } else {
+            $this->headers[strtoupper($name)] = [$value];
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function withHeader($name, $value): MessageInterface
+    public function withHeader($name, $value)
     {
         $clone = clone $this;
         $clone->setHeader($name, $value);
@@ -94,11 +96,15 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function withAddedHeader($name, $value): MessageInterface
+    public function withAddedHeader($name, $value)
     {
         $clone = clone $this;
         if ($this->hasHeader($name)) {
-            $this->headers[strtoupper($name)][] = $value;
+            if (is_array($value)) {
+                $this->headers[strtoupper($name)] += $value;
+            } else {
+                $this->headers[strtoupper($name)][] = $value;
+            }
         } else {
             $this->setHeader($name, $value);
         }                
@@ -108,7 +114,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function withoutHeader($name): MessageInterface
+    public function withoutHeader($name)
     {
         $clone = clone $this;
         if ($this->hasHeader($name)) {
@@ -120,7 +126,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function getBody(): ?StreamInterface
+    public function getBody()
     {
         return $this->body;
     }
@@ -128,7 +134,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritdoc}
      */
-    public function withBody(StreamInterface $body): MessageInterface
+    public function withBody(StreamInterface $body)
     {
         $clone = clone $this;
         $clone->body = $body;

@@ -4,19 +4,19 @@ namespace codesaur\Http\Message;
 
 class OutputBuffer
 {
-    public function start($chunk_size = 0, $erase = PHP_OUTPUT_HANDLER_STDFLAGS)
+    public function start(int $chunk_size = 0, int $flags = \PHP_OUTPUT_HANDLER_STDFLAGS)
     {
-        $this->startCallback(null, $chunk_size, $erase);
+        ob_start(null, $chunk_size, $flags);
     }
     
-    public function startCallback($output_callback, $chunk_size, $erase)
+    public function startCallback(?callable $output_callback, int $chunk_size, int $flags)
     {
-        ob_start($output_callback, $chunk_size, $erase);
+        ob_start($output_callback, $chunk_size, $flags);
     }
     
-    public function startCompress($chunk_size = 0, $erase = PHP_OUTPUT_HANDLER_STDFLAGS)
+    public function startCompress(int $chunk_size = 0, int $flags = \PHP_OUTPUT_HANDLER_STDFLAGS)
     {
-        $this->startCallback(array($this, 'compress'), $chunk_size, $erase);
+        $this->startCallback([$this, 'compress'], $chunk_size, $flags);
     }
     
     public function flush()
@@ -40,12 +40,12 @@ class OutputBuffer
         }
     }
     
-    public function getLength(): int
+    public function getLength(): int|false
     {
         return ob_get_length();
     }
 
-    public function getContents(): ?string
+    public function getContents(): string|null|false
     {
         if (!ob_get_level()) {
             return null;

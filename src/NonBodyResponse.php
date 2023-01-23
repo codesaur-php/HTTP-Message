@@ -1,21 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace codesaur\Http\Message;
-
-use InvalidArgumentException;
 
 use Psr\Http\Message\ResponseInterface;
 use Fig\Http\Message\StatusCodeInterface;
 
 class NonBodyResponse extends Message implements ResponseInterface
 {
-    protected $status = StatusCodeInterface::STATUS_OK;
-    protected $reasonPhrase;
+    protected int $status = StatusCodeInterface::STATUS_OK;
+    protected string $reasonPhrase = '';
     
     /**
      * {@inheritdoc}
      */
-    public function getStatusCode(): int
+    public function getStatusCode()
     {
         return $this->status;
     }
@@ -23,28 +21,25 @@ class NonBodyResponse extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
+    public function withStatus($code, $reasonPhrase = '')
     {
         $status = "STATUS_$code";
         $reasonPhraseClass = ReasonPrhase::class;
         if (!defined("$reasonPhraseClass::$status")) {
-            throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
+            throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
         }
         
         $clone = clone $this;
-        $clone->status = (int)$code;        
-        if (empty($reasonPhrase)) {
-            $clone->reasonPhrase = null;
-        } else {
-            $clone->reasonPhrase = (string)$reasonPhrase;
-        }
+        $clone->status = $code;        
+        $clone->reasonPhrase = $reasonPhrase;
+        
         return $clone;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getReasonPhrase(): string
+    public function getReasonPhrase()
     {
         if (!empty($this->reasonPhrase)) {
             return $this->reasonPhrase;

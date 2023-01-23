@@ -2,18 +2,16 @@
 
 namespace codesaur\Http\Message;
 
-use RuntimeException;
-
 use Psr\Http\Message\StreamInterface;
 
 class Output implements StreamInterface
 {    
-    protected $buffer;
+    protected OutputBuffer $buffer;
     
     public function __construct()
     {
         $this->buffer = new OutputBuffer();        
-        if ($_ENV['CODESAUR_OUTPUT_COMPRESS'] ?? false) {
+        if (($_ENV['CODESAUR_OUTPUT_COMPRESS'] ?? false) === true) {
             $this->buffer->startCompress();
         } else {
             $this->buffer->start();
@@ -53,15 +51,15 @@ class Output implements StreamInterface
      */
     public function detach()
     {
-        return RuntimeException(__CLASS__ . ' is not detachable');
+        return \RuntimeException(__CLASS__ . ' is not detachable');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSize(): int
+    public function getSize()
     {
-        $this->buffer->getLength();
+        return $this->buffer->getLength();
     }
 
     /**
@@ -83,7 +81,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isSeekable(): bool
+    public function isSeekable()
     {
         return false;
     }
@@ -91,9 +89,9 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = \SEEK_SET)
     {
-        return RuntimeException(__CLASS__ . ' is not seekable');
+        \RuntimeException(__CLASS__ . ' is not seekable');
     }
 
     /**
@@ -101,13 +99,13 @@ class Output implements StreamInterface
      */
     public function rewind()
     {
-        return RuntimeException(__CLASS__ . ' is not rewindable');
+        \RuntimeException(__CLASS__ . ' is not rewindable');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isWritable(): bool
+    public function isWritable()
     {
         return true;
     }
@@ -117,10 +115,9 @@ class Output implements StreamInterface
      */
     public function write($string)
     {
-        $content = (string)$string;        
-        echo $content;
+        echo $string;
         
-        return strlen($content);
+        return strlen($string);
     }
 
     /**
@@ -142,9 +139,9 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getContents(): string
+    public function getContents()
     {
-        return (string)$this->buffer->getContents();
+        return (string) $this->buffer->getContents();
     }
 
     /**

@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace codesaur\Http\Message;
-
-use InvalidArgumentException;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -10,13 +8,13 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class ServerRequest extends Request implements ServerRequestInterface
 {
-    protected $serverParams = array();
-    protected $cookies = array();
-    protected $attributes = array();
+    protected array $serverParams = [];
+    protected array $cookies = [];
+    protected array $attributes = [];
 
-    protected $queryParams;
-    protected $parsedBody;
-    protected $uploadedFiles;
+    protected array $queryParams = [];
+    protected array $parsedBody = [];
+    protected array $uploadedFiles = [];
 
     public function initFromGlobal()
     {
@@ -24,15 +22,15 @@ class ServerRequest extends Request implements ServerRequestInterface
         
         if (function_exists('getallheaders')) {
             foreach (getallheaders() as $key => $value) {
-                if (in_array($key, array(
+                if (in_array($key, [
                     'Content-Type',
-                    'Host',                        
+                    'Host',
                     'User-Agent',
                     'Accept',
                     'Accept-Encoding',
                     'Connection',
                     'Content-Length',
-                ))) {
+                ])) {
                     continue;
                 }
                 $key = strtoupper($key);
@@ -53,7 +51,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         
         $this->uri = new Uri();        
         $https = $this->serverParams['HTTPS'] ?? 'off';
-        $port = (int)$this->serverParams['SERVER_PORT'];
+        $port = (int) $this->serverParams['SERVER_PORT'];
         if ((!empty($https) && strtolower($https) != 'off')
             || $port == 443
         ) {
@@ -61,7 +59,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         } else {
             $this->uri->setScheme('http');
         }
-        $this->uri->setPort($port);        
+        $this->uri->setPort($port);
         $this->uri->setHost($this->serverParams['HTTP_HOST']);
         $this->setHeader('Host', $this->uri->getHost());
 
@@ -69,7 +67,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         if (($pos = strpos($request_uri, '?')) !== false) {
             $request_uri = substr($request_uri, 0, $pos);
         }
-        $this->requestTarget = rtrim($request_uri, '/');        
+        $this->requestTarget = rtrim($request_uri, '/');
         $this->uri->setPath($this->requestTarget);
         
         if (!empty($this->serverParams['QUERY_STRING'])) {
@@ -81,14 +79,14 @@ class ServerRequest extends Request implements ServerRequestInterface
         
         $this->uploadedFiles = $this->getNormalizedUploadedFiles($_FILES);
         
-        if ($this->serverParams['CONTENT_LENGTH'] ?? 0 > 0) {
+        if (($this->serverParams['CONTENT_LENGTH'] ?? 0) > 0) {
             if (empty($_POST)) {
                 $input = file_get_contents('php://input');
                 if (empty($input)) {
-                    $this->parsedBody = array();            
+                    $this->parsedBody = [];
                 } else {
                     $decoded = json_decode($input, true);
-                    if (json_last_error() == JSON_ERROR_NONE) {
+                    if (json_last_error() == \JSON_ERROR_NONE) {
                         $this->parsedBody = $decoded;
                     } else {
                         $this->parseFormData($input);
@@ -97,7 +95,7 @@ class ServerRequest extends Request implements ServerRequestInterface
             } else {
                 $this->parsedBody = $_POST;
             }
-        }        
+        }
         
         return $this;
     }
@@ -105,12 +103,12 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getServerParams(): array
+    public function getServerParams()
     {
         return $this->serverParams;
     }
     
-    public function setScriptTargetPath($uri_path_segment)
+    public function setScriptTargetPath(string $uri_path_segment)
     {
         $this->serverParams['SCRIPT_TARGET_PATH'] = $uri_path_segment;
     }
@@ -118,7 +116,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getCookieParams(): array
+    public function getCookieParams()
     {
         return $this->cookies;
     }
@@ -126,7 +124,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withCookieParams(array $cookies): ServerRequestInterface
+    public function withCookieParams(array $cookies)
     {
         $clone = clone $this;
         $clone->cookies = $cookies;
@@ -137,14 +135,14 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getQueryParams() : array
+    public function getQueryParams()
     {
         if (is_array($this->queryParams)) {
             return $this->queryParams;
         }
 
         if (!$this->getUri() instanceof UriInterface) {
-            return array();
+            return [];
         }
         
         $query = rawurldecode($this->getUri()->getQuery());
@@ -165,15 +163,15 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getUploadedFiles(): array
+    public function getUploadedFiles()
     {
-        return $this->uploadedFiles ?? array();
+        return $this->uploadedFiles;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
+    public function withUploadedFiles(array $uploadedFiles)
     {
         $clone = clone $this;
         $clone->uploadedFiles = $uploadedFiles;        
@@ -191,19 +189,19 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withParsedBody($data): ServerRequestInterface
+    public function withParsedBody($data)
     {
         $clone = clone $this;
-        $clone->parsedBody = $data;
+        $clone->parsedBody = (array) $data;
         return $clone;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAttributes(): array
+    public function getAttributes()
     {
-        return $this->attributes ?? array();
+        return $this->attributes;
     }
 
     /**
@@ -221,7 +219,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withAttribute($name, $value): ServerRequestInterface
+    public function withAttribute($name, $value)
     {
         $clone = clone $this;
         $clone->attributes[$name] = $value;
@@ -231,7 +229,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withoutAttribute($name): ServerRequestInterface
+    public function withoutAttribute($name)
     {
         $clone = clone $this;
         if (isset($clone->attributes[$name])) {
@@ -254,7 +252,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         }
         
         $index = 0;
-        $datas = array();
+        $datas = [];
         $varNamesEncoded = '';
         $fileNamesEncoded = '';
         $tmp_dir = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
@@ -288,7 +286,7 @@ class ServerRequest extends Request implements ServerRequestInterface
             
             $index++;
             
-            $matches = array();
+            $matches = [];
             preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
             list(/*$content_header*/, /*$content_type*/, $name) = $matches;
             $encodedNameIndex = urlencode($name) . '=' . $index;
@@ -301,13 +299,13 @@ class ServerRequest extends Request implements ServerRequestInterface
                     continue;
                 }
                 
-                $data = new UploadedFile($tmp_path, $matches[4], $headers['content-type'], $size, 0);
+                $data = new UploadedFile($tmp_path, $matches[4], $headers['content-type'], $size, \UPLOAD_ERR_OK);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
                 }
                 $fileNamesEncoded .= $encodedNameIndex;
             } elseif (substr($headers['content-disposition'], -$length) === $needle) {
-                $data = new UploadedFile("", "", "", 0, UPLOAD_ERR_NO_FILE);
+                $data = new UploadedFile('', null, null, null, \UPLOAD_ERR_NO_FILE);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
                 }
@@ -369,7 +367,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     private function getNormalizedUploadedFiles(array $uploadedFiles): array
     {
-        $normalizedUploadedFiles = array();
+        $normalizedUploadedFiles = [];
         foreach ($uploadedFiles as $index => $item) {
             if (isset($item['tmp_name'])) {
                 $normalizedUploadedFiles[$index] = $this->normalizeUploadedFile($item);
@@ -378,7 +376,7 @@ class ServerRequest extends Request implements ServerRequestInterface
             } elseif ($item instanceof UploadedFileInterface) {
                 $normalizedUploadedFiles[$index] = $item;
             } else {
-                throw new InvalidArgumentException('The structure of the uploaded files list is not valid.');
+                throw new \InvalidArgumentException('The structure of the uploaded files list is not valid.');
             }
         }
         
@@ -402,12 +400,12 @@ class ServerRequest extends Request implements ServerRequestInterface
         $filename = $item['tmp_name'];
         if (is_array($filename)) {
             if (empty($filename)) {
-                throw new InvalidArgumentException('The value of the key "tmp_name" in the uploaded files list must be a non-empty array.');
+                throw new \InvalidArgumentException('The value of the key "tmp_name" in the uploaded files list must be a non-empty array.');
             }
             return $this->normalizeFileUploadTmpNameItem($filename, $item);
         }
         
-        return new UploadedFile($filename, $item['name'] ?? null, $item['type'] ?? null, $item['size'] ?? null, $item['error'] ?? 0);
+        return new UploadedFile($filename, $item['name'] ?? null, $item['type'] ?? null, $item['size'] ?? null, $item['error'] ?? \UPLOAD_ERR_OK);
     }
     
     /**
@@ -432,7 +430,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                     || !isset($currentElements['error'][$key])
                     || !is_array($currentElements['error'][$key])
                 ) {
-                    throw new InvalidArgumentException('The structure of the items assigned to the keys "size" and "error" in the uploaded files list must be identical with the one of the  item assigned to the key "tmp_name". This restriction does not  apply to the leaf elements.');
+                    throw new \InvalidArgumentException('The structure of the items assigned to the keys "size" and "error" in the uploaded files list must be identical with the one of the  item assigned to the key "tmp_name". This restriction does not  apply to the leaf elements.');
                 }
                 
                 $filename = $currentElements['tmp_name'][$key];
@@ -442,7 +440,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                 $clientMediaType = isset($currentElements['type'][$key]) && is_array($currentElements['type'][$key]) ? $currentElements['type'][$key] : null;
                 $normalizedItem[$key] = $this->normalizeFileUploadTmpNameItem($value, array('tmp_name' => $filename, 'size' => $size, 'error' => $error, 'name' => $clientFilename, 'type' => $clientMediaType));
             } else {
-                $normalizedItem[$key] = new UploadedFile($currentElements['tmp_name'][$key], $currentElements['name'][$key] ?? null, $currentElements['type'][$key] ?? null, $currentElements['size'][$key] ?? null, $currentElements['error'][$key] ?? 0);
+                $normalizedItem[$key] = new UploadedFile($currentElements['tmp_name'][$key], $currentElements['name'][$key] ?? null, $currentElements['type'][$key] ?? null, $currentElements['size'][$key] ?? null, $currentElements['error'][$key] ?? \UPLOAD_ERR_OK);
             }
         }
 

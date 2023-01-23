@@ -1,23 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace codesaur\Http\Message;
 
-use RuntimeException;
-
 use Psr\Http\Message\UploadedFileInterface;
-use Psr\Http\Message\StreamInterface;
 
 class UploadedFile implements UploadedFileInterface
 {
-    protected $name;
-    protected $type;
-    protected $size;
-    protected $error;
-    protected $tmp_name;
+    protected ?string $name;
+    protected ?string $type;
+    protected ?int $size;
+    protected int $error;
+    protected string $tmp_name;
     
-    private $_moved = false;
+    private bool $_moved = false;
     
-    function __construct($tmp_name, $name, $type, $size, $error)
+    function __construct(string $tmp_name, ?string $name, ?string $type, ?int $size, int $error)
     {
         $this->tmp_name = $tmp_name;
         
@@ -54,7 +51,7 @@ class UploadedFile implements UploadedFileInterface
     /**
      * {@inheritdoc}
      */
-    public function getError(): int
+    public function getError()
     {
         return $this->error;
     }
@@ -62,9 +59,9 @@ class UploadedFile implements UploadedFileInterface
     /**
      * {@inheritdoc}
      */
-    public function getStream(): StreamInterface
+    public function getStream()
     {
-        throw new RuntimeException('Not implemented');
+        throw new \RuntimeException('Not implemented');
     }
 
     /**
@@ -73,40 +70,40 @@ class UploadedFile implements UploadedFileInterface
     public function moveTo($targetPath)
     {
         if (empty($targetPath)) {
-            throw new InvalidArgumentException('Invalid target path!');
+            throw new \InvalidArgumentException('Invalid target path!');
         }
 
         if (empty($this->tmp_name)) {
-            throw new InvalidArgumentException('Upload file path not found!');
+            throw new \InvalidArgumentException('Upload file path not found!');
         }
         
         if ($this->_moved) {
-            throw new RuntimeException(sprintf('Uploaded file already moved from %s!', $this->tmp_name));
+            throw new \RuntimeException(sprintf('Uploaded file already moved from %s!', $this->tmp_name));
         }
                 
         switch ($this->error) {
-            case UPLOAD_ERR_OK:
+            case \UPLOAD_ERR_OK:
                 break;
-            case UPLOAD_ERR_NO_FILE:
-                throw new RuntimeException('No file sent!');
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                throw new RuntimeException('Exceeded filesize limit!');
+            case \UPLOAD_ERR_NO_FILE:
+                throw new \RuntimeException('No file sent!');
+            case \UPLOAD_ERR_INI_SIZE:
+            case \UPLOAD_ERR_FORM_SIZE:
+                throw new \RuntimeException('Exceeded filesize limit!');
             default:
-                throw new RuntimeException('Unknown errors on file upload!');
+                throw new \RuntimeException('Unknown errors on file upload!');
         }
 
-        if (PHP_SAPI === 'cli') {
+        if (\PHP_SAPI == 'cli') {
             if (!rename($this->tmp_name, $targetPath)) {
-                throw new RuntimeException(sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath));
+                throw new \RuntimeException(sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath));
             }
         } else {
             if (!copy($this->tmp_name, $targetPath)) {
-                throw new RuntimeException(sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath));
+                throw new \RuntimeException(sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath));
             }
 
             if (!unlink($this->tmp_name)) {
-                throw new RuntimeException(sprintf('Error removing uploaded temp file %s!', $this->tmp_name));
+                throw new \RuntimeException(sprintf('Error removing uploaded temp file %s!', $this->tmp_name));
             }
         }
         

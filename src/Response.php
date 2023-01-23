@@ -2,15 +2,13 @@
 
 namespace codesaur\Http\Message;
 
-use InvalidArgumentException;
-
 use Psr\Http\Message\ResponseInterface;
 use Fig\Http\Message\StatusCodeInterface;
 
 class Response extends Message implements ResponseInterface
 {
-    protected $status = StatusCodeInterface::STATUS_OK;
-    protected $reasonPhrase;
+    protected int $status = StatusCodeInterface::STATUS_OK;
+    protected string $reasonPhrase = '';
     
     function __construct()
     {
@@ -20,7 +18,7 @@ class Response extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getStatusCode(): int
+    public function getStatusCode()
     {
         return $this->status;
     }
@@ -28,24 +26,24 @@ class Response extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
+    public function withStatus($code, $reasonPhrase = '')
     {
         if (!is_int($code)) {
-            throw new InvalidArgumentException(__CLASS__ . ': HTTP status code must be an integer');
+            throw new \InvalidArgumentException(__CLASS__ . ': HTTP status code must be an integer');
         }
         
         $status = "STATUS_$code";
         $reasonPhraseClass = ReasonPrhase::class;
         if (!defined("$reasonPhraseClass::$status")) {
-            throw new InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
+            throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
         }
         
         $clone = clone $this;
-        $clone->status = $code;        
+        $clone->status = (int) $code;
         if (empty($reasonPhrase)) {
-            $clone->reasonPhrase = null;
+            $clone->reasonPhrase = '';
         } else {
-            $clone->reasonPhrase = (string)$reasonPhrase;
+            $clone->reasonPhrase = (string) $reasonPhrase;
         }
         return $clone;
     }
@@ -53,7 +51,7 @@ class Response extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getReasonPhrase(): string
+    public function getReasonPhrase()
     {
         if (!empty($this->reasonPhrase)) {
             return $this->reasonPhrase;

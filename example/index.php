@@ -13,5 +13,4 @@ use codesaur\Http\Message\ServerRequest;
 
 $request = new ServerRequest();
 $request->initFromGlobal();
-
 var_dump($request);
