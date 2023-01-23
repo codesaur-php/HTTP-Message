@@ -240,7 +240,12 @@ class ServerRequest extends Request implements ServerRequestInterface
     
     private function parseFormData($input)
     {
-        $boundary = substr($input, 0, strpos($input, "\r\n"));
+        $bound_start = strpos($input, "\r\n");
+        if ($bound_start !== false) {
+            $boundary = substr($input, 0, $bound_start);
+        } else {
+            $boundary = null;
+        }
         if (empty($boundary)) {
             parse_str($input, $parsedBody);
             if (count($parsedBody) != 1
