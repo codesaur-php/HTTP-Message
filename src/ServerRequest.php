@@ -12,9 +12,9 @@ class ServerRequest extends Request implements ServerRequestInterface
     protected array $cookies = [];
     protected array $attributes = [];
 
-    protected array $queryParams = [];
     protected array $parsedBody = [];
     protected array $uploadedFiles = [];
+    protected ?array $queryParams = null;
 
     public function initFromGlobal()
     {
