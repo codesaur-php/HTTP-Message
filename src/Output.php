@@ -22,7 +22,7 @@ class Output implements StreamInterface
     {
         // If outbut buffering is still active when the script ends, PHP outputs it automatically.
         // In effect, every script ends with ob_end_flush(). Thus we don't really need to call endFlush!
-        // $this->output->endFlush();
+        // $this->buffer->endFlush();
     }
     
     public function getBuffer(): OutputBuffer
@@ -133,7 +133,7 @@ class Output implements StreamInterface
      */
     public function read($length)
     {
-        throw new RuntimeException(__CLASS__ . ' is not readable');
+        throw new \RuntimeException(__CLASS__ . ' is not readable');
     }
 
     /**

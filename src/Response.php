@@ -8,6 +8,7 @@ use Fig\Http\Message\StatusCodeInterface;
 class Response extends Message implements ResponseInterface
 {
     protected int $status = StatusCodeInterface::STATUS_OK;
+    
     protected string $reasonPhrase = '';
     
     function __construct()

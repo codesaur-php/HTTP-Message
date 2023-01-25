@@ -8,7 +8,7 @@ namespace codesaur\Http\Message\Example;
  */
 
 ini_set('display_errors', 'On');
-error_reporting(\E_ALL & ~\E_STRICT & ~\E_NOTICE);
+error_reporting(\E_ALL);
 
 require_once '../vendor/autoload.php';
 

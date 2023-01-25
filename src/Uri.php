@@ -7,12 +7,19 @@ use Psr\Http\Message\UriInterface;
 class Uri implements UriInterface
 {
     private string $_scheme = '';
+    
     private string $_host = '';
+    
     private ?int $_port = null;
+    
     private string $_path = '';
+    
     private string $_query = '';
+    
     private string $_fragment = '';
+    
     private string $_user = '';
+    
     private string $_password = '';
 
     /**
@@ -26,7 +33,7 @@ class Uri implements UriInterface
     public function setScheme(string $scheme)
     {
         $schm = strtolower($scheme);
-        if (!in_array($schm, array('http', 'https'))) {
+        if (!in_array($schm, ['http', 'https'])) {
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP scheme');
         }
         
@@ -241,21 +248,21 @@ class Uri implements UriInterface
         $fragment = $this->getFragment();
         
         $uri_reference = '';
-        if ($scheme !== '') {
+        if ($scheme != '') {
             $uri_reference .= "$scheme:";
         }
         
-        if ($authority !== '') {
+        if ($authority != '') {
             $uri_reference .= "//$authority";
         }
         
         $uri_reference .= rawurldecode($this->getPath());
         
-        if ($query !== '') {
+        if ($query != '') {
             $uri_reference .= '?' . rawurldecode($query);
         }
         
-        if ($fragment !== '') {
+        if ($fragment != '') {
             $uri_reference .= '#' . rawurldecode($fragment);
         }
         

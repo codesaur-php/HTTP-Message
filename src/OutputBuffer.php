@@ -9,14 +9,14 @@ class OutputBuffer
         ob_start(null, $chunk_size, $flags);
     }
     
-    public function startCallback(?callable $output_callback, int $chunk_size, int $flags)
+    public function startCallback(callable $output_callback, $chunk_size = 0, int $flags = \PHP_OUTPUT_HANDLER_STDFLAGS)
     {
         ob_start($output_callback, $chunk_size, $flags);
     }
     
-    public function startCompress(int $chunk_size = 0, int $flags = \PHP_OUTPUT_HANDLER_STDFLAGS)
+    public function startCompress()
     {
-        $this->startCallback([$this, 'compress'], $chunk_size, $flags);
+        $this->startCallback([$this, 'compress']);
     }
     
     public function flush()
@@ -56,11 +56,11 @@ class OutputBuffer
     
     public function compress($buffer)
     {
-        $search = array(
+        $search = [
             '/\>[^\S ]+/s', // strip whitespaces after tags, except space
             '/[^\S ]+\</s', // strip whitespaces before tags, except space
             '/(\s)+/s',     // shorten multiple whitespace sequences
-        );        
-        return preg_replace($search, array('>', '<', '\\1'), $buffer);
+        ];
+        return preg_replace($search, ['>', '<', '\\1'], $buffer);
     }
 }

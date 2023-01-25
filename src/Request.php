@@ -8,8 +8,10 @@ use Fig\Http\Message\RequestMethodInterface;
 
 class Request extends Message implements RequestInterface
 {
-    protected Uri $uri;
     protected string $method = '';
+    
+    protected UriInterface $uri;    
+    
     protected string $requestTarget = '';
     
     /**
@@ -27,12 +29,12 @@ class Request extends Message implements RequestInterface
         $requestTarget = '/' . ltrim($path, '/');
         
         $query = $this->getUri()->getQuery();
-        if ($query !== '') {
+        if ($query != '') {
             $requestTarget .= '?' . rawurldecode($query);
         }
         
         $fragment = $this->getUri()->getFragment();
-        if ($fragment !== '') {
+        if ($fragment != '') {
             $requestTarget .= '#' . rawurldecode($fragment);
         }
 
@@ -89,8 +91,8 @@ class Request extends Message implements RequestInterface
         $clone = clone $this;
         $clone->uri = $uri;
         
-        if ($preserveHost === false) {
-            if ($uri->getHost() !== '') {
+        if ($preserveHost == false) {
+            if ($uri->getHost() != '') {
                 $clone->setHeader('Host', $uri->getHost());
             }
             

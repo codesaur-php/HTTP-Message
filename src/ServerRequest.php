@@ -9,11 +9,15 @@ use Psr\Http\Message\UploadedFileInterface;
 class ServerRequest extends Request implements ServerRequestInterface
 {
     protected array $serverParams = [];
+    
     protected array $cookies = [];
+    
     protected array $attributes = [];
 
     protected array $parsedBody = [];
+    
     protected array $uploadedFiles = [];
+    
     protected ?array $queryParams = null;
 
     public function initFromGlobal()
@@ -304,7 +308,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                     $fileNamesEncoded .= '&';
                 }
                 $fileNamesEncoded .= $encodedNameIndex;
-            } elseif (substr($headers['content-disposition'], -$length) === $needle) {
+            } elseif (substr($headers['content-disposition'], -$length) == $needle) {
                 $data = new UploadedFile('', null, null, null, \UPLOAD_ERR_NO_FILE);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
@@ -438,7 +442,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                 $error = $currentElements['error'][$key];
                 $clientFilename = isset($currentElements['name'][$key]) && is_array($currentElements['name'][$key]) ? $currentElements['name'][$key] : null;
                 $clientMediaType = isset($currentElements['type'][$key]) && is_array($currentElements['type'][$key]) ? $currentElements['type'][$key] : null;
-                $normalizedItem[$key] = $this->normalizeFileUploadTmpNameItem($value, array('tmp_name' => $filename, 'size' => $size, 'error' => $error, 'name' => $clientFilename, 'type' => $clientMediaType));
+                $normalizedItem[$key] = $this->normalizeFileUploadTmpNameItem($value, ['tmp_name' => $filename, 'size' => $size, 'error' => $error, 'name' => $clientFilename, 'type' => $clientMediaType]);
             } else {
                 $normalizedItem[$key] = new UploadedFile($currentElements['tmp_name'][$key], $currentElements['name'][$key] ?? null, $currentElements['type'][$key] ?? null, $currentElements['size'][$key] ?? null, $currentElements['error'][$key] ?? \UPLOAD_ERR_OK);
             }

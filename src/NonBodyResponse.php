@@ -8,6 +8,7 @@ use Fig\Http\Message\StatusCodeInterface;
 class NonBodyResponse extends Message implements ResponseInterface
 {
     protected int $status = StatusCodeInterface::STATUS_OK;
+    
     protected string $reasonPhrase = '';
     
     /**
@@ -30,7 +31,7 @@ class NonBodyResponse extends Message implements ResponseInterface
         }
         
         $clone = clone $this;
-        $clone->status = $code;        
+        $clone->status = $code;
         $clone->reasonPhrase = $reasonPhrase;
         
         return $clone;
