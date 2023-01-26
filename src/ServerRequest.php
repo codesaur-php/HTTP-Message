@@ -90,7 +90,9 @@ class ServerRequest extends Request implements ServerRequestInterface
                     $this->parsedBody = [];
                 } else {
                     $decoded = json_decode($input, true);
-                    if (json_last_error() == \JSON_ERROR_NONE) {
+                    if ($decoded != null
+                        && json_last_error() == \JSON_ERROR_NONE
+                    ) {
                         $this->parsedBody = $decoded;
                     } else {
                         $this->parseFormData($input);
@@ -391,12 +393,13 @@ class ServerRequest extends Request implements ServerRequestInterface
      * Normalize the file upload item which contains the FIRST OCCURRENCE of the key "tmp_name".
      *
      * This method returns a tree structure, with each leaf
-     * an instance of Psr\Http\Message\UploadedFileInterface.
+     * an instance of Psr\Http\Message\UploadedFileInterface
+     * or instance of Psr\Http\Message\UploadedFileInterface.
      *
      * Not part of PSR-17.
      *
      * @param array $item The file upload item.
-     * @return array The file upload item as a tree structure, with each leaf an instance of UploadedFileInterface.
+     * @return array|UploadedFileInterface The file upload item as a tree structure, with each leaf an instance of UploadedFileInterface, or instance of Psr\Http\Message\UploadedFileInterface.
      * @throws InvalidArgumentException The value at the key "tmp_name" is empty.
      */
     private function normalizeUploadedFile(array $item)
@@ -426,7 +429,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     private function normalizeFileUploadTmpNameItem(array $item, array $currentElements): array
     {
-        $normalizedItem = array();
+        $normalizedItem = [];
         foreach ($item as $key => $value) {
             if (is_array($value)) {
                 if (!isset($currentElements['size'][$key])

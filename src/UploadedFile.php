@@ -7,9 +7,13 @@ use Psr\Http\Message\UploadedFileInterface;
 class UploadedFile implements UploadedFileInterface
 {
     protected ?string $name;
+    
     protected ?string $type;
+    
     protected ?int $size;
+    
     protected int $error;
+    
     protected string $tmp_name;
     
     private bool $_moved = false;
