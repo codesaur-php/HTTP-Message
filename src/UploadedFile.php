@@ -18,7 +18,7 @@ class UploadedFile implements UploadedFileInterface
     
     private bool $_moved = false;
     
-    function __construct(string $tmp_name, ?string $name, ?string $type, ?int $size, int $error)
+    public function __construct(string $tmp_name, ?string $name, ?string $type, ?int $size, int $error)
     {
         $this->tmp_name = $tmp_name;
         

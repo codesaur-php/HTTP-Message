@@ -11,7 +11,7 @@ class Response extends Message implements ResponseInterface
     
     protected string $reasonPhrase = '';
     
-    function __construct()
+    public function __construct()
     {
         $this->body = new Output();
     }

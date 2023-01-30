@@ -18,7 +18,7 @@ class Output implements StreamInterface
         }
     }
     
-    function __destruct()
+    public function __destruct()
     {
         // If outbut buffering is still active when the script ends, PHP outputs it automatically.
         // In effect, every script ends with ob_end_flush(). Thus we don't really need to call endFlush!
