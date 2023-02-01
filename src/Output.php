@@ -5,12 +5,12 @@ namespace codesaur\Http\Message;
 use Psr\Http\Message\StreamInterface;
 
 class Output implements StreamInterface
-{    
+{
     protected OutputBuffer $buffer;
     
     public function __construct()
     {
-        $this->buffer = new OutputBuffer();        
+        $this->buffer = new OutputBuffer();
         if (($_ENV['CODESAUR_OUTPUT_COMPRESS'] ?? false) === true) {
             $this->buffer->startCompress();
         } else {

@@ -53,7 +53,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         
         $this->cookies = $_COOKIE;
         
-        $this->uri = new Uri();        
+        $this->uri = new Uri();
         $https = $this->serverParams['HTTPS'] ?? 'off';
         $port = (int) $this->serverParams['SERVER_PORT'];
         if ((!empty($https) && strtolower($https) != 'off')
@@ -180,7 +180,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withUploadedFiles(array $uploadedFiles)
     {
         $clone = clone $this;
-        $clone->uploadedFiles = $uploadedFiles;        
+        $clone->uploadedFiles = $uploadedFiles;
         return $clone;
     }
 

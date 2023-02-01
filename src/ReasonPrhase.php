@@ -52,13 +52,13 @@ class ReasonPrhase
     const STATUS_415 = 'Unsupported Media Type';
     const STATUS_416 = 'Range Not Satisfiable';
     const STATUS_417 = 'Expectation Failed';
-    const STATUS_418 = 'I\'m a Teapot';    
+    const STATUS_418 = 'I\'m a Teapot';
     const STATUS_421 = 'Misdirected Request';
     const STATUS_422 = 'Unprocessable Entity';
     const STATUS_423 = 'Locked';
     const STATUS_424 = 'Failed Dependency';
     const STATUS_425 = 'Too Early';
-    const STATUS_426 = 'Upgrade Required';    
+    const STATUS_426 = 'Upgrade Required';
     const STATUS_428 = 'Precondition Required';
     const STATUS_429 = 'Too Many Requests';
     const STATUS_431 = 'Request Header Fields Too Large';

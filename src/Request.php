@@ -10,7 +10,7 @@ class Request extends Message implements RequestInterface
 {
     protected string $method = '';
     
-    protected UriInterface $uri;    
+    protected UriInterface $uri;
     
     protected string $requestTarget = '';
     
