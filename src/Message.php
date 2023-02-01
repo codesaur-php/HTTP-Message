@@ -109,7 +109,7 @@ abstract class Message implements MessageInterface
             }
         } else {
             $this->setHeader($name, $value);
-        }                
+        }
         return $clone;
     }
 
