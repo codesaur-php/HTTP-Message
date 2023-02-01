@@ -69,7 +69,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
         $request_uri = \preg_replace('/\/+/', '\\1/', $this->serverParams['REQUEST_URI']);
         if (($pos = \strpos($request_uri, '?')) !== false) {
-            $request_uri = substr($request_uri, 0, $pos);
+            $request_uri = \substr($request_uri, 0, $pos);
         }
         $this->requestTarget = \rtrim($request_uri, '/');
         $this->uri->setPath($this->requestTarget);
