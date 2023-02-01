@@ -98,16 +98,16 @@ class UploadedFile implements UploadedFileInterface
         }
 
         if (\PHP_SAPI == 'cli') {
-            if (!rename($this->tmp_name, $targetPath)) {
-                throw new \RuntimeException(sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath));
+            if (!\rename($this->tmp_name, $targetPath)) {
+                throw new \RuntimeException(\sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath));
             }
         } else {
-            if (!copy($this->tmp_name, $targetPath)) {
-                throw new \RuntimeException(sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath));
+            if (!\copy($this->tmp_name, $targetPath)) {
+                throw new \RuntimeException(\sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath));
             }
 
-            if (!unlink($this->tmp_name)) {
-                throw new \RuntimeException(sprintf('Error removing uploaded temp file %s!', $this->tmp_name));
+            if (!\unlink($this->tmp_name)) {
+                throw new \RuntimeException(\sprintf('Error removing uploaded temp file %s!', $this->tmp_name));
             }
         }
         

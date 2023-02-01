@@ -24,9 +24,9 @@ class ServerRequest extends Request implements ServerRequestInterface
     {
         $this->serverParams = $_SERVER;
         
-        if (function_exists('getallheaders')) {
-            foreach (getallheaders() as $key => $value) {
-                if (in_array($key, [
+        if (\function_exists('getallheaders')) {
+            foreach (\getallheaders() as $key => $value) {
+                if (\in_array($key, [
                     'Content-Type',
                     'Host',
                     'User-Agent',
@@ -37,8 +37,8 @@ class ServerRequest extends Request implements ServerRequestInterface
                 ])) {
                     continue;
                 }
-                $key = strtoupper($key);
-                $key = 'HTTP_' . str_replace('-', '_', $key);
+                $key = \strtoupper($key);
+                $key = 'HTTP_' . \str_replace('-', '_', $key);
                 if (!isset($this->serverParams[$key])) {
                     $this->serverParams[$key] = $value;
                 }
@@ -46,17 +46,17 @@ class ServerRequest extends Request implements ServerRequestInterface
         }
         
         if (isset($this->serverParams['SERVER_PROTOCOL'])) {
-            $this->protocolVersion = str_replace('HTTP/', '', $this->serverParams['SERVER_PROTOCOL']);
+            $this->protocolVersion = \str_replace('HTTP/', '', $this->serverParams['SERVER_PROTOCOL']);
         }
         
-        $this->method = strtoupper($this->serverParams['REQUEST_METHOD']);
+        $this->method = \strtoupper($this->serverParams['REQUEST_METHOD']);
         
         $this->cookies = $_COOKIE;
         
         $this->uri = new Uri();
         $https = $this->serverParams['HTTPS'] ?? 'off';
         $port = (int) $this->serverParams['SERVER_PORT'];
-        if ((!empty($https) && strtolower($https) != 'off')
+        if ((!empty($https) && \strtolower($https) != 'off')
             || $port == 443
         ) {
             $this->uri->setScheme('https');
@@ -67,31 +67,31 @@ class ServerRequest extends Request implements ServerRequestInterface
         $this->uri->setHost($this->serverParams['HTTP_HOST']);
         $this->setHeader('Host', $this->uri->getHost());
 
-        $request_uri = preg_replace('/\/+/', '\\1/', $this->serverParams['REQUEST_URI']);
-        if (($pos = strpos($request_uri, '?')) !== false) {
+        $request_uri = \preg_replace('/\/+/', '\\1/', $this->serverParams['REQUEST_URI']);
+        if (($pos = \strpos($request_uri, '?')) !== false) {
             $request_uri = substr($request_uri, 0, $pos);
         }
-        $this->requestTarget = rtrim($request_uri, '/');
+        $this->requestTarget = \rtrim($request_uri, '/');
         $this->uri->setPath($this->requestTarget);
         
         if (!empty($this->serverParams['QUERY_STRING'])) {
             $query = $this->serverParams['QUERY_STRING'];
             $this->uri->setQuery($query);
             $this->requestTarget .= "?$query";
-            parse_str($query, $this->queryParams);
+            \parse_str($query, $this->queryParams);
         }
         
         $this->uploadedFiles = $this->getNormalizedUploadedFiles($_FILES);
         
         if (($this->serverParams['CONTENT_LENGTH'] ?? 0) > 0) {
             if (empty($_POST)) {
-                $input = file_get_contents('php://input');
+                $input = \file_get_contents('php://input');
                 if (empty($input)) {
                     $this->parsedBody = [];
                 } else {
-                    $decoded = json_decode($input, true);
+                    $decoded = \json_decode($input, true);
                     if ($decoded != null
-                        && json_last_error() == \JSON_ERROR_NONE
+                        && \json_last_error() == \JSON_ERROR_NONE
                     ) {
                         $this->parsedBody = $decoded;
                     } else {
@@ -143,7 +143,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     public function getQueryParams()
     {
-        if (is_array($this->queryParams)) {
+        if (\is_array($this->queryParams)) {
             return $this->queryParams;
         }
 
@@ -151,8 +151,8 @@ class ServerRequest extends Request implements ServerRequestInterface
             return [];
         }
         
-        $query = rawurldecode($this->getUri()->getQuery());
-        parse_str($query, $this->queryParams);
+        $query = \rawurldecode($this->getUri()->getQuery());
+        \parse_str($query, $this->queryParams);
         return $this->queryParams;
     }
 
@@ -246,11 +246,11 @@ class ServerRequest extends Request implements ServerRequestInterface
     
     private function parseFormData(string $input)
     {
-        $boundary = substr($input, 0, strpos($input, "\r\n") ?: 0);
+        $boundary = \substr($input, 0, \strpos($input, "\r\n") ?: 0);
         if (empty($boundary)) {
-            parse_str($input, $parsedBody);
-            if (count($parsedBody) != 1
-                || strlen(key($parsedBody)) != strlen($input)
+            \parse_str($input, $parsedBody);
+            if (\count($parsedBody) != 1
+                || \strlen(\key($parsedBody)) != \strlen($input)
             ) {
                 $this->parsedBody = $parsedBody;
             }
@@ -261,29 +261,29 @@ class ServerRequest extends Request implements ServerRequestInterface
         $datas = [];
         $varNamesEncoded = '';
         $fileNamesEncoded = '';
-        $tmp_dir = ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
+        $tmp_dir = \ini_get('upload_tmp_dir') ?: \sys_get_temp_dir();
         $needle = '; filename=""';
-        $length = strlen($needle);
+        $length = \strlen($needle);
         
-        $parts = array_slice(explode($boundary, $input), 1);
+        $parts = \array_slice(\explode($boundary, $input), 1);
         foreach ($parts as $part) {
             if ($part == "--\r\n") {
                 break;
             }
 
-            $part = ltrim($part, "\r\n");
-            $raw_parts = explode("\r\n\r\n", $part, 2);
+            $part = \ltrim($part, "\r\n");
+            $raw_parts = \explode("\r\n\r\n", $part, 2);
             if (!isset($raw_parts[1])) {
                 continue;
             }
             
             list($raw_headers_inline, $body) = $raw_parts;
-            $raw_headers = explode("\r\n", $raw_headers_inline);
+            $raw_headers = \explode("\r\n", $raw_headers_inline);
 
-            $headers = array();
+            $headers = [];
             foreach ($raw_headers as $header) {
-                list($content, $value) = explode(':', $header);
-                $headers[strtolower($content)] = ltrim($value, ' ');
+                list($content, $value) = \explode(':', $header);
+                $headers[\strtolower($content)] = \ltrim($value, ' ');
             }
 
             if (!isset($headers['content-disposition'])) {
@@ -293,14 +293,14 @@ class ServerRequest extends Request implements ServerRequestInterface
             $index++;
             
             $matches = [];
-            preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
+            \preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
             list(/*$content_header*/, /*$content_type*/, $name) = $matches;
-            $encodedNameIndex = urlencode($name) . '=' . $index;
-            $data = substr($body, 0, strlen($body) - 2);
+            $encodedNameIndex = \urlencode($name) . '=' . $index;
+            $data = \substr($body, 0, \strlen($body) - 2);
             if (!empty($matches[4]) && isset($headers['content-type'])) {
-                $unique_tmp_name = uniqid('php_') . '.tmp';
+                $unique_tmp_name = \uniqid('php_') . '.tmp';
                 $tmp_path = "$tmp_dir/$unique_tmp_name";
-                $size = file_put_contents($tmp_path, $data);
+                $size = \file_put_contents($tmp_path, $data);
                 if ($size === false) {
                     continue;
                 }
@@ -310,7 +310,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                     $fileNamesEncoded .= '&';
                 }
                 $fileNamesEncoded .= $encodedNameIndex;
-            } elseif (substr($headers['content-disposition'], -$length) == $needle) {
+            } elseif (\substr($headers['content-disposition'], -$length) == $needle) {
                 $data = new UploadedFile('', null, null, null, \UPLOAD_ERR_NO_FILE);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
@@ -326,11 +326,11 @@ class ServerRequest extends Request implements ServerRequestInterface
             $datas[$index] = $data;
         }
         
-        parse_str($varNamesEncoded, $parsedBody);
+        \parse_str($varNamesEncoded, $parsedBody);
         $this->arrayTreeLeafs($parsedBody, $datas);
         $this->parsedBody = $parsedBody;
         
-        parse_str($fileNamesEncoded, $uploadedFiles);
+        \parse_str($fileNamesEncoded, $uploadedFiles);
         $this->arrayTreeLeafs($uploadedFiles, $datas);
         $this->uploadedFiles = $uploadedFiles;
     }
@@ -338,7 +338,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     private function arrayTreeLeafs(array &$tree, array $leafs)
     {
         foreach ($tree as $key => &$value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $this->arrayTreeLeafs($value, $leafs);
             } else {
                 $tree[$key] = $leafs[$value];
@@ -377,7 +377,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         foreach ($uploadedFiles as $index => $item) {
             if (isset($item['tmp_name'])) {
                 $normalizedUploadedFiles[$index] = $this->normalizeUploadedFile($item);
-            } elseif (is_array($item)) {
+            } elseif (\is_array($item)) {
                 $normalizedUploadedFiles[$index] = $this->getNormalizedUploadedFiles($item);
             } elseif ($item instanceof UploadedFileInterface) {
                 $normalizedUploadedFiles[$index] = $item;
@@ -405,7 +405,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     private function normalizeUploadedFile(array $item)
     {
         $filename = $item['tmp_name'];
-        if (is_array($filename)) {
+        if (\is_array($filename)) {
             if (empty($filename)) {
                 throw new \InvalidArgumentException('The value of the key "tmp_name" in the uploaded files list must be a non-empty array.');
             }
@@ -431,11 +431,11 @@ class ServerRequest extends Request implements ServerRequestInterface
     {
         $normalizedItem = [];
         foreach ($item as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 if (!isset($currentElements['size'][$key])
-                    || !is_array($currentElements['size'][$key])
+                    || !\is_array($currentElements['size'][$key])
                     || !isset($currentElements['error'][$key])
-                    || !is_array($currentElements['error'][$key])
+                    || !\is_array($currentElements['error'][$key])
                 ) {
                     throw new \InvalidArgumentException('The structure of the items assigned to the keys "size" and "error" in the uploaded files list must be identical with the one of the  item assigned to the key "tmp_name". This restriction does not  apply to the leaf elements.');
                 }
@@ -443,8 +443,8 @@ class ServerRequest extends Request implements ServerRequestInterface
                 $filename = $currentElements['tmp_name'][$key];
                 $size = $currentElements['size'][$key];
                 $error = $currentElements['error'][$key];
-                $clientFilename = isset($currentElements['name'][$key]) && is_array($currentElements['name'][$key]) ? $currentElements['name'][$key] : null;
-                $clientMediaType = isset($currentElements['type'][$key]) && is_array($currentElements['type'][$key]) ? $currentElements['type'][$key] : null;
+                $clientFilename = isset($currentElements['name'][$key]) && \is_array($currentElements['name'][$key]) ? $currentElements['name'][$key] : null;
+                $clientMediaType = isset($currentElements['type'][$key]) && \is_array($currentElements['type'][$key]) ? $currentElements['type'][$key] : null;
                 $normalizedItem[$key] = $this->normalizeFileUploadTmpNameItem($value, ['tmp_name' => $filename, 'size' => $size, 'error' => $error, 'name' => $clientFilename, 'type' => $clientMediaType]);
             } else {
                 $normalizedItem[$key] = new UploadedFile($currentElements['tmp_name'][$key], $currentElements['name'][$key] ?? null, $currentElements['type'][$key] ?? null, $currentElements['size'][$key] ?? null, $currentElements['error'][$key] ?? \UPLOAD_ERR_OK);

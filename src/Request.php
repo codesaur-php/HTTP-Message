@@ -25,17 +25,17 @@ class Request extends Message implements RequestInterface
             return '/';
         }
 
-        $path = rawurldecode($this->getUri()->getPath());
-        $requestTarget = '/' . ltrim($path, '/');
+        $path = \rawurldecode($this->getUri()->getPath());
+        $requestTarget = '/' . \ltrim($path, '/');
         
         $query = $this->getUri()->getQuery();
         if ($query != '') {
-            $requestTarget .= '?' . rawurldecode($query);
+            $requestTarget .= '?' . \rawurldecode($query);
         }
         
         $fragment = $this->getUri()->getFragment();
         if ($fragment != '') {
-            $requestTarget .= '#' . rawurldecode($fragment);
+            $requestTarget .= '#' . \rawurldecode($fragment);
         }
 
         return $requestTarget;
@@ -64,9 +64,9 @@ class Request extends Message implements RequestInterface
      */
     public function withMethod($method)
     {
-        $uMethod = strtoupper($method);
+        $uMethod = \strtoupper($method);
         $commonHTTPmethod = RequestMethodInterface::class . "::METHOD_$uMethod";
-        if (!defined($commonHTTPmethod)) {
+        if (!\defined($commonHTTPmethod)) {
             throw new \InvalidArgumentException(__CLASS__ . ": Invalid HTTP method [$method]");
         }
         

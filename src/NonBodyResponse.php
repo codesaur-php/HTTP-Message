@@ -26,7 +26,7 @@ class NonBodyResponse extends Message implements ResponseInterface
     {
         $status = "STATUS_$code";
         $reasonPhraseClass = ReasonPrhase::class;
-        if (!defined("$reasonPhraseClass::$status")) {
+        if (!\defined("$reasonPhraseClass::$status")) {
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
         }
         
@@ -48,8 +48,8 @@ class NonBodyResponse extends Message implements ResponseInterface
         
         $status = "STATUS_$this->status";
         $reasonPhrase = ReasonPrhase::class;
-        if (defined("$reasonPhrase::$status")) {
-            return constant("$reasonPhrase::$status");
+        if (\defined("$reasonPhrase::$status")) {
+            return \constant("$reasonPhrase::$status");
         }
         
         return '';

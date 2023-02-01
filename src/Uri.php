@@ -32,8 +32,8 @@ class Uri implements UriInterface
     
     public function setScheme(string $scheme)
     {
-        $schm = strtolower($scheme);
-        if (!in_array($schm, ['http', 'https'])) {
+        $schm = \strtolower($scheme);
+        if (!\in_array($schm, ['http', 'https'])) {
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP scheme');
         }
         
@@ -76,13 +76,13 @@ class Uri implements UriInterface
     
     public function setUserInfo(string $user, ?string $password = null)
     {
-        $this->_user = rawurlencode($user);
+        $this->_user = \rawurlencode($user);
 
         if (empty($password)) {
             return;
         }
 
-        $this->_password = rawurlencode($password);
+        $this->_password = \rawurlencode($password);
     }
 
     /**
@@ -95,11 +95,11 @@ class Uri implements UriInterface
 
     public function setHost(string $host) 
     {
-        if (filter_var($host, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
+        if (\filter_var($host, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
             $host = "[$host]";
         }
         
-        $this->_host = strtolower($host);
+        $this->_host = \strtolower($host);
     }
     
     /**
@@ -138,7 +138,7 @@ class Uri implements UriInterface
     
     public function setPath(string $path)
     {
-        $this->_path = rawurlencode($path);
+        $this->_path = \rawurlencode($path);
     }
 
     /**
@@ -151,7 +151,7 @@ class Uri implements UriInterface
     
     public function setQuery(string $query)
     {
-        $this->_query = rawurlencode($query);
+        $this->_query = \rawurlencode($query);
     }
 
     /**
@@ -164,7 +164,7 @@ class Uri implements UriInterface
     
     public function setFragment(string $fragment)
     {
-        $this->_fragment = rawurlencode($fragment);
+        $this->_fragment = \rawurlencode($fragment);
     }
 
     /**
@@ -256,14 +256,14 @@ class Uri implements UriInterface
             $uri_reference .= "//$authority";
         }
         
-        $uri_reference .= rawurldecode($this->getPath());
+        $uri_reference .= \rawurldecode($this->getPath());
         
         if ($query != '') {
-            $uri_reference .= '?' . rawurldecode($query);
+            $uri_reference .= '?' . \rawurldecode($query);
         }
         
         if ($fragment != '') {
-            $uri_reference .= '#' . rawurldecode($fragment);
+            $uri_reference .= '#' . \rawurldecode($fragment);
         }
         
         return $uri_reference;

@@ -34,7 +34,7 @@ abstract class Message implements MessageInterface
      */
     public function withProtocolVersion($version)
     {
-        if (!in_array($version, self::HTTP_PROTOCOL_VERSIONS)) {
+        if (!\in_array($version, self::HTTP_PROTOCOL_VERSIONS)) {
             throw new \InvalidArgumentException(__CLASS__ . ": Invalid HTTP protocol version [$version]");
         }
 
@@ -56,7 +56,7 @@ abstract class Message implements MessageInterface
      */
     public function hasHeader($name)
     {
-        return isset($this->headers[strtoupper($name)]);
+        return isset($this->headers[\strtoupper($name)]);
     }
 
     /**
@@ -64,7 +64,7 @@ abstract class Message implements MessageInterface
      */
     public function getHeader($name)
     {
-        return $this->headers[strtoupper($name)] ?? [];
+        return $this->headers[\strtoupper($name)] ?? [];
     }
 
     /**
@@ -73,15 +73,15 @@ abstract class Message implements MessageInterface
     public function getHeaderLine($name)
     {
         $values = $this->getHeader($name);
-        return implode(',', $values);
+        return \implode(',', $values);
     }
 
     function setHeader($name, $value)
     {
-        if (is_array($value)) {
-            $this->headers[strtoupper($name)] = $value;
+        if (\is_array($value)) {
+            $this->headers[\strtoupper($name)] = $value;
         } else {
-            $this->headers[strtoupper($name)] = [$value];
+            $this->headers[\strtoupper($name)] = [$value];
         }
     }
 
@@ -102,10 +102,10 @@ abstract class Message implements MessageInterface
     {
         $clone = clone $this;
         if ($this->hasHeader($name)) {
-            if (is_array($value)) {
-                $this->headers[strtoupper($name)] += $value;
+            if (\is_array($value)) {
+                $this->headers[\strtoupper($name)] += $value;
             } else {
-                $this->headers[strtoupper($name)][] = $value;
+                $this->headers[\strtoupper($name)][] = $value;
             }
         } else {
             $this->setHeader($name, $value);
@@ -120,7 +120,7 @@ abstract class Message implements MessageInterface
     {
         $clone = clone $this;
         if ($this->hasHeader($name)) {
-            unset($this->headers[strtoupper($name)]);
+            unset($this->headers[\strtoupper($name)]);
         }
         return $clone;
     }

@@ -29,13 +29,13 @@ class Response extends Message implements ResponseInterface
      */
     public function withStatus($code, $reasonPhrase = '')
     {
-        if (!is_int($code)) {
+        if (!\is_int($code)) {
             throw new \InvalidArgumentException(__CLASS__ . ': HTTP status code must be an integer');
         }
         
         $status = "STATUS_$code";
         $reasonPhraseClass = ReasonPrhase::class;
-        if (!defined("$reasonPhraseClass::$status")) {
+        if (!\defined("$reasonPhraseClass::$status")) {
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
         }
         
@@ -60,8 +60,8 @@ class Response extends Message implements ResponseInterface
         
         $status = "STATUS_$this->status";
         $reasonPhrase = ReasonPrhase::class;
-        if (defined("$reasonPhrase::$status")) {
-            return constant("$reasonPhrase::$status");
+        if (\defined("$reasonPhrase::$status")) {
+            return \constant("$reasonPhrase::$status");
         }
         
         return '';

@@ -117,7 +117,7 @@ class Output implements StreamInterface
     {
         echo $string;
         
-        return strlen($string);
+        return \strlen($string);
     }
 
     /**
