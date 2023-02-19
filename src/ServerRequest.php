@@ -23,20 +23,8 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function initFromGlobal()
     {
         $this->serverParams = $_SERVER;
-        
         if (\function_exists('getallheaders')) {
             foreach (\getallheaders() as $key => $value) {
-                if (\in_array($key, [
-                    'Content-Type',
-                    'Host',
-                    'User-Agent',
-                    'Accept',
-                    'Accept-Encoding',
-                    'Connection',
-                    'Content-Length',
-                ])) {
-                    continue;
-                }
                 $key = \strtoupper($key);
                 $key = 'HTTP_' . \str_replace('-', '_', $key);
                 if (!isset($this->serverParams[$key])) {
