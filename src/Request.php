@@ -17,7 +17,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getRequestTarget()
+    public function getRequestTarget(): string
     {
         if (!empty($this->requestTarget)) {
             return $this->requestTarget;
@@ -44,7 +44,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget(string $requestTarget): RequestInterface
     {
         $clone = clone $this;
         $clone->requestTarget = $requestTarget;
@@ -54,7 +54,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -62,7 +62,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withMethod($method)
+    public function withMethod(string $method): RequestInterface
     {
         $uMethod = \strtoupper($method);
         $commonHTTPmethod = RequestMethodInterface::class . "::METHOD_$uMethod";
@@ -78,7 +78,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getUri()
+    public function getUri(): UriInterface
     {
         return $this->uri;
     }
@@ -86,7 +86,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, bool $preserveHost = false): RequestInterface
     {
         $clone = clone $this;
         $clone->uri = $uri;

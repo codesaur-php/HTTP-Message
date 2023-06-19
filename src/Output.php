@@ -33,7 +33,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getContents();
     }
@@ -41,7 +41,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): void
     {
         $this->buffer->endClean();
     }
@@ -57,15 +57,15 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getSize()
+    public function getSize(): ?int
     {
-        return $this->buffer->getLength();
+        return $this->buffer->getLength() ?: null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function tell()
+    public function tell(): int
     {
         return 0;
     }
@@ -73,7 +73,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function eof()
+    public function eof(): bool
     {
         return true;
     }
@@ -81,7 +81,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return false;
     }
@@ -89,7 +89,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function seek($offset, $whence = \SEEK_SET)
+    public function seek(int $offset, int $whence = \SEEK_SET): void
     {
         \RuntimeException(__CLASS__ . ' is not seekable');
     }
@@ -97,7 +97,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
         \RuntimeException(__CLASS__ . ' is not rewindable');
     }
@@ -105,7 +105,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         return true;
     }
@@ -113,7 +113,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function write($string)
+    public function write(string $string): int
     {
         echo $string;
         
@@ -123,7 +123,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         return false;
     }
@@ -131,7 +131,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function read($length)
+    public function read(int $length): string
     {
         throw new \RuntimeException(__CLASS__ . ' is not readable');
     }
@@ -139,7 +139,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getContents()
+    public function getContents(): string
     {
         return (string) $this->buffer->getContents();
     }
@@ -147,7 +147,7 @@ class Output implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function getMetadata($key = null)
+    public function getMetadata(?string $key = null)
     {
         return null;
     }

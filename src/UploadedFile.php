@@ -31,7 +31,7 @@ class UploadedFile implements UploadedFileInterface
     /**
      * {@inheritdoc}
      */
-    public function getClientFilename()
+    public function getClientFilename(): ?string
     {
         return $this->name;
     }
@@ -39,7 +39,7 @@ class UploadedFile implements UploadedFileInterface
     /**
      * {@inheritdoc}
      */
-    public function getClientMediaType()
+    public function getClientMediaType(): ?string
     {
         return $this->type;
     }
@@ -47,7 +47,7 @@ class UploadedFile implements UploadedFileInterface
     /**
      * {@inheritdoc}
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
@@ -55,7 +55,7 @@ class UploadedFile implements UploadedFileInterface
     /**
      * {@inheritdoc}
      */
-    public function getError()
+    public function getError(): int
     {
         return $this->error;
     }
@@ -63,7 +63,7 @@ class UploadedFile implements UploadedFileInterface
     /**
      * {@inheritdoc}
      */
-    public function getStream()
+    public function getStream(): StreamInterface
     {
         throw new \RuntimeException('Not implemented');
     }
@@ -71,7 +71,7 @@ class UploadedFile implements UploadedFileInterface
     /**
      * {@inheritdoc}
      */
-    public function moveTo($targetPath)
+    public function moveTo(string $targetPath): void
     {
         if (empty($targetPath)) {
             throw new \InvalidArgumentException('Invalid target path!');

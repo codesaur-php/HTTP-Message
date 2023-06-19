@@ -19,7 +19,7 @@ class Response extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->status;
     }
@@ -27,7 +27,7 @@ class Response extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         if (!\is_int($code)) {
             throw new \InvalidArgumentException(__CLASS__ . ': HTTP status code must be an integer');
@@ -52,7 +52,7 @@ class Response extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         if (!empty($this->reasonPhrase)) {
             return $this->reasonPhrase;

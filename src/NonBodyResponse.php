@@ -14,7 +14,7 @@ class NonBodyResponse extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->status;
     }
@@ -22,7 +22,7 @@ class NonBodyResponse extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         $status = "STATUS_$code";
         $reasonPhraseClass = ReasonPrhase::class;
@@ -40,7 +40,7 @@ class NonBodyResponse extends Message implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         if (!empty($this->reasonPhrase)) {
             return $this->reasonPhrase;

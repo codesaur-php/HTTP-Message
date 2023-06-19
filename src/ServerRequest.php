@@ -97,7 +97,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getServerParams()
+    public function getServerParams(): array
     {
         return $this->serverParams;
     }
@@ -110,7 +110,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getCookieParams()
+    public function getCookieParams(): array
     {
         return $this->cookies;
     }
@@ -118,7 +118,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies): ServerRequestInterface
     {
         $clone = clone $this;
         $clone->cookies = $cookies;
@@ -129,7 +129,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getQueryParams()
+    public function getQueryParams(): array
     {
         if (\is_array($this->queryParams)) {
             return $this->queryParams;
@@ -147,7 +147,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query): ServerRequestInterface
     {
         $clone = clone $this;
         $clone->queryParams = $query;
@@ -157,7 +157,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array
     {
         return $this->uploadedFiles;
     }
@@ -165,7 +165,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
         $clone = clone $this;
         $clone->uploadedFiles = $uploadedFiles;
@@ -183,7 +183,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data): ServerRequestInterface
     {
         $clone = clone $this;
         $clone->parsedBody = (array) $data;
@@ -193,7 +193,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -201,7 +201,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getAttribute($name, $default = null)
+    public function getAttribute(string $name, $default = null)
     {
         if (!isset($this->attributes[$name])) {
             return $default;
@@ -213,7 +213,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withAttribute($name, $value)
+    public function withAttribute(string $name, $value): ServerRequestInterface
     {
         $clone = clone $this;
         $clone->attributes[$name] = $value;
@@ -223,7 +223,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function withoutAttribute($name)
+    public function withoutAttribute(string $name): ServerRequestInterface
     {
         $clone = clone $this;
         if (isset($clone->attributes[$name])) {

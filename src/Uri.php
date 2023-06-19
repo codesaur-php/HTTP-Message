@@ -25,7 +25,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getScheme()
+    public function getScheme(): string
     {
         return $this->_scheme;
     }
@@ -43,7 +43,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getAuthority()
+    public function getAuthority(): string
     {
         $userInfo = $this->getUserInfo();
         if ($userInfo != '') {
@@ -65,7 +65,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getUserInfo()
+    public function getUserInfo(): string
     {
         $info = $this->_user;
         if (!empty($this->_password)) {
@@ -88,7 +88,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->_host;
     }
@@ -105,7 +105,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getPort()
+    public function getPort(): ?int
     {
         if (!empty($this->_port)) {
             $scheme = $this->getScheme();
@@ -131,7 +131,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->_path;
     }
@@ -144,7 +144,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getQuery()
+    public function getQuery(): string
     {
         return $this->_query;
     }
@@ -157,7 +157,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function getFragment()
+    public function getFragment(): string
     {
         return $this->_fragment;
     }
@@ -170,7 +170,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function withScheme($scheme)
+    public function withScheme(string $scheme): UriInterface
     {
         $clone = clone $this;
         $clone->setScheme($scheme);
@@ -180,7 +180,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function withUserInfo($user, $password = null)
+    public function withUserInfo(string $user, ?string $password = null): UriInterface
     {
         $clone = clone $this;
         $clone->setUserInfo($user, $password);
@@ -190,7 +190,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function withHost($host)
+    public function withHost(string $host): UriInterface
     {
         $clone = clone $this;
         $clone->setHost($host);
@@ -200,7 +200,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function withPort($port)
+    public function withPort(?int $port): UriInterface
     {
         $clone = clone $this;
         $clone->setPort((int) $port);
@@ -210,7 +210,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function withPath($path)
+    public function withPath(string $path): UriInterface
     {
         $clone = clone $this;
         $clone->setPath($path);
@@ -220,7 +220,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function withQuery($query)
+    public function withQuery(string $query): UriInterface
     {
         $clone = clone $this;
         $clone->setQuery($query);
@@ -230,7 +230,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function withFragment($fragment)
+    public function withFragment(string $fragment): UriInterface
     {
         $clone = clone $this;
         $clone->setFragment($fragment);
@@ -240,7 +240,7 @@ class Uri implements UriInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
         $scheme = $this->getScheme();
         $authority = $this->getAuthority();
