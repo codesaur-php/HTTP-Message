@@ -76,7 +76,7 @@ abstract class Message implements MessageInterface
         return \implode(',', $values);
     }
 
-    function setHeader($name, $value)
+    public function setHeader($name, $value)
     {
         if (\is_array($value)) {
             $this->headers[\strtoupper($name)] = $value;
