@@ -3,6 +3,7 @@
 namespace codesaur\Http\Message;
 
 use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\StreamInterface;
 
 class UploadedFile implements UploadedFileInterface
 {
