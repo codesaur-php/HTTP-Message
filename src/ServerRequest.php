@@ -102,11 +102,6 @@ class ServerRequest extends Request implements ServerRequestInterface
         return $this->serverParams;
     }
     
-    public function setScriptTargetPath(string $uri_path_segment)
-    {
-        $this->serverParams['SCRIPT_TARGET_PATH'] = $uri_path_segment;
-    }
-
     /**
      * {@inheritdoc}
      */
