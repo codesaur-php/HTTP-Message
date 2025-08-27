@@ -5,7 +5,7 @@ namespace codesaur\Http\Message;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\StreamInterface;
 
-class UploadedFile implements UploadedFileInterface
+class UploadedFile implements UploadedFileInterface, \JsonSerializable
 {
     protected ?string $name;
     
@@ -113,5 +113,13 @@ class UploadedFile implements UploadedFileInterface
         }
         
         $this->_moved = true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize(): mixed
+    {
+        return \get_object_vars($this);
     }
 }
