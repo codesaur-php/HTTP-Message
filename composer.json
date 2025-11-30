@@ -1,6 +1,6 @@
 {
     "name": "codesaur/http-message",
-    "description": "An elegant object-oriented application development framework component for PHP 8.2.1 or newer",
+    "description": "PHP 8.2+ зориулсан минимал, цэвэр бүтэцтэй HTTP Message компонент (PSR-7)",
     "keywords": [
         "http", "message", "http message", "psr-7", "mongol", "mongolia", "монгол", "codesaur", "narankhuu", "coden", "кодзавр", "наранхүү", "коден"
     ],
