@@ -5,8 +5,26 @@ namespace codesaur\Http\Message;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
+/**
+ * HTTP Message-ийн үндсэн abstract хэрэгжилт.
+ *
+ * Энэ класс нь PSR-7 стандартын MessageInterface-ийн бүх үндсэн
+ * функцүүдийг хэрэгжүүлэх суурь загвар юм. Request болон Response
+ * объектууд энэ ангийг өргөтгөн ашиглана.
+ *
+ * Онцлог:
+ * - HTTP протоколын дэмжигдэх хувилбаруудыг шалгана
+ * - Header-үүдийг нэрээр нь case-insensitive байдлаар хадгална
+ * - StreamInterface төрлийн message body ажиллуулна
+ * - Бүх mutable өөрчлөлтүүд нь clone (immutable) зарчмаар буцаана
+ */
 abstract class Message implements MessageInterface
 {
+    /**
+     * Дэмжигдэх HTTP протоколын хувилбарууд.
+     * 
+     * @var string[]
+     */
     const HTTP_PROTOCOL_VERSIONS = [
         '1',
         '1.0',
@@ -15,14 +33,32 @@ abstract class Message implements MessageInterface
         '2.0'
     ];
     
+    /**
+     * Message-ийн протоколын үндсэн хувилбар.
+     *
+     * @var string
+     */
     protected string $protocolVersion = '1.1';
     
+    /**
+     * HTTP header-үүдийг хадгалах массив.
+     * Key нь header-ийн нэр (uppercase), value нь массив хэлбэрт утгууд.
+     *
+     * @var array
+     */
     protected array $headers = [];
     
+    /**
+     * Message body-г илэрхийлэх stream объект.
+     *
+     * @var StreamInterface
+     */
     protected StreamInterface $body;
 
     /**
-     * {@inheritdoc}
+     * HTTP протоколын одоогийн хувилбарыг буцаана.
+     *
+     * @inheritdoc
      */
     public function getProtocolVersion(): string
     {
@@ -30,7 +66,15 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * HTTP протоколын хувилбарыг шинэчилсэн клон объект буцаана.
+     *
+     * @param string $version Дэмжигдэх протоколын хувилбар
+     *
+     * @throws \InvalidArgumentException Хэрэв буруу хувилбар өгвөл
+     *
+     * @return MessageInterface
+     *
+     * @inheritdoc
      */
     public function withProtocolVersion(string $version): MessageInterface
     {
@@ -44,7 +88,11 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Message-ийн бүх header-үүдийг массив хэлбэрээр буцаана.
+     *
+     * @return array<string,array>
+     *
+     * @inheritdoc
      */
     public function getHeaders(): array
     {
@@ -52,7 +100,11 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Тухайн нэртэй header байгаа эсэхийг шалгана.
+     *
+     * @param string $name Header-ийн нэр
+     *
+     * @inheritdoc
      */
     public function hasHeader(string $name): bool
     {
@@ -60,7 +112,14 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Тухайн header-ийн бүх утгыг массив хэлбэртэй буцаана.
+     * Хэрэв байхгүй бол хоосон массив буцаана.
+     *
+     * @param string $name Header-ийн нэр
+     *
+     * @return array
+     *
+     * @inheritdoc
      */
     public function getHeader(string $name): array
     {
@@ -68,7 +127,13 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Header-ийн утгуудыг нэг мөрөнд (comma-separated) буцаана.
+     *
+     * @param string $name Header-ийн нэр
+     *
+     * @return string
+     *
+     * @inheritdoc
      */
     public function getHeaderLine(string $name): string
     {
@@ -76,6 +141,14 @@ abstract class Message implements MessageInterface
         return \implode(',', $values);
     }
 
+    /**
+     * Header-ийг шууд дотооддоо тохируулдаг туслах функц.
+     *
+     * @param string       $name  Header-ийн нэр
+     * @param string|array $value Header-ийн утга(ууд)
+     *
+     * @return void
+     */
     public function setHeader($name, $value)
     {
         if (\is_array($value)) {
@@ -86,7 +159,9 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Header-ийг overwrite хийсэн шинэ клон буцаана.
+     *
+     * @inheritdoc
      */
     public function withHeader(string $name, $value): MessageInterface
     {
@@ -96,7 +171,9 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Header-т нэмэлт утга (append) хийсэн шинэ клон буцаана.
+     *
+     * @inheritdoc
      */
     public function withAddedHeader(string $name, $value): MessageInterface
     {
@@ -114,7 +191,9 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Тухайн header-ийг устгасан клон объект буцаана.
+     *
+     * @inheritdoc
      */
     public function withoutHeader(string $name): MessageInterface
     {
@@ -126,7 +205,11 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Message body буюу StreamInterface объект буцаана.
+     *
+     * @return StreamInterface
+     *
+     * @inheritdoc
      */
     public function getBody(): StreamInterface
     {
@@ -134,7 +217,13 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Шинэ body-г тохируулсан клон объект буцаана.
+     *
+     * @param StreamInterface $body
+     *
+     * @return MessageInterface
+     *
+     * @inheritdoc
      */
     public function withBody(StreamInterface $body): MessageInterface
     {

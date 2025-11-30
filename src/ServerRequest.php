@@ -6,23 +6,89 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
+/**
+ * PSR-7 стандартын ServerRequest (серверийн талын HTTP хүсэлт) объектын бүрэн хэрэгжилт.
+ *
+ * Энэ класс нь веб серверээс ирсэн HTTP хүсэлтийн бүх мэдээллийг
+ * (headers, cookies, URI, query, body, uploaded files, attributes, server params)
+ * нэг цэгт цэгцтэйгээр агуулах бөгөөд immutable зарчмаар удирдана.
+ *
+ * `initFromGlobal()` нь PHP-ийн глобал хувьсагчдаас ($_SERVER, $_GET, $_POST…)
+ * ServerRequest объект автоматаар угсарч авах зориулалттай.
+ *
+ * Дэмжинэ:
+ *  - Cookies
+ *  - Query parameters
+ *  - Parsed body (JSON, x-www-form-urlencoded, multipart/form-data)
+ *  - Uploaded files (гүехэн & олон түвшинтэй файл)
+ *  - Server params
+ *  - Custom attributes
+ *
+ * PSR-7 шаардлагын дагуу бүх setter функцүүд нь clone хийж immutable байна.
+ */
 class ServerRequest extends Request implements ServerRequestInterface
 {
+    /**
+     * $_SERVER утгууд.
+     *
+     * @var array
+     */
     protected array $serverParams = [];
     
+    /**
+     * Cookies (client-с ирсэн).
+     *
+     * @var array
+     */
     protected array $cookies = [];
     
+    /**
+     * Custom attributes — middleware болон router-д голчлон ашиглагддаг.
+     * хэрэглэгчийн дурын нэмэлт мэдээлэл байна.
+     *
+     * @var array
+     */
     protected array $attributes = [];
 
+    /**
+     * Parsed body — JSON эсвэл form-urlencoded эсвэл multipart form-ийн body.
+     *
+     * @var array
+     */
     protected array $parsedBody = [];
     
+    /**
+     * Uploaded files tree (PSR-7 UploadedFileInterface бүтэц).
+     *
+     * @var array
+     */
     protected array $uploadedFiles = [];
     
+    /**
+     * Query parameters (lazy parse).
+     *
+     * @var array|null
+     */
     protected ?array $queryParams = null;
 
+    /**
+     * PHP-ийн глобал хувьсагчдаас ServerRequest-ийг бүрэн угсарна.
+     *
+     * Доорх эх сурвалжаас мэдээлэл уншина:
+     *  - $_SERVER → serverParams, протокол, method, host, port, uri, query
+     *  - getallheaders() байвал → headers → serverParams дотор нэгтгэнэ
+     *  - $_COOKIE → cookies
+     *  - $_FILES → uploadedFiles (normalize хийж)
+     *  - php://input / $_POST → parsedBody
+     *
+     * @return static Энэхүү ServerRequest-ийн өөрийн instance
+     */
     public function initFromGlobal()
     {
+        // SERVER PARAMS
         $this->serverParams = $_SERVER;
+        
+        // HEADERS (normalize: HTTP_HOST → SERVER['HTTP_HOST'])
         if (\function_exists('getallheaders')) {
             foreach (\getallheaders() as $key => $value) {
                 $key = \strtoupper($key);
@@ -33,14 +99,18 @@ class ServerRequest extends Request implements ServerRequestInterface
             }
         }
         
+        // PROTOCOL
         if (isset($this->serverParams['SERVER_PROTOCOL'])) {
             $this->protocolVersion = \str_replace('HTTP/', '', $this->serverParams['SERVER_PROTOCOL']);
         }
         
+        // METHOD
         $this->method = \strtoupper($this->serverParams['REQUEST_METHOD']);
-        
+                
+        // COOKIES
         $this->cookies = $_COOKIE;
         
+        // BUILD URI
         $this->uri = new Uri();
         $https = $this->serverParams['HTTPS'] ?? 'off';
         $port = (int) $this->serverParams['SERVER_PORT'];
@@ -55,6 +125,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         $this->uri->setHost($this->serverParams['HTTP_HOST']);
         $this->setHeader('Host', $this->uri->getHost());
 
+        // REQUEST TARGET (path)
         $request_uri = \preg_replace('/\/+/', '\\1/', $this->serverParams['REQUEST_URI']);
         if (($pos = \strpos($request_uri, '?')) !== false) {
             $request_uri = \substr($request_uri, 0, $pos);
@@ -62,6 +133,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         $this->requestTarget = \rtrim($request_uri, '/');
         $this->uri->setPath($this->requestTarget);
         
+        // QUERY STRING
         if (!empty($this->serverParams['QUERY_STRING'])) {
             $query = $this->serverParams['QUERY_STRING'];
             $this->uri->setQuery($query);
@@ -69,10 +141,13 @@ class ServerRequest extends Request implements ServerRequestInterface
             \parse_str($query, $this->queryParams);
         }
         
+        // UPLOADED FILES (normalize)
         $this->uploadedFiles = $this->getNormalizedUploadedFiles($_FILES);
         
+        // PARSED BODY
         if (($this->serverParams['CONTENT_LENGTH'] ?? 0) > 0) {
             if (empty($_POST)) {
+                // JSON эсвэл raw input
                 $input = \file_get_contents('php://input');
                 if (empty($input)) {
                     $this->parsedBody = [];
@@ -87,6 +162,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                     }
                 }
             } else {
+                // application/x-www-form-urlencoded
                 $this->parsedBody = $_POST;
             }
         }
@@ -95,7 +171,12 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
     
     /**
-     * {@inheritdoc}
+     * Серверийн талаас ирсэн $_SERVER массивын утгуудыг буцаана.
+     *
+     * Энэ нь PHP серверийн орчин, request environment, headers болон
+     * серверийн дотоод параметрүүдийг өөртөө агуулдаг.
+     *
+     * @return array Серверийн параметрийн жагсаалт
      */
     public function getServerParams(): array
     {
@@ -103,7 +184,12 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
     
     /**
-     * {@inheritdoc}
+     * Client талаас ирсэн бүх cookie утгуудыг буцаана.
+     *
+     * Энэ нь $_COOKIE-ийн хуулбар бөгөөд PSR-7 шаардлагын дагуу
+     * immutable хэлбэрээр хадгалагдсан байдаг.
+     *
+     * @return array Cookie-ийн нэр/утгын массив
      */
     public function getCookieParams(): array
     {
@@ -111,7 +197,12 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Шинэ cookie массивыг тохируулсан шинэ ServerRequest instance
+     * (immutable clone) үүсгэнэ.
+     *
+     * @param array $cookies Cookie-ийн нэр/утгын жагсаалт
+     *
+     * @return ServerRequestInterface Иммутабл шинэ объект
      */
     public function withCookieParams(array $cookies): ServerRequestInterface
     {
@@ -122,7 +213,16 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Query string (URI-ийн ? дараах хэсэг)-ийг задлан массив хэлбэрээр буцаана.
+     *
+     * Lazy-evaluation буюу анхны дуудалтын үед parse хийж,
+     * дараагийн удаа кешлэгдсэн утгыг буцаана.
+     *
+     * Жишээ:  
+     *   /product/view?id=10&lang=en  
+     * → ['id' => '10', 'lang' => 'en']
+     *
+     * @return array Query параметрийн массив
      */
     public function getQueryParams(): array
     {
@@ -140,7 +240,11 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Query параметрийн массивыг шинэчлэн immutably clone буцаана.
+     *
+     * @param array $query Query string-ийг key/value массив хэлбэрээр
+     *
+     * @return ServerRequestInterface Шинэ request object
      */
     public function withQueryParams(array $query): ServerRequestInterface
     {
@@ -150,7 +254,11 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Upload хийгдсэн файлуудын PSR-7 UploadedFileInterface бүтэцтэй жагсаалтыг буцаана.
+     *
+     * Энэ жагсаалт нь олон түвшинтэй (nested) байж болно.
+     *
+     * @return array UploadedFileInterface instance-үүдээс бүрдэх мод бүтэц
      */
     public function getUploadedFiles(): array
     {
@@ -158,7 +266,11 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Upload хийгдсэн файлуудын жагсаалтыг шинэчлэн immutably clone буцаана.
+     *
+     * @param array $uploadedFiles UploadedFileInterface instance-үүд
+     *
+     * @return ServerRequestInterface Шинэ объект
      */
     public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
@@ -168,7 +280,14 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Request body-г parse хийж гарсан үр дүнг буцаана.
+     *
+     * Дараах форматуудыг автоматаар задлана:
+     *   - JSON
+     *   - application/x-www-form-urlencoded
+     *   - multipart/form-data (файлын бус хэсэг)
+     *
+     * @return mixed|null Parsed body (ихэвчлэн массив)
      */
     public function getParsedBody()
     {
@@ -176,7 +295,11 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Parsed body-г шинэчлэн immutably clone буцаана.
+     *
+     * @param mixed $data Parsed body-д оноох шинэ утга (ихэвчлэн массив)
+     *
+     * @return ServerRequestInterface Шинэ request instance
      */
     public function withParsedBody($data): ServerRequestInterface
     {
@@ -186,7 +309,11 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Request-т хавсаргасан custom attribute-үүдийг массив хэлбэрээр буцаана.
+     *
+     * Attribute-уудыг middleware, router, framework-level логикт ашигладаг.
+     *
+     * @return array Attribute-ийн key/value жагсаалт
      */
     public function getAttributes(): array
     {
@@ -194,7 +321,12 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Нэг attribute-ын утгыг нэрээр нь авч буцаана.
+     *
+     * @param string $name    Attribute-ийн нэр
+     * @param mixed  $default Утга олдохгүй бол буцаах default утга
+     *
+     * @return mixed|null Attribute-ийн утга эсвэл default
      */
     public function getAttribute(string $name, $default = null)
     {
@@ -206,7 +338,12 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Нэг attribute-ыг нэмэн шинэ request instance буцаана (immutable).
+     *
+     * @param string $name  Attribute-ийн нэр
+     * @param mixed  $value Утга
+     *
+     * @return ServerRequestInterface Шинэ request instance
      */
     public function withAttribute(string $name, $value): ServerRequestInterface
     {
@@ -216,7 +353,11 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Нэг attribute-ыг устган immutably clone буцаана.
+     *
+     * @param string $name Устгах attribute-ийн нэр
+     *
+     * @return ServerRequestInterface Шинэ request instance
      */
     public function withoutAttribute(string $name): ServerRequestInterface
     {
@@ -227,9 +368,32 @@ class ServerRequest extends Request implements ServerRequestInterface
         return $clone;
     }
     
+    /**
+     * multipart/form-data body-г уншиж parse хийх дотоод функц.
+     *
+     * Алхамууд:
+     *  - Boundary тодорхойлох
+     *  - Boundary ашиглан хэсгүүдэд (parts) хуваах
+     *  - Header болон body-г салгах
+     *  - content-disposition-оос name болон filename-ийг олж авах
+     *  - Файл хэсгүүдийг түр зуурын файл болгон диск дээр бичих
+     *  - Текст хэсгүүдийг key=value хэлбэрээр хадгалах
+     *  - parse_str() + arrayTreeLeafs() ашиглан олон түвшинтэй
+     *    form нэршлийг бүрэн мод бүтэцтэй болгох
+     *
+     * Үр дүн:
+     *  - $this->parsedBody — текстэн form field-үүд
+     *  - $this->uploadedFiles — UploadedFile instance-үүдтэй мод бүтэц
+     *
+     * @param string $input Raw HTTP request body (multipart/form-data)
+     *
+     * @return void
+     */
     private function parseFormData(string $input)
     {
         $boundary = \substr($input, 0, \strpos($input, "\r\n") ?: 0);
+        
+        // Boundary олдохгүй бол form-urlencoded гэж үзээд parse_str ашиглана
         if (empty($boundary)) {
             \parse_str($input, $parsedBody);
             if (\count($parsedBody) != 1
@@ -248,8 +412,10 @@ class ServerRequest extends Request implements ServerRequestInterface
         $needle = '; filename=""';
         $length = \strlen($needle);
         
+        // Boundary-гаар хэсэглэх
         $parts = \array_slice(\explode($boundary, $input), 1);
         foreach ($parts as $part) {
+            // Эцсийн boundary (–boundary--)
             if ($part == "--\r\n") {
                 break;
             }
@@ -263,6 +429,7 @@ class ServerRequest extends Request implements ServerRequestInterface
             list($raw_headers_inline, $body) = $raw_parts;
             $raw_headers = \explode("\r\n", $raw_headers_inline);
 
+            // Header-үүдийг боловсруулах
             $headers = [];
             foreach ($raw_headers as $header) {
                 list($content, $value) = \explode(':', $header);
@@ -275,11 +442,17 @@ class ServerRequest extends Request implements ServerRequestInterface
             
             $index++;
             
+            // name="" болон filename=""-ийг регуляр илэрхийллээр салгах
             $matches = [];
             \preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
+            
+            // $matches[2] = name, $matches[4] = filename (байвал)
             list(/*$content_header*/, /*$content_type*/, $name) = $matches;
+            
             $encodedNameIndex = \urlencode($name) . '=' . $index;
             $data = \substr($body, 0, \strlen($body) - 2);
+            
+            // Файл upload хэсэг
             if (!empty($matches[4]) && isset($headers['content-type'])) {
                 $unique_tmp_name = \uniqid('php_') . '.tmp';
                 $tmp_path = "$tmp_dir/$unique_tmp_name";
@@ -293,12 +466,16 @@ class ServerRequest extends Request implements ServerRequestInterface
                     $fileNamesEncoded .= '&';
                 }
                 $fileNamesEncoded .= $encodedNameIndex;
+                
+            // Файл upload field боловч файл ирээгүй (filename="" кейс)                
             } elseif (\substr($headers['content-disposition'], -$length) == $needle) {
                 $data = new UploadedFile('', null, null, null, \UPLOAD_ERR_NO_FILE);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
                 }
                 $fileNamesEncoded .= $encodedNameIndex;
+                
+            // Энгийн текстэн form field
             } else {
                 if ($varNamesEncoded != '') {
                     $varNamesEncoded .= '&';
@@ -306,18 +483,35 @@ class ServerRequest extends Request implements ServerRequestInterface
                 $varNamesEncoded .= $encodedNameIndex;
             }
             
+            // Ингэж индекс-утгыг datas массивт хадгална
             $datas[$index] = $data;
         }
         
+        // TEXT FIELDS — varNamesEncoded → parsedBody
         \parse_str($varNamesEncoded, $parsedBody);
         $this->arrayTreeLeafs($parsedBody, $datas);
         $this->parsedBody = $parsedBody;
         
+        // FILE FIELDS — fileNamesEncoded → uploadedFiles
         \parse_str($fileNamesEncoded, $uploadedFiles);
         $this->arrayTreeLeafs($uploadedFiles, $datas);
         $this->uploadedFiles = $uploadedFiles;
     }
     
+    /**
+     * Мод бүтэцтэй массивын навчууд (leaf)-ын индекс утгыг бодит
+     * $leafs массивын утгаар солих recursive туслах функц.
+     *
+     * Жишээ:
+     *  - $tree['user']['name'] = 1
+     *  - $leafs[1] = "Bat"
+     *  → үр дүнд: $tree['user']['name'] = "Bat"
+     *
+     * @param array $tree  Олон түвшинтэй мод бүтэцтэй массив
+     * @param array $leafs Индекс → утга mapping бүхий массив
+     *
+     * @return void
+     */
     private function arrayTreeLeafs(array &$tree, array $leafs)
     {
         foreach ($tree as $key => &$value) {
@@ -331,28 +525,20 @@ class ServerRequest extends Request implements ServerRequestInterface
     
     // Normalizing
     // Thank dakis for sharing excellent code
-    // see reference => https://stackoverflow.com/questions/52027412/files-key-used-for-building-a-psr-7-uploaded-files-list
-    
+    // see reference => https://stackoverflow.com/questions/52027412/files-key-used-for-building-a-psr-7-uploaded-files-list    
     /**
-     * Normalize - if not already - the list of uploaded files as a tree of upload
-     * metadata, with each leaf an instance of Psr\Http\Message\UploadedFileInterface.
+     * $_FILES буюу upload бүтэцийг PSR-7 UploadedFileInterface мод бүтэц рүү
+     * нормалайз хийдэг туслах функц.
      *
+     * - Шууд UploadedFileInterface instance ирвэл шууд ашиглана
+     * - "tmp_name" key-тэй массив байвал normalizeUploadedFile() руу дамжуулна
+     * - Олон түвшинтэй (nested) бүтэц байвал рекурсив дуудна
      *
-     * IMPORTANT: For a correct normalization of the uploaded files list, the FIRST OCCURRENCE
-     *            of the key "tmp_name" is checked against. See "POST method uploads" link.
-     *            As soon as the key will be found in an item of the uploaded files list, it
-     *            will be supposed that the array item to which it belongs is an array with
-     *            a structure similar to the one saved in the global variable $_FILES when a
-     *            standard file upload is executed.
+     * @param array $uploadedFiles $_FILES эсвэл түүнтэй төстэй upload бүтэц
      *
-     * @link https://secure.php.net/manual/en/features.file-upload.post-method.php POST method uploads.
-     * @link https://secure.php.net/manual/en/reserved.variables.files.php $_FILES.
-     * @link https://tools.ietf.org/html/rfc1867 Form-based File Upload in HTML.
-     * @link https://tools.ietf.org/html/rfc2854 The 'text/html' Media Type.
+     * @return array PSR-7-д нийцсэн normalized uploaded files мод
      *
-     * @param array $uploadedFiles The list of uploaded files (normalized or not). Data MAY come from $_FILES or the message body.
-     * @return array A tree of upload files in a normalized structure, with each leaf an instance of UploadedFileInterface.
-     * @throws InvalidArgumentException An invalid structure of uploaded files list is provided.
+     * @throws \InvalidArgumentException Буруу бүтэцтэй uploaded files дамжуулсан бол
      */
     private function getNormalizedUploadedFiles(array $uploadedFiles): array
     {
@@ -373,17 +559,18 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
     
     /**
-     * Normalize the file upload item which contains the FIRST OCCURRENCE of the key "tmp_name".
+     * "tmp_name" key агуулсан upload item-ийг PSR-7 UploadedFile эсвэл
+     * түүнээс бүрдэх мод бүтцэд хөрвүүлнэ.
      *
-     * This method returns a tree structure, with each leaf
-     * an instance of Psr\Http\Message\UploadedFileInterface
-     * or instance of Psr\Http\Message\UploadedFileInterface.
+     * - Хэрэв tmp_name нь массив бол олон файлын upload гэж үзээд
+     *   normalizeFileUploadTmpNameItem() руу дамжуулна
+     * - Энгийн string бол ганц файл → UploadedFile instance үүсгэнэ
      *
-     * Not part of PSR-17.
+     * @param array $item $_FILES['field'] бүтцийн нэг элемент
      *
-     * @param array $item The file upload item.
-     * @return array|UploadedFileInterface The file upload item as a tree structure, with each leaf an instance of UploadedFileInterface, or instance of Psr\Http\Message\UploadedFileInterface.
-     * @throws InvalidArgumentException The value at the key "tmp_name" is empty.
+     * @return array|UploadedFileInterface
+     *
+     * @throws \InvalidArgumentException tmp_name массив хоосон байвал
      */
     private function normalizeUploadedFile(array $item)
     {
@@ -399,16 +586,18 @@ class ServerRequest extends Request implements ServerRequestInterface
     }
     
     /**
-     * Normalize the array assigned as value to the FIRST OCCURRENCE of the key "tmp_name" in a
-     * file upload item of the uploaded files list. It is recursively iterated, in order to build
-     * a tree structure, with each leaf an instance of Psr\Http\Message\UploadedFileInterface.
+     * "tmp_name" key-д массив оноогдсон тохиолдолд (олон файл upload),
+     * тухайн массивыг рекурсивээр гүйж, навч бүр дээр UploadedFile instance
+     * үүсгэж мод бүтэц болгон буцаана.
      *
-     * Not part of PSR-17.
+     * @param array $item            tmp_name массив
+     * @param array $currentElements size, error, name, type гэх мэт
+     *                               upload item-ийн бусад талбарууд
      *
-     * @param array $item The array assigned as value to the FIRST OCCURRENCE of the key "tmp_name".
-     * @param array $currentElements An array holding the file upload key/value pairs of the current item.
-     * @return array A tree structure, with each leaf an instance of UploadedFileInterface.
-     * @throws InvalidArgumentException
+     * @return array UploadedFileInterface instance-үүдээс бүрдсэн мод бүтэц
+     *
+     * @throws \InvalidArgumentException size / error талбарын бүтэц tmp_name-тай
+     *                                   тохирохгүй бол
      */
     private function normalizeFileUploadTmpNameItem(array $item, array $currentElements): array
     {

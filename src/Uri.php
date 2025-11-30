@@ -4,32 +4,52 @@ namespace codesaur\Http\Message;
 
 use Psr\Http\Message\UriInterface;
 
+/**
+ * PSR-7 UriInterface хэрэгжилт.
+ *
+ * Энэ класс нь URI-ийн (Uniform Resource Identifier)
+ * дараах бүрэлдэхүүн хэсгүүдийг удирдах зориулалттай:
+ *
+ *  - Scheme (http, https)
+ *  - User info (user:password)
+ *  - Host (домен эсвэл IPv6)
+ *  - Port
+ *  - Path
+ *  - Query
+ *  - Fragment
+ *
+ * PSR-7 шаардлагын дагуу URI объект нь immutable тул
+ * withXXX() setter-үүд нь үргэлж clone буцаана.
+ */
 class Uri implements UriInterface
 {
     private string $_scheme = '';
-    
     private string $_host = '';
-    
     private ?int $_port = null;
-    
     private string $_path = '';
-    
     private string $_query = '';
-    
     private string $_fragment = '';
-    
     private string $_user = '';
-    
     private string $_password = '';
 
     /**
-     * {@inheritdoc}
+     * URI-ийн scheme-г буцаана (http эсвэл https).
+     *
+     * @return string
      */
     public function getScheme(): string
     {
         return $this->_scheme;
     }
     
+    /**
+     * Scheme тохируулах (mutable setter).
+     *
+     * @param string $scheme http эсвэл https
+     *
+     * @throws \InvalidArgumentException Scheme буруу бол
+     * @return void
+     */
     public function setScheme(string $scheme)
     {
         $schm = \strtolower($scheme);
@@ -41,7 +61,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Authority хэсгийг (user@host:port) бүтнээр буцаана.
+     *
+     * @return string Authority string
      */
     public function getAuthority(): string
     {
@@ -63,7 +85,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * User info (username эсвэл username:password)-г буцаана.
+     *
+     * @return string
      */
     public function getUserInfo(): string
     {
@@ -74,25 +98,42 @@ class Uri implements UriInterface
         return $info;
     }
     
+    /**
+     * User info-г тохируулах (mutable setter).
+     *
+     * @param string      $user     Username
+     * @param string|null $password Password (optional)
+     *
+     * @return void
+     */
     public function setUserInfo(string $user, ?string $password = null)
     {
         $this->_user = \rawurlencode($user);
 
-        if (empty($password)) {
-            return;
+        if (!empty($password)) {
+            $this->_password = \rawurlencode($password);
         }
-
-        $this->_password = \rawurlencode($password);
     }
 
     /**
-     * {@inheritdoc}
+     * Host-г буцаана (example.com)
+     *
+     * @return string
      */
     public function getHost(): string
     {
         return $this->_host;
     }
 
+    /**
+     * Host тохируулах (mutable setter).
+     *
+     * IPv6 хаяг бол [xxxx:xxxx] хэлбэрт хөрвүүлнэ.
+     *
+     * @param string $host
+     *
+     * @return void
+     */
     public function setHost(string $host) 
     {
         if (\filter_var($host, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
@@ -103,7 +144,11 @@ class Uri implements UriInterface
     }
     
     /**
-     * {@inheritdoc}
+     * Port-г буцаана. 
+     *
+     * Default порт (80, 443) тохиолдолд null буцаана (PSR-7 requirement).
+     *
+     * @return int|null
      */
     public function getPort(): ?int
     {
@@ -119,6 +164,14 @@ class Uri implements UriInterface
         return $this->_port;
     }
     
+    /**
+     * Port тохируулах (mutable setter).
+     *
+     * @param int $port Valid range: 1–65535
+     *
+     * @throws \InvalidArgumentException
+     * @return void
+     */
     public function setPort(int $port)
     {
         if ($port < 1 || $port > 65535) {
@@ -129,46 +182,72 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * URI-ийн path хэсгийг буцаана.
+     *
+     * @return string
      */
     public function getPath(): string
     {
         return $this->_path;
     }
     
+    /**
+     * Path тохируулах (mutable setter).
+     *
+     * @param string $path
+     * @return void
+     */
     public function setPath(string $path)
     {
         $this->_path = \rawurlencode($path);
     }
 
     /**
-     * {@inheritdoc}
+     * Query string-г буцаана (? дараах хэсэг, key=value&key2=value2).
+     *
+     * @return string
      */
     public function getQuery(): string
     {
         return $this->_query;
     }
     
+    /**
+     * Query тохируулах (mutable setter).
+     *
+     * @param string $query
+     * @return void
+     */
     public function setQuery(string $query)
     {
         $this->_query = \rawurlencode($query);
     }
 
     /**
-     * {@inheritdoc}
+     * Fragment-г буцаана (#info гэх мэт).
+     *
+     * @return string
      */
     public function getFragment(): string
     {
         return $this->_fragment;
     }
     
+    /**
+     * Fragment тохируулах (mutable setter).
+     *
+     * @param string $fragment
+     * @return void
+     */
     public function setFragment(string $fragment)
     {
         $this->_fragment = \rawurlencode($fragment);
     }
 
     /**
-     * {@inheritdoc}
+     * Immutable: Scheme-г өөрчилсөн шинэ URI instance буцаана.
+     *
+     * @inheritdoc
      */
     public function withScheme(string $scheme): UriInterface
     {
@@ -178,7 +257,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Immutable: User info-г өөрчилсөн шинэ URI instance буцаана.
+     *
+     * @inheritdoc
      */
     public function withUserInfo(string $user, ?string $password = null): UriInterface
     {
@@ -188,7 +269,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Immutable: Host-г өөрчилсөн шинэ URI instance буцаана.
+     *
+     * @inheritdoc
      */
     public function withHost(string $host): UriInterface
     {
@@ -198,7 +281,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Immutable: Port-г өөрчилсөн шинэ URI instance буцаана.
+     *
+     * @inheritdoc
      */
     public function withPort(?int $port): UriInterface
     {
@@ -208,7 +293,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Immutable: Path-г өөрчилсөн шинэ URI instance буцаана.
+     *
+     * @inheritdoc
      */
     public function withPath(string $path): UriInterface
     {
@@ -218,7 +305,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Immutable: Query-г өөрчилсөн шинэ URI instance буцаана.
+     *
+     * @inheritdoc
      */
     public function withQuery(string $query): UriInterface
     {
@@ -228,7 +317,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Immutable: Fragment-г өөрчилсөн шинэ URI instance буцаана.
+     *
+     * @inheritdoc
      */
     public function withFragment(string $fragment): UriInterface
     {
@@ -238,7 +329,11 @@ class Uri implements UriInterface
     }
 
     /**
-     * {@inheritdoc}
+     * URI-г бүрэн (scheme://authority/path?query#fragment) хэлбэрээр буцаана.
+     *
+     * Энэ нь URL-г хэвлэх эсвэл лог бичих үед ашиглагдана.
+     *
+     * @return string Бүрэн URI reference
      */
     public function __toString(): string
     {
