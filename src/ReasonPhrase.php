@@ -240,3 +240,4 @@ class ReasonPhrase
     /** @var string 511 Network Authentication Required */
     const STATUS_511 = 'Network Authentication Required';
 }
+

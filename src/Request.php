@@ -37,9 +37,9 @@ class Request extends Message implements RequestInterface
     /**
      * Хүсэлтийн URI объект (scheme, host, path, query…).
      *
-     * @var UriInterface
+     * @var UriInterface|null
      */
-    protected UriInterface $uri;
+    protected ?UriInterface $uri = null;
     
     /**
      * Request target – тухайн хүсэлтийн зорилтот зам.
@@ -59,7 +59,7 @@ class Request extends Message implements RequestInterface
      * Хоосон бол URI-ийн path + query + fragment-ийг ашиглан target үүсгэнэ.
      * Хэрэв URI байхгүй бол "/" буцаана.
      *
-     * @return string
+     * @return string Request target string
      *
      * @inheritdoc
      */
@@ -67,21 +67,27 @@ class Request extends Message implements RequestInterface
     {
         if (!empty($this->requestTarget)) {
             return $this->requestTarget;
-        } elseif (!$this->getUri() instanceof UriInterface) {
+        }
+        
+        if (!isset($this->uri)) {
             return '/';
         }
 
-        $path = \rawurldecode($this->getUri()->getPath());
+        // Path нь аль хэдийн encoded эсвэл unencoded байж болно
+        // PSR-7 стандартын дагуу хадгалсан утгыг шууд ашиглана
+        $path = $this->getUri()->getPath();
         $requestTarget = '/' . \ltrim($path, '/');
         
+        // Query string нь аль хэдийн encoded байх ёстой
         $query = $this->getUri()->getQuery();
         if ($query != '') {
-            $requestTarget .= '?' . \rawurldecode($query);
+            $requestTarget .= '?' . $query;
         }
         
+        // Fragment нь аль хэдийн encoded байх ёстой
         $fragment = $this->getUri()->getFragment();
         if ($fragment != '') {
-            $requestTarget .= '#' . \rawurldecode($fragment);
+            $requestTarget .= '#' . $fragment;
         }
 
         return $requestTarget;
@@ -151,6 +157,9 @@ class Request extends Message implements RequestInterface
      */
     public function getUri(): UriInterface
     {
+        if ($this->uri === null) {
+            $this->uri = new Uri();
+        }
         return $this->uri;
     }
     

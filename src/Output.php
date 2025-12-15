@@ -7,17 +7,25 @@ use Psr\Http\Message\StreamInterface;
 /**
  * Output stream – PHP-ийн output buffering-д суурилсан StreamInterface хэрэгжилт.
  *
- * Энэ класс нь HTTP хариуны body-г “шууд браузер руу хэвлэх”
- * зарчмаар ажилладаг тусгай stream юм. Уламжлалт файл эсвэл
- * memory stream-ээс ялгаатай нь:
+ * Энэ класс нь HTTP хариуны body-г "шууд браузер руу хэвлэх"
+ * зарчмаар ажилладаг тусгай stream юм.
  *
+ * Уламжлалт файл эсвэл memory stream-ээс ялгаатай нь:
+ * - Уламжлалт файл stream: файл дээр бичиж, дараа нь уншина
+ * - Memory stream: RAM дээр бичиж, дараа нь уншина
+ * - Output stream (энэ класс): шууд браузер/клиент рүү хэвлэнэ
+ *
+ * Онцлог:
  * - OutputBuffer ашиглан ob_start() / ob_get_clean() дээр суурилна
  * - write() дуудахад шууд echo хийгдэж output-д гарна
  * - read(), seek(), rewind() зэрэг нь боломжгүй (unsupported)
  * - Буцааж унших шаардлагагүй зөвхөн бичих зориулалттай stream
  *
+ * Хэрэглээ:
  * `Response`-ийн body-д энэ stream-г ашиглавал response контент
- * бодитоор шууд client рүү дамжина.
+ * бодитоор шууд client рүү дамжина. Энэ нь веб хөгжүүлэлтэд
+ * илүү тохиромжтой, учир нь response body-г файл эсвэл memory-д
+ * хадгалж, дараа нь унших шаардлагагүй, шууд хэрэглэгч рүү илгээнэ.
  */
 class Output implements StreamInterface
 {

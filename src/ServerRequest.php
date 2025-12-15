@@ -3,7 +3,6 @@
 namespace codesaur\Http\Message;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
 /**
@@ -43,7 +42,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     protected array $cookies = [];
     
     /**
-     * Custom attributes — middleware болон router-д голчлон ашиглагддаг.
+     * Custom attributes - middleware болон router-д голчлон ашиглагддаг.
      * хэрэглэгчийн дурын нэмэлт мэдээлэл байна.
      *
      * @var array
@@ -51,7 +50,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     protected array $attributes = [];
 
     /**
-     * Parsed body — JSON эсвэл form-urlencoded эсвэл multipart form-ийн body.
+     * Parsed body - JSON эсвэл form-urlencoded эсвэл multipart form-ийн body.
      *
      * @var array
      */
@@ -125,20 +124,43 @@ class ServerRequest extends Request implements ServerRequestInterface
         $this->uri->setHost($this->serverParams['HTTP_HOST']);
         $this->setHeader('Host', $this->uri->getHost());
 
-        // REQUEST TARGET (path)
-        $request_uri = \preg_replace('/\/+/', '\\1/', $this->serverParams['REQUEST_URI']);
-        if (($pos = \strpos($request_uri, '?')) !== false) {
-            $request_uri = \substr($request_uri, 0, $pos);
+        // REQUEST_URI нь path, query string, fragment агуулж болно
+        $request_uri = $this->serverParams['REQUEST_URI'] ?? '';
+        // Fragment (#) салгах - REQUEST_URI-д fragment байж болно
+        if (($fragmentPos = \strpos($request_uri, '#')) !== false) {
+            $fragment = \substr($request_uri, $fragmentPos + 1);
+            // Fragment нь PHP серверээс аль хэдийн percent-encoded байх ёстой
+            $this->uri->setFragment($fragment);
+            $request_uri = \substr($request_uri, 0, $fragmentPos);
         }
-        $this->requestTarget = \rtrim($request_uri, '/');
-        $this->uri->setPath($this->requestTarget);
+        // Query string (?) салгах - REQUEST_URI-д query string байж болно
+        if (($queryPos = \strpos($request_uri, '?')) !== false) {
+            $request_uri = \substr($request_uri, 0, $queryPos);
+        }
+        // Path-г normalize хийх (олон /-ийг нэг болгох)
+        $path = \preg_replace('/\/+/', '/', $request_uri);
+        $path = \rtrim($path, '/');
+        if (empty($path)) {
+            $path = '/';
+        }
+        
+        // Path нь PHP серверээс аль хэдийн percent-encoded байх ёстой
+        $this->uri->setPath($path);
+        $this->requestTarget = $path;
         
         // QUERY STRING
         if (!empty($this->serverParams['QUERY_STRING'])) {
             $query = $this->serverParams['QUERY_STRING'];
+            // QUERY_STRING нь PHP серверээс аль хэдийн percent-encoded байх ёстой
             $this->uri->setQuery($query);
             $this->requestTarget .= "?$query";
             \parse_str($query, $this->queryParams);
+        }
+        
+        // Fragment-ийг request target-д нэмэх
+        $fragment = $this->uri->getFragment();
+        if ($fragment != '') {
+            $this->requestTarget .= "#$fragment";
         }
         
         // UPLOADED FILES (normalize)
@@ -230,11 +252,13 @@ class ServerRequest extends Request implements ServerRequestInterface
             return $this->queryParams;
         }
 
-        if (!$this->getUri() instanceof UriInterface) {
+        if (!isset($this->uri)) {
             return [];
         }
         
-        $query = \rawurldecode($this->getUri()->getQuery());
+        // Query string нь аль хэдийн percent-encoded байх ёстой
+        // parse_str() нь автоматаар decode хийнэ
+        $query = $this->getUri()->getQuery();
         \parse_str($query, $this->queryParams);
         return $this->queryParams;
     }
@@ -382,8 +406,8 @@ class ServerRequest extends Request implements ServerRequestInterface
      *    form нэршлийг бүрэн мод бүтэцтэй болгох
      *
      * Үр дүн:
-     *  - $this->parsedBody — текстэн form field-үүд
-     *  - $this->uploadedFiles — UploadedFile instance-үүдтэй мод бүтэц
+     *  - $this->parsedBody - текстэн form field-үүд
+     *  - $this->uploadedFiles - UploadedFile instance-үүдтэй мод бүтэц
      *
      * @param string $input Raw HTTP request body (multipart/form-data)
      *
@@ -487,12 +511,12 @@ class ServerRequest extends Request implements ServerRequestInterface
             $datas[$index] = $data;
         }
         
-        // TEXT FIELDS — varNamesEncoded → parsedBody
+        // TEXT FIELDS - varNamesEncoded → parsedBody
         \parse_str($varNamesEncoded, $parsedBody);
         $this->arrayTreeLeafs($parsedBody, $datas);
         $this->parsedBody = $parsedBody;
         
-        // FILE FIELDS — fileNamesEncoded → uploadedFiles
+        // FILE FIELDS - fileNamesEncoded → uploadedFiles
         \parse_str($fileNamesEncoded, $uploadedFiles);
         $this->arrayTreeLeafs($uploadedFiles, $datas);
         $this->uploadedFiles = $uploadedFiles;

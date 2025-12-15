@@ -23,6 +23,14 @@
             "codesaur\\Http\\Message\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "codesaur\\Http\\Message\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
     "license": "MIT",
     "minimum-stability": "dev"
 }

@@ -11,11 +11,11 @@ minimal загвар бүхий компонент юм.
 ## 📌 Онцлог
 
 - ✔ **PSR-7 MessageInterface, RequestInterface, ResponseInterface** бүрэн хэрэгжилт  
-- ✔ `ServerRequest::initFromGlobal()` — глобал орчноос request үүсгэх advanced parser  
+- ✔ `ServerRequest::initFromGlobal()` - глобал орчноос request үүсгэх advanced parser  
 - ✔ `multipart/form-data` **бүрэн multipart parser** (RFC 7578 дагуу)  
-- ✔ `UploadedFile` — PHP upload файлыг PSR-7 хэлбэрт хөрвүүлнэ  
-- ✔ `Output` — response body-г output buffering-аар удирдах stream  
-- ✔ `Uri` — scheme, host, path, query, fragment зэрэг URI бүрэлдэхүүн  
+- ✔ `UploadedFile` - PHP upload файлыг PSR-7 хэлбэрт хөрвүүлнэ  
+- ✔ `Output` - response body-г output buffering-аар удирдах stream  
+- ✔ `Uri` - scheme, host, path, query, fragment зэрэг URI бүрэлдэхүүн  
 - ✔ Сервер болон CLI орчинд адил ажиллана  
 - ✔ 0 external dependency (зөвхөн PSR interface-ууд)  
 - ✔ Framework-agnostic тул codesaur, Laravel, Symfony, Slim болон бусад бүх PHP framework-тэй бүрэн нийцтэй  
@@ -40,6 +40,7 @@ composer require codesaur/http-message
 | `NonBodyResponse` | Body шаардлагагүй response (301, 204, 304 гэх мэт) |
 | `ServerRequest` | Глобал орчноос request сэргээдэг advanced implementation |
 | `Uri` | PSR-7 UriInterface |
+| `Stream` | PSR-7 StreamInterface хэрэгжилт (PHP resource дээр суурилсан) |
 | `UploadedFile` | Upload хийгдсэн файлын metadata + moveTo() |
 | `Output` | StreamInterface хэрэгжилт (output buffering) |
 | `OutputBuffer` | Minify, compress, flush, endClean зэрэг буфер удирдлага |
@@ -75,9 +76,10 @@ $response = new Response();
 $response = $response->withStatus(200);
 
 $body = $response->getBody();
-$body->write("<h1>Hello from Codesaur!</h1>");
+// Анхаар: Response-ийн default body нь output buffer тул
+// write() хийгдэх бүрт шууд browser/клиент рүү хэвлэгдэнэ
+$body->write("<h1>Hello from codesaur!</h1>");
 
-echo $response->getBody();
 ```
 
 ---
@@ -92,9 +94,10 @@ $data = ['status' => 'success', 'message' => 'Hello world'];
 $response = (new Response())
     ->withHeader('Content-Type', 'application/json');
 
+// Анхаар: Response-ийн default body нь output buffer тул
+// write() хийгдэх бүрт шууд browser/клиент рүү хэвлэгдэнэ
 $response->getBody()->write(json_encode($data));
 
-echo $response->getBody();
 ```
 
 ---
@@ -133,6 +136,37 @@ echo (string) $uri;
 
 ---
 
+## 6. Stream ашиглах жишээ
+
+`Stream` класс нь PSR-7 `StreamInterface` хэрэгжилт бөгөөд PHP resource дээр суурилсан. Request body-д ашиглагдана.
+
+```php
+use codesaur\Http\Message\Stream;
+
+// php://temp stream үүсгэх (memory дээр)
+$resource = fopen('php://temp', 'r+');
+$stream = new Stream($resource);
+
+// Stream-д бичих
+$stream->write('Hello, World!');
+
+// Stream-ийн байрлалыг эхлэл рүү буцаах
+$stream->rewind();
+
+// Stream-аас унших
+$content = $stream->read(5); // "Hello"
+
+// Stream-ийн бүх контентыг унших
+$allContent = $stream->getContents();
+
+// Stream хаах
+$stream->close();
+```
+
+**Анхаар:** `Message::getBody()` нь `Stream` instance буцаана (хэрэв body тохируулаагүй бол `php://temp` stream үүсгэнэ).
+
+---
+
 # ⚙ Дотоод ажиллагааны онцлох хэсгүүд
 
 ## ✔ **Multipart/form-data Parser**
@@ -149,7 +183,19 @@ echo (string) $uri;
 
 ---
 
-## ✔ **Output Buffer — StreamInterface хэрэгжилт**
+## ✔ **Stream - PSR-7 StreamInterface хэрэгжилт**
+
+`Stream` класс нь PHP resource дээр суурилсан PSR-7 `StreamInterface` хэрэгжилт юм:
+
+- PHP `fopen()` буцаасан resource-д суурилсан  
+- Readable, writable, seekable stream-үүдийг дэмжинэ  
+- `php://temp`, `php://memory`, файл stream зэрэг бүх PHP stream-үүдтэй ажиллана  
+- Request body-д автоматаар ашиглагдана (`Message::getBody()`)  
+- `tell()`, `seek()`, `rewind()`, `eof()` зэрэг stream удирдлагын method-ууд  
+
+---
+
+## ✔ **Output Buffer - StreamInterface хэрэгжилт**
 
 `Output` болон `OutputBuffer` нь response body-г дараах байдлаар удирддаг:
 
@@ -190,7 +236,79 @@ Narankhuu
 
 ---
 
+---
+
+## 🧪 Тест ажиллуулах
+
+Энэ төсөл PHPUnit ашиглан бүрэн тест хийгдсэн. Тест ажиллуулах:
+
+### Linux / macOS
+
+```bash
+# Composer dependencies суулгах (PHPUnit зэрэг)
+composer install
+
+# Бүх тест ажиллуулах
+./vendor/bin/phpunit
+
+# Coverage-тэй ажиллуулах
+./vendor/bin/phpunit --coverage-html coverage
+
+# Тодорхой тест файл ажиллуулах
+./vendor/bin/phpunit tests/MessageTest.php
+```
+
+### Windows (PowerShell / Command Prompt)
+
+```powershell
+# Composer dependencies суулгах (PHPUnit зэрэг)
+composer install
+
+# Бүх тест ажиллуулах
+vendor\bin\phpunit.bat
+
+# Coverage-тэй ажиллуулах
+vendor\bin\phpunit.bat --coverage-html coverage
+
+# Тодорхой тест файл ажиллуулах
+vendor\bin\phpunit.bat tests\MessageTest.php
+```
+
+**Анхаар:** Windows-д PowerShell эсвэл Command Prompt ашиглаж болно. Зам нь backslash (`\`) ашиглана.
+
+### Тест бүтэц
+
+| Тест файл | Тестлэх класс |
+|-----------|---------------|
+| `tests/MessageTest.php` | `Message` (abstract) |
+| `tests/RequestTest.php` | `Request` |
+| `tests/ResponseTest.php` | `Response` |
+| `tests/NonBodyResponseTest.php` | `NonBodyResponse` |
+| `tests/UriTest.php` | `Uri` |
+| `tests/StreamTest.php` | `Stream` |
+| `tests/UploadedFileTest.php` | `UploadedFile` |
+| `tests/OutputTest.php` | `Output` |
+| `tests/OutputBufferTest.php` | `OutputBuffer` |
+
+---
+
+## 📝 PHPDoc ба код чанар
+
+- Бүх класс, метод, property-д бүрэн PHPDoc тайлбар бичигдсэн
+- PSR-7 стандартын дагуу бүх interface-үүд бүрэн хэрэгжсэн
+- Immutable зарчмыг бүх setter-үүдэд мөрдсөн
+- Exception handling болон validation бүрэн хийгдсэн
+
+---
+
 # 🤝 Хөгжүүлэлтэд хувь нэмэр оруулах
 
 Pull request буюу code засвар, сайжруулалтыг хэзээд нээлттэй хүлээж авна.  
+
+**Хувь нэмэр оруухаас өмнө:**
+- Тестүүдийг ажиллуулж бүх тест амжилттай байгаа эсэхийг шалгана
+- Шинэ функц нэмсэн бол шинэ тест нэмнэ
+- PHPDoc тайлбарыг шинэчлэнэ
+- PSR-7 стандартыг мөрдөнө
+
 Bug report илгээхдээ системийн орчны мэдээллээ давхар бичиж өгнө үү.

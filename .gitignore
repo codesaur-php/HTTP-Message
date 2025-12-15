@@ -2,3 +2,24 @@
 /nbproject/
 
 composer.lock
+
+# PHPUnit
+.phpunit.cache/
+phpunit.xml.bak
+coverage/
+*.coverage
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+/tests/_files/
+/tests/_output/

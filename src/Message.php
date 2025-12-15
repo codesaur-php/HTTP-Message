@@ -30,7 +30,9 @@ abstract class Message implements MessageInterface
         '1.0',
         '1.1',
         '2',
-        '2.0'
+        '2.0',
+        '3',
+        '3.0'
     ];
     
     /**
@@ -51,9 +53,9 @@ abstract class Message implements MessageInterface
     /**
      * Message body-г илэрхийлэх stream объект.
      *
-     * @var StreamInterface
+     * @var StreamInterface|null
      */
-    protected StreamInterface $body;
+    protected ?StreamInterface $body = null;
 
     /**
      * HTTP протоколын одоогийн хувилбарыг буцаана.
@@ -149,7 +151,7 @@ abstract class Message implements MessageInterface
      *
      * @return void
      */
-    public function setHeader($name, $value)
+    protected function setHeader($name, $value)
     {
         if (\is_array($value)) {
             $this->headers[\strtoupper($name)] = $value;
@@ -173,19 +175,24 @@ abstract class Message implements MessageInterface
     /**
      * Header-т нэмэлт утга (append) хийсэн шинэ клон буцаана.
      *
+     * @param string $name Header-ийн нэр
+     * @param string|array $value Нэмэх утга(ууд)
+     *
+     * @return MessageInterface
+     *
      * @inheritdoc
      */
     public function withAddedHeader(string $name, $value): MessageInterface
     {
         $clone = clone $this;
-        if ($this->hasHeader($name)) {
+        if ($clone->hasHeader($name)) {
             if (\is_array($value)) {
-                $this->headers[\strtoupper($name)] += $value;
+                $clone->headers[\strtoupper($name)] = \array_merge($clone->headers[\strtoupper($name)], $value);
             } else {
-                $this->headers[\strtoupper($name)][] = $value;
+                $clone->headers[\strtoupper($name)][] = $value;
             }
         } else {
-            $this->setHeader($name, $value);
+            $clone->setHeader($name, $value);
         }
         return $clone;
     }
@@ -193,13 +200,17 @@ abstract class Message implements MessageInterface
     /**
      * Тухайн header-ийг устгасан клон объект буцаана.
      *
+     * @param string $name Устгах header-ийн нэр
+     *
+     * @return MessageInterface
+     *
      * @inheritdoc
      */
     public function withoutHeader(string $name): MessageInterface
     {
         $clone = clone $this;
-        if ($this->hasHeader($name)) {
-            unset($this->headers[\strtoupper($name)]);
+        if ($clone->hasHeader($name)) {
+            unset($clone->headers[\strtoupper($name)]);
         }
         return $clone;
     }
@@ -207,12 +218,22 @@ abstract class Message implements MessageInterface
     /**
      * Message body буюу StreamInterface объект буцаана.
      *
+     * Body null бол (lazy initialization) хоосон php://temp stream
+     * автоматаар үүсгэнэ. Энэ нь GET request зэрэг body шаардлагагүй
+     * хүсэлтүүдэд memory хэмнэнэ.
+     *
      * @return StreamInterface
      *
      * @inheritdoc
      */
     public function getBody(): StreamInterface
     {
+        if ($this->body === null) {
+            // Lazy initialization: хоосон stream үүсгэх
+            $resource = \fopen('php://temp', 'r+');
+            $this->body = new Stream($resource);
+        }
+        
         return $this->body;
     }
 

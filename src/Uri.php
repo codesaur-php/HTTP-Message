@@ -63,13 +63,32 @@ class Uri implements UriInterface
     /**
      * Authority хэсгийг (user@host:port) бүтнээр буцаана.
      *
+     * User info нь URI string-д харагдах үед percent-encode хийгдэнэ.
+     * Хэрэв user info аль хэдийн encoded байвал, decode хийж дараа нь encode хийнэ
+     * (давхар encode-ийг зайлсхийх зорилгоор).
+     *
      * @return string Authority string
      */
     public function getAuthority(): string
     {
         $userInfo = $this->getUserInfo();
         if ($userInfo != '') {
-            $authority = "$userInfo@";
+            // User info-г URI string-д харагдах үед encode хийнэ
+            // user:password хэлбэрт байгаа тул user болон password-ийг тусад нь encode хийх хэрэгтэй
+            $parts = \explode(':', $userInfo, 2);
+            if (\count($parts) == 2) {
+                // Decode хийж, дараа нь encode хийнэ (давхар encode-ийг зайлсхийх)
+                $decodedUser = \rawurldecode($parts[0]);
+                $decodedPassword = \rawurldecode($parts[1]);
+                $encodedUser = \rawurlencode($decodedUser);
+                $encodedPassword = \rawurlencode($decodedPassword);
+                $authority = "$encodedUser:$encodedPassword@";
+            } else {
+                // Decode хийж, дараа нь encode хийнэ (давхар encode-ийг зайлсхийх)
+                $decodedUser = \rawurldecode($userInfo);
+                $encodedUser = \rawurlencode($decodedUser);
+                $authority = "$encodedUser@";
+            }
         } else {
             $authority = '';
         }
@@ -101,17 +120,23 @@ class Uri implements UriInterface
     /**
      * User info-г тохируулах (mutable setter).
      *
-     * @param string      $user     Username
-     * @param string|null $password Password (optional)
+     * Анхаар: User info-г encode хийхгүй, хэрэглэгч өгсөн утгыг шууд хадгална.
+     * PSR-7 стандартын дагуу user info нь аль хэдийн encoded эсвэл unencoded байж болно.
+     * URI-г string хэлбэрт хөрвүүлэхдээ (getAuthority(), __toString()) шаардлагатай хэсгүүдийг encode хийнэ.
+     *
+     * @param string      $user     Username (encoded эсвэл unencoded)
+     * @param string|null $password Password (optional, encoded эсвэл unencoded)
      *
      * @return void
      */
     public function setUserInfo(string $user, ?string $password = null)
     {
-        $this->_user = \rawurlencode($user);
+        $this->_user = $user;
 
         if (!empty($password)) {
-            $this->_password = \rawurlencode($password);
+            $this->_password = $password;
+        } else {
+            $this->_password = '';
         }
     }
 
@@ -194,12 +219,16 @@ class Uri implements UriInterface
     /**
      * Path тохируулах (mutable setter).
      *
-     * @param string $path
+     * Анхаар: Path-г encode хийхгүй, хэрэглэгч өгсөн утгыг шууд хадгална.
+     * PSR-7 стандартын дагуу path нь аль хэдийн encoded эсвэл unencoded байж болно.
+     * URI-г string хэлбэрт хөрвүүлэхдээ (__toString()) шаардлагатай хэсгүүдийг encode хийнэ.
+     *
+     * @param string $path URI path хэсэг (encoded эсвэл unencoded)
      * @return void
      */
     public function setPath(string $path)
     {
-        $this->_path = \rawurlencode($path);
+        $this->_path = $path;
     }
 
     /**
@@ -215,12 +244,16 @@ class Uri implements UriInterface
     /**
      * Query тохируулах (mutable setter).
      *
-     * @param string $query
+     * Анхаар: Query string-г encode хийхгүй, хэрэглэгч өгсөн утгыг шууд хадгална.
+     * PSR-7 стандартын дагуу query нь аль хэдийн encoded эсвэл unencoded байж болно.
+     * URI-г string хэлбэрт хөрвүүлэхдээ (__toString()) шаардлагатай хэсгүүдийг encode хийнэ.
+     *
+     * @param string $query Query string (key=value&key2=value2 хэлбэр, encoded эсвэл unencoded)
      * @return void
      */
     public function setQuery(string $query)
     {
-        $this->_query = \rawurlencode($query);
+        $this->_query = $query;
     }
 
     /**
@@ -236,12 +269,16 @@ class Uri implements UriInterface
     /**
      * Fragment тохируулах (mutable setter).
      *
-     * @param string $fragment
+     * Анхаар: Fragment-г encode хийхгүй, хэрэглэгч өгсөн утгыг шууд хадгална.
+     * PSR-7 стандартын дагуу fragment нь аль хэдийн encoded эсвэл unencoded байж болно.
+     * URI-г string хэлбэрт хөрвүүлэхдээ (__toString()) шаардлагатай хэсгүүдийг encode хийнэ.
+     *
+     * @param string $fragment URI fragment (# дараах хэсэг, encoded эсвэл unencoded)
      * @return void
      */
     public function setFragment(string $fragment)
     {
-        $this->_fragment = \rawurlencode($fragment);
+        $this->_fragment = $fragment;
     }
 
     /**
@@ -333,12 +370,17 @@ class Uri implements UriInterface
      *
      * Энэ нь URL-г хэвлэх эсвэл лог бичих үед ашиглагдана.
      *
+     * Анхаар: Path, query, fragment нь хадгалсан утгаар нь шууд ашиглагдана.
+     * PSR-7 стандартын дагуу эдгээр утгууд аль хэдийн percent-encoded байх ёстой.
+     * Хэрэв хэрэглэгч unencoded утга өгсөн бол, URI зөв ажиллахгүй байж болно.
+     *
      * @return string Бүрэн URI reference
      */
     public function __toString(): string
     {
         $scheme = $this->getScheme();
         $authority = $this->getAuthority();
+        $path = $this->getPath();
         $query = $this->getQuery();
         $fragment = $this->getFragment();
         
@@ -351,14 +393,17 @@ class Uri implements UriInterface
             $uri_reference .= "//$authority";
         }
         
-        $uri_reference .= \rawurldecode($this->getPath());
+        // Path нь хадгалсан утгаар нь шууд ашиглагдана (PSR-7 стандарт)
+        $uri_reference .= $path;
         
         if ($query != '') {
-            $uri_reference .= '?' . \rawurldecode($query);
+            // Query string нь хадгалсан утгаар нь шууд ашиглагдана
+            $uri_reference .= '?' . $query;
         }
         
         if ($fragment != '') {
-            $uri_reference .= '#' . \rawurldecode($fragment);
+            // Fragment нь хадгалсан утгаар нь шууд ашиглагдана
+            $uri_reference .= '#' . $fragment;
         }
         
         return $uri_reference;

@@ -69,7 +69,7 @@ class NonBodyResponse extends Message implements ResponseInterface
     public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         $status = "STATUS_$code";
-        $reasonPhraseClass = ReasonPrhase::class;
+        $reasonPhraseClass = ReasonPhrase::class;
 
         // Статус код ReasonPhrase класст тодорхойлсон эсэхийг шалгана
         if (!\defined("$reasonPhraseClass::$status")) {
@@ -103,7 +103,7 @@ class NonBodyResponse extends Message implements ResponseInterface
         }
         
         $status = "STATUS_$this->status";
-        $reasonPhrase = ReasonPrhase::class;
+        $reasonPhrase = ReasonPhrase::class;
 
         if (\defined("$reasonPhrase::$status")) {
             return \constant("$reasonPhrase::$status");

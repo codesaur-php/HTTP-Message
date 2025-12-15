@@ -18,8 +18,32 @@ use Fig\Http\Message\StatusCodeInterface;
  * зэрэг үндсэн параметрүүдийг immutable (clone хийж буцаадаг)
  * зарчмаар удирддаг.
  *
+ * Body Stream-ийн тохиргоо:
+ *   - Анхдагч body нь {@see Output} stream тул {@see Response::__construct()}
+ *     дуудахад автоматаар output buffer stream үүсгэнэ.
+ *   - Output stream нь write() хийгдэх бүрт шууд browser/клиент рүү
+ *     хэвлэдэг (output buffering ашиглаж).
+ *   - Хэрэв та шууд хэвлэхгүй, response body-г өөр stream дээр авахыг
+ *     хүсвэл {@see Message::withBody()} method ашиглан body-г ямар ч
+ *     StreamInterface implementation-д холбож болно:
+ *     - {@see Stream} (php://temp, php://memory, файл stream)
+ *     - {@see Output} (шууд browser руу хэвлэх)
+ *     - Бусад custom StreamInterface хэрэгжилт
+ *
+ * Жишээ:
+ * ```php
+ * // Default: Output stream (шууд browser руу хэвлэх)
+ * $response = new Response();
+ * $response->getBody()->write('Hello'); // Шууд browser руу хэвлэгдэнэ
+ *
+ * // Memory stream ашиглах (response body-г memory дээр авах)
+ * $memoryStream = new Stream(fopen('php://memory', 'r+'));
+ * $response = (new Response())->withBody($memoryStream);
+ * $response->getBody()->write('Hello'); // Memory дээр хадлагдана
+ * $content = $response->getBody()->getContents(); // "Hello"
+ * ```
+ *
  * Онцлог:
- *   - Анхдагч body нь Output stream тул write() → шууд echo хийгдэнэ.
  *   - Status/ReasonPhrase нь ReasonPhrase класст заасан RFC стандарттай
  *     status code-уудыг баталгаатайгаар ашиглана.
  *   - PSR-7 ResponseInterface-ийн шаардлагуудыг бүрэн хангана.
@@ -42,8 +66,31 @@ class Response extends Message implements ResponseInterface
     protected string $reasonPhrase = '';
     
     /**
-     * Response үүсэх үед body-г Output stream болгон тохируулна.
-     * Ингэснээр write() хийгдэх бүрт шууд хэрэглэгч рүү дамжина.
+     * Response үүсэх үед body-г Output buffering stream болгон тохируулна.
+     *
+     * Анхдагч body нь {@see Output} stream тул write() хийгдэх бүрт
+     * шууд browser/клиент рүү хэвлэгдэнэ (output buffering ашигладаг).
+     *
+     * Хэрэв та шууд хэвлэхгүй, response body-г өөр stream дээр авахыг
+     * хүсвэл {@see Message::withBody()} method ашиглан body-г ямар ч
+     * StreamInterface implementation-д холбож болно:
+     *
+     * - {@see Stream} (php://temp, php://memory, файл stream) - memory эсвэл
+     *   файл дээр хадгалах
+     * - {@see Output} - шууд browser руу хэвлэх (default)
+     * - Бусад custom StreamInterface хэрэгжилт
+     *
+     * Жишээ:
+     * ```php
+     * // Default: шууд browser руу хэвлэх
+     * $response = new Response();
+     * $response->getBody()->write('Hello'); // Шууд хэвлэгдэнэ
+     *
+     * // Memory stream ашиглах
+     * $memoryStream = new Stream(fopen('php://memory', 'r+'));
+     * $response = (new Response())->withBody($memoryStream);
+     * $response->getBody()->write('Hello'); // Memory дээр хадлагдана
+     * ```
      */
     public function __construct()
     {
@@ -67,8 +114,8 @@ class Response extends Message implements ResponseInterface
      * @param string $reasonPhrase  Custom текстэн тайлбар (optional)
      *
      * @throws \InvalidArgumentException
-     *          — код integer биш бол
-     *          — ReasonPhrase класст байхгүй статус код бол
+     *          - код integer биш бол
+     *          - ReasonPhrase класст байхгүй статус код бол
      *
      * @return ResponseInterface
      *
@@ -81,7 +128,7 @@ class Response extends Message implements ResponseInterface
         }
         
         $status = "STATUS_$code";
-        $reasonPhraseClass = ReasonPrhase::class;
+        $reasonPhraseClass = ReasonPhrase::class;
 
         // RFC-ийн статус код мөн эсэхийг шалгана
         if (!\defined("$reasonPhraseClass::$status")) {
@@ -120,7 +167,7 @@ class Response extends Message implements ResponseInterface
         }
         
         $status = "STATUS_$this->status";
-        $reasonPhrase = ReasonPrhase::class;
+        $reasonPhrase = ReasonPhrase::class;
 
         if (\defined("$reasonPhrase::$status")) {
             return \constant("$reasonPhrase::$status");
