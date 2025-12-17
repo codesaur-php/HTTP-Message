@@ -1,11 +1,19 @@
+# Apache mod_rewrite модуль идэвхтэй эсэхийг шалгах
 <IfModule mod_rewrite.c>
+# URL rewrite идэвхжүүлэх
 RewriteEngine On
 
+# Хүсэлт файл биш эсэхийг шалгах (файл байвал rewrite хийхгүй)
 RewriteCond %{REQUEST_FILENAME} !-f
+# Хүсэлт хавтас биш эсэхийг шалгах (хавтас байвал rewrite хийхгүй)
 RewriteCond %{REQUEST_FILENAME} !-d
 
+# Бүх хүсэлтийг index.php руу чиглүүлэх (front controller pattern)
 RewriteRule ^(.*)$ index.php/$1 [L]
 </IfModule>
+
+# mod_rewrite модуль байхгүй бол
 <IfModule !mod_rewrite.c>
+# Хавтасны жагсаалтыг харуулахыг хориглох
 Options -Indexes
 </IfModule>

@@ -9,6 +9,9 @@
          failOnWarning="false"
          processIsolation="false"
          stopOnFailure="false">
+    <php>
+        <ini name="xdebug.mode" value="develop,coverage"/>
+    </php>
     <testsuites>
         <testsuite name="HTTP Message Test Suite">
             <directory>tests</directory>
