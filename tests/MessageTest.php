@@ -5,7 +5,6 @@ namespace codesaur\Http\Message\Tests;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
-use codesaur\Http\Message\Message;
 use codesaur\Http\Message\Request;
 
 /**

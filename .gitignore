@@ -7,6 +7,9 @@ composer.lock
 .phpunit.cache/
 phpunit.xml.bak
 coverage/
+coverage.html
+coverage.xml
+coverage.txt
 *.coverage
 
 # IDE
@@ -15,11 +18,17 @@ coverage/
 *.swp
 *.swo
 *~
+.phpstorm.meta.php
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Test artifacts
 /tests/_files/
 /tests/_output/
+
+# Build artifacts
+*.log
+*.tmp

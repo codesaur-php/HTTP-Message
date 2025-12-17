@@ -13,6 +13,9 @@
         <testsuite name="HTTP Message Test Suite">
             <directory>tests</directory>
         </testsuite>
+        <testsuite name="Integration Tests">
+            <directory>tests/Integration</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -23,4 +26,11 @@
             <directory>tests</directory>
         </exclude>
     </source>
+    <coverage>
+        <report>
+            <html outputDirectory="coverage/html"/>
+            <text outputFile="coverage/coverage.txt"/>
+            <clover outputFile="coverage.xml"/>
+        </report>
+    </coverage>
 </phpunit>

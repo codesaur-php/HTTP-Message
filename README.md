@@ -1,4 +1,9 @@
 # 📨 codesaur/http-message  
+
+[![CI](https://github.com/codesaur-php/HTTP-Message/workflows/CI/badge.svg)](https://github.com/codesaur-php/HTTP-Message/actions)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.2.1-777BB4.svg?logo=php)](https://www.php.net/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **PHP 8.2+ зориулсан минимал, цэвэр бүтэцтэй HTTP Message компонент (PSR-7)** 
 
 `codesaur/http-message` нь PHP-ийн PSR-7 стандартын дагуу **Request**, **Response**,  
@@ -221,23 +226,6 @@ $stream->close();
 
 ---
 
-# 📄 Лиценз
-
-Энэ төсөл MIT лицензтэй.
-
----
-
-# 👨‍💻 Хөгжүүлэгч
-
-Narankhuu  
-📧 codesaur@gmail.com  
-📱 +976 99000287  
-🌐 https://github.com/codesaur  
-
----
-
----
-
 ## 🧪 Тест ажиллуулах
 
 Энэ төсөл PHPUnit ашиглан бүрэн тест хийгдсэн. Тест ажиллуулах:
@@ -251,11 +239,23 @@ composer install
 # Бүх тест ажиллуулах
 ./vendor/bin/phpunit
 
-# Coverage-тэй ажиллуулах
-./vendor/bin/phpunit --coverage-html coverage
+# Coverage-тэй ажиллуулах (HTML report)
+./vendor/bin/phpunit --coverage-html coverage/html
+
+# Coverage-тэй ажиллуулах (Text report)
+./vendor/bin/phpunit --coverage-text
+
+# Coverage XML үүсгэх (CI/CD-д ашиглах)
+./vendor/bin/phpunit --coverage-clover coverage.xml
 
 # Тодорхой тест файл ажиллуулах
 ./vendor/bin/phpunit tests/MessageTest.php
+
+# Edge case тестүүд ажиллуулах
+./vendor/bin/phpunit tests/EdgeCaseTest.php
+
+# Integration тестүүд ажиллуулах
+./vendor/bin/phpunit tests/Integration/
 ```
 
 ### Windows (PowerShell / Command Prompt)
@@ -267,14 +267,33 @@ composer install
 # Бүх тест ажиллуулах
 vendor\bin\phpunit.bat
 
-# Coverage-тэй ажиллуулах
-vendor\bin\phpunit.bat --coverage-html coverage
+# Coverage-тэй ажиллуулах (HTML report)
+vendor\bin\phpunit.bat --coverage-html coverage\html
+
+# Coverage-тэй ажиллуулах (Text report)
+vendor\bin\phpunit.bat --coverage-text
+
+# Coverage XML үүсгэх (CI/CD-д ашиглах)
+vendor\bin\phpunit.bat --coverage-clover coverage.xml
 
 # Тодорхой тест файл ажиллуулах
 vendor\bin\phpunit.bat tests\MessageTest.php
+
+# Edge case тестүүд ажиллуулах
+vendor\bin\phpunit.bat tests\EdgeCaseTest.php
+
+# Integration тестүүд ажиллуулах
+vendor\bin\phpunit.bat tests\Integration\
 ```
 
 **Анхаар:** Windows-д PowerShell эсвэл Command Prompt ашиглаж болно. Зам нь backslash (`\`) ашиглана.
+
+### Code Coverage Report
+
+Coverage report үүсгэсний дараа:
+- **HTML report:** `coverage/html/index.html` файлыг browser-оор нээж харах
+- **Text report:** `coverage/coverage.txt` файлд текстэн хэлбэрээр хадгалагдана
+- **XML report:** `coverage.xml` файл нь CI/CD системд (Codecov, Coveralls) ашиглахад тохиромжтой
 
 ### Тест бүтэц
 
@@ -285,10 +304,29 @@ vendor\bin\phpunit.bat tests\MessageTest.php
 | `tests/ResponseTest.php` | `Response` |
 | `tests/NonBodyResponseTest.php` | `NonBodyResponse` |
 | `tests/UriTest.php` | `Uri` |
-| `tests/StreamTest.php` | `Stream` |
 | `tests/UploadedFileTest.php` | `UploadedFile` |
 | `tests/OutputTest.php` | `Output` |
 | `tests/OutputBufferTest.php` | `OutputBuffer` |
+| `tests/EdgeCaseTest.php` | Edge case тестүүд (хязгаарын тохиолдлууд) |
+| `tests/Integration/FullRequestResponseTest.php` | Integration тестүүд (бүх компонентууд хамтдаа) |
+
+---
+
+## 🚀 CI/CD (GitHub Actions)
+
+Энэ төсөл GitHub Actions ашиглан автоматаар CI/CD хийгддэг:
+
+- ✅ **Олон PHP хувилбар дээр тест**: PHP 8.2, 8.3, 8.4
+- ✅ **Олон платформ дэмжлэг**: Ubuntu болон Windows
+- ✅ **Автомат тест ажиллуулалт**: Push болон Pull Request үед
+- ✅ **Code coverage**: Codecov руу автоматаар илгээгддэг
+
+---
+
+## 📚 Баримт Бичиг
+
+- 📖 [API.md](API.md) - Бүх классуудын API documentation (PHPDoc-уудаас цуглуулсан Cursor AI)
+- 🔍 [REVIEW.md](REVIEW.md) - Package-ийн бүрэн review (код чанар, архитектур, ашиглалтын боломж Cursor AI)
 
 ---
 
@@ -298,6 +336,21 @@ vendor\bin\phpunit.bat tests\MessageTest.php
 - PSR-7 стандартын дагуу бүх interface-үүд бүрэн хэрэгжсэн
 - Immutable зарчмыг бүх setter-үүдэд мөрдсөн
 - Exception handling болон validation бүрэн хийгдсэн
+
+---
+
+# 📄 Лиценз
+
+Энэ төсөл MIT лицензтэй.
+
+---
+
+# 👨‍💻 Хөгжүүлэгч
+
+Narankhuu  
+📧 codesaur@gmail.com  
+📱 +976 99000287  
+🌐 https://github.com/codesaur  
 
 ---
 
