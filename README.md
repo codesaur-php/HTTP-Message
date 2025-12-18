@@ -4,7 +4,7 @@
 [![PHP Version](https://img.shields.io/badge/php-%5E8.2.1-777BB4.svg?logo=php)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**PHP 8.2+ зориулсан минимал, цэвэр бүтэцтэй HTTP Message компонент (PSR-7)** 
+**Цэвэр, минимал, объект хандалтат бүтэцтэй HTTP Message компонент (PSR-7)** 
 
 `codesaur/http-message` нь PHP-ийн PSR-7 стандартын дагуу **Request**, **Response**,  
 **ServerRequest**, **URI**, **Stream**, **UploadedFile**, **OutputBuffer** зэрэг HTTP  
