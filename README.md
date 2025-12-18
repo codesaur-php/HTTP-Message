@@ -1,7 +1,7 @@
 # 📨 codesaur/http-message  
 
 [![CI](https://github.com/codesaur-php/HTTP-Message/workflows/CI/badge.svg)](https://github.com/codesaur-php/HTTP-Message/actions)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.2.1-777BB4.svg?logo=php)](https://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%5E8.2.1-777BB4.svg?logo=php)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **PHP 8.2+ зориулсан минимал, цэвэр бүтэцтэй HTTP Message компонент (PSR-7)** 
@@ -325,8 +325,8 @@ Coverage report үүсгэсний дараа:
 
 ## 📚 Баримт Бичиг
 
-- 📖 [API.md](API.md) - Бүх классуудын API documentation (PHPDoc-уудаас цуглуулсан Cursor AI)
-- 🔍 [REVIEW.md](REVIEW.md) - Package-ийн бүрэн review (код чанар, архитектур, ашиглалтын боломж Cursor AI)
+- 📖 [API.md](API.md) - Бүх классуудын API documentation (PHPDoc-уудаас Cursor AI ашиглан автоматаар үүсгэсэн)
+- 🔍 [REVIEW.md](REVIEW.md) - Package-ийн бүрэн review (код чанар, архитектур, ашиглалтын боломж - Cursor AI ашиглан үүсгэсэн)
 
 ---
 
@@ -349,7 +349,7 @@ Coverage report үүсгэсний дараа:
 
 Narankhuu  
 📧 codesaur@gmail.com  
-📱 +976 99000287  
+📲 [+976 99000287](https://wa.me/97699000287)  
 🌐 https://github.com/codesaur  
 
 ---

@@ -439,7 +439,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         // Boundary-гаар хэсэглэх
         $parts = \array_slice(\explode($boundary, $input), 1);
         foreach ($parts as $part) {
-            // Эцсийн boundary (–boundary--)
+            // Эцсийн boundary (-boundary--)
             if ($part == "--\r\n") {
                 break;
             }

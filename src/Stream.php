@@ -13,7 +13,7 @@ use Psr\Http\Message\StreamInterface;
 class Stream implements StreamInterface
 {
     /**
-     * Stream resource.
+     * Stream resource (PHP fopen() буцаасан resource).
      *
      * @var resource|null
      */
@@ -199,7 +199,7 @@ class Stream implements StreamInterface
         
         $meta = \stream_get_meta_data($this->resource);
         $mode = $meta['mode'];
-        return strpbrk($mode, 'waxc+') !== false;
+        return \strpbrk($mode, 'waxc+') !== false;
     }
 
     /**

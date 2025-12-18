@@ -169,7 +169,7 @@ class ReasonPhrase
     /** @var string 417 Expectation Failed */
     const STATUS_417 = 'Expectation Failed';
 
-    /** @var string 418 I'm a Teapot — RFC 2324 (April Fools) */
+    /** @var string 418 I'm a Teapot - RFC 2324 (April Fools) */
     const STATUS_418 = 'I\'m a Teapot';
 
     /** @var string 421 Misdirected Request */

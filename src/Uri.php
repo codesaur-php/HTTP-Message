@@ -23,13 +23,60 @@ use Psr\Http\Message\UriInterface;
  */
 class Uri implements UriInterface
 {
+    /**
+     * URI scheme (http эсвэл https).
+     *
+     * @var string
+     */
     private string $_scheme = '';
+    
+    /**
+     * URI host (домен эсвэл IPv6 хаяг).
+     *
+     * @var string
+     */
     private string $_host = '';
+    
+    /**
+     * URI port (1-65535).
+     *
+     * @var int|null
+     */
     private ?int $_port = null;
+    
+    /**
+     * URI path хэсэг.
+     *
+     * @var string
+     */
     private string $_path = '';
+    
+    /**
+     * URI query string (? дараах хэсэг).
+     *
+     * @var string
+     */
     private string $_query = '';
+    
+    /**
+     * URI fragment (# дараах хэсэг).
+     *
+     * @var string
+     */
     private string $_fragment = '';
+    
+    /**
+     * URI user info - username.
+     *
+     * @var string
+     */
     private string $_user = '';
+    
+    /**
+     * URI user info - password.
+     *
+     * @var string
+     */
     private string $_password = '';
 
     /**
@@ -192,7 +239,7 @@ class Uri implements UriInterface
     /**
      * Port тохируулах (mutable setter).
      *
-     * @param int $port Valid range: 1–65535
+     * @param int $port Valid range: 1-65535
      *
      * @throws \InvalidArgumentException
      * @return void

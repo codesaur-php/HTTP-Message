@@ -42,7 +42,7 @@ class Request extends Message implements RequestInterface
     protected ?UriInterface $uri = null;
     
     /**
-     * Request target – тухайн хүсэлтийн зорилтот зам.
+     * Request target - тухайн хүсэлтийн зорилтот зам.
      *
      * Жишээ:
      *   "/products?id=1#top"

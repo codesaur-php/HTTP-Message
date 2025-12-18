@@ -5,7 +5,7 @@ namespace codesaur\Http\Message;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Output stream – PHP-ийн output buffering-д суурилсан StreamInterface хэрэгжилт.
+ * Output stream - PHP-ийн output buffering-д суурилсан StreamInterface хэрэгжилт.
  *
  * Энэ класс нь HTTP хариуны body-г "шууд браузер руу хэвлэх"
  * зарчмаар ажилладаг тусгай stream юм.
@@ -53,7 +53,7 @@ class Output implements StreamInterface
      */
     public function __destruct()
     {
-        // PHP автомат flush хийнэ — endFlush() дуудах шаардлагагүй.
+        // PHP автомат flush хийнэ - endFlush() дуудах шаардлагагүй.
     }
     
     /**
