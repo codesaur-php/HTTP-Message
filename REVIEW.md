@@ -84,6 +84,13 @@ Message (abstract)
 - Response body-г шууд browser/клиент рүү хэвлэх боломж олгоно
 - Веб хөгжүүлэлтэд илүү тохиромжтой
 
+✅ **NonBodyResponse:**
+- Body stream агуулаагүй HTTP хариуны минимал хэрэгжилт
+- Output buffer-тэй шууд `echo`, `print` ашиглан browser руу хэвлэх үед зориулсан
+- Redirect (301, 302, 303, 307, 308), 204 No Content, 304 Not Modified зэрэг body шаардлагагүй хариуд тохиромжтой
+- `Response` классын ялгаа: `Response` нь body stream агуулдаг (`Output` stream), `NonBodyResponse` нь body stream огт байхгүй
+- `getBody()` method нь `RuntimeException` шиднэ, учир нь энэ классын зорилго нь output buffer-тэй шууд хэвлэх тул body stream шаардлагагүй. Энэ нь developer-д илүү тодорхой байх боломж олгоно
+
 ### 6. ServerRequest::initFromGlobal()
 
 ✅ **Онцлог:**

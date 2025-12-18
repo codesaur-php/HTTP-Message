@@ -41,7 +41,7 @@ composer require codesaur/http-message
 | `Message` | PSR-7 MessageInterface хэрэгжилт (headers, protocol, body) |
 | `Request` | PSR-7 RequestInterface |
 | `Response` | PSR-7 ResponseInterface |
-| `NonBodyResponse` | Body шаардлагагүй response (301, 204, 304 гэх мэт) |
+| `NonBodyResponse` | Body stream агуулаагүй response. Output buffer-тэй ажиллан шууд `echo`, `print` ашиглан browser руу хэвлэх үед зориулсан |
 | `ServerRequest` | Глобал орчноос request сэргээдэг advanced implementation |
 | `Uri` | PSR-7 UriInterface |
 | `Stream` | PSR-7 StreamInterface хэрэгжилт (PHP resource дээр суурилсан) |
@@ -100,7 +100,7 @@ $response = (new Response())
 
 // Анхаар: Response-ийн default body нь output buffer тул
 // write() хийгдэх бүрт шууд browser/клиент рүү хэвлэгдэнэ
-$response->getBody()->write(json_encode($data));
+$response->getBody()->write(\json_encode($data));
 
 ```
 
@@ -148,7 +148,7 @@ echo (string) $uri;
 use codesaur\Http\Message\Stream;
 
 // php://temp stream үүсгэх (memory дээр)
-$resource = fopen('php://temp', 'r+');
+$resource = \fopen('php://temp', 'r+');
 $stream = new Stream($resource);
 
 // Stream-д бичих

@@ -66,4 +66,13 @@ class NonBodyResponseTest extends TestCase
         
         $this->assertEquals('Custom OK', $newResponse->getReasonPhrase());
     }
+
+    public function testGetBodyThrowsException(): void
+    {
+        $response = new NonBodyResponse();
+        
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('does not support body stream');
+        $response->getBody();
+    }
 }
