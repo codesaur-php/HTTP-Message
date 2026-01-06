@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ---
 
 ## [3.0.1] - 2026-01-06
+[3.0.1]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.0...v3.0.1
 
 ### ✨ Added
 
@@ -23,8 +24,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **README.md refactoring**
   - Updated project description to match HTTP-Message component  
 
-[3.0.1]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.0...v3.0.1
-
 ---
 
 ## [3.0.0] - 2025-12-18
@@ -38,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ---
 
 ## [2.0.0] - 2025-12-17
+[2.0.0]: https://github.com/codesaur-php/HTTP-Message/compare/v1.0...v2.0.0
 
 ### ✨ Added
 - Enhanced multipart parser
@@ -55,17 +55,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Performance optimizations
 - Code refactoring
 
-[2.0.0]: https://github.com/codesaur-php/HTTP-Message/compare/v1.0...v2.0.0
-
 ---
 
 ## [1.0] - 2021-03-02
+[1.0]: https://github.com/codesaur-php/HTTP-Message/releases/tag/v1.0
 
-### ✨ Added
-
+### Released
 - Initial release of `codesaur/http-message`
 - Basic PSR-7 implementation
 - Core HTTP message components
 - Basic documentation
-
-[1.0]: https://github.com/codesaur-php/HTTP-Message/releases/tag/v1.0
