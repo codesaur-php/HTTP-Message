@@ -10,7 +10,7 @@ jobs:
   test:
     name: PHP ${{ matrix.php-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       fail-fast: false
       matrix:

@@ -33,7 +33,7 @@ class ResponseTest extends TestCase
     {
         $response = new Response();
         $newResponse = $response->withStatus(404);
-        
+
         $this->assertNotSame($response, $newResponse);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(404, $newResponse->getStatusCode());
@@ -50,7 +50,7 @@ class ResponseTest extends TestCase
     {
         $response = new Response();
         $this->assertEquals('OK', $response->getReasonPhrase());
-        
+
         $response = $response->withStatus(404);
         $this->assertEquals('Not Found', $response->getReasonPhrase());
     }
@@ -59,7 +59,7 @@ class ResponseTest extends TestCase
     {
         $response = new Response();
         $newResponse = $response->withStatus(200, 'Custom OK');
-        
+
         $this->assertEquals('Custom OK', $newResponse->getReasonPhrase());
     }
 

@@ -43,10 +43,10 @@
 **Код бүтэц:**
 ```
 Message (abstract)
-├── Request
-│   └── ServerRequest
-└── Response
-    └── NonBodyResponse
+|-- Request
+|   `-- ServerRequest
+`-- Response
+    `-- NonBodyResponse
 ```
 
 ### 3. Бүрэн PHPDoc тайлбар
@@ -333,6 +333,6 @@ Package нь дараах use case-үүдэд тохиромжтой:
 
 ---
 
-**Review хийсэн:** Cursor AI  
-**Огноо:** 2025  
+**Review хийсэн:** Cursor AI
+**Огноо:** 2025
 **Version:** 1.0

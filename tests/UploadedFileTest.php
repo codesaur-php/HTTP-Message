@@ -58,12 +58,12 @@ class UploadedFileTest extends TestCase
     {
         $targetPath = sys_get_temp_dir() . '/moved_' . uniqid() . '.txt';
         $file = new UploadedFile($this->tmpFile, 'test.txt', 'text/plain', 12, UPLOAD_ERR_OK);
-        
+
         $file->moveTo($targetPath);
-        
+
         $this->assertFileExists($targetPath);
         $this->assertEquals('test content', file_get_contents($targetPath));
-        
+
         if (file_exists($targetPath)) {
             unlink($targetPath);
         }
@@ -81,11 +81,11 @@ class UploadedFileTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $targetPath1 = sys_get_temp_dir() . '/moved1_' . uniqid() . '.txt';
         $targetPath2 = sys_get_temp_dir() . '/moved2_' . uniqid() . '.txt';
-        
+
         $file = new UploadedFile($this->tmpFile, 'test.txt', 'text/plain', 12, UPLOAD_ERR_OK);
         $file->moveTo($targetPath1);
         $file->moveTo($targetPath2);
-        
+
         if (file_exists($targetPath1)) {
             unlink($targetPath1);
         }
@@ -105,7 +105,7 @@ class UploadedFileTest extends TestCase
     {
         $file = new UploadedFile($this->tmpFile, 'test.txt', 'text/plain', 12, UPLOAD_ERR_OK);
         $data = $file->jsonSerialize();
-        
+
         $this->assertIsArray($data);
         $this->assertEquals('test.txt', $data['name']);
         $this->assertEquals('text/plain', $data['type']);

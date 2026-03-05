@@ -43,10 +43,10 @@ This document is a comprehensive review of the `codesaur/http-message` package, 
 **Code structure:**
 ```
 Message (abstract)
-├── Request
-│   └── ServerRequest
-└── Response
-    └── NonBodyResponse
+|-- Request
+|   `-- ServerRequest
+`-- Response
+    `-- NonBodyResponse
 ```
 
 ### 3. Complete PHPDoc Documentation
@@ -333,6 +333,6 @@ Package is suitable for the following use cases:
 
 ---
 
-**Reviewed by:** Cursor AI  
-**Date:** 2025  
+**Reviewed by:** Cursor AI
+**Date:** 2025
 **Version:** 1.0

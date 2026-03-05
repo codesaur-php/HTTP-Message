@@ -29,49 +29,49 @@ class Uri implements UriInterface
      * @var string
      */
     private string $_scheme = '';
-    
+
     /**
      * URI host (домен эсвэл IPv6 хаяг).
      *
      * @var string
      */
     private string $_host = '';
-    
+
     /**
      * URI port (1-65535).
      *
      * @var int|null
      */
     private ?int $_port = null;
-    
+
     /**
      * URI path хэсэг.
      *
      * @var string
      */
     private string $_path = '';
-    
+
     /**
      * URI query string (? дараах хэсэг).
      *
      * @var string
      */
     private string $_query = '';
-    
+
     /**
      * URI fragment (# дараах хэсэг).
      *
      * @var string
      */
     private string $_fragment = '';
-    
+
     /**
      * URI user info - username.
      *
      * @var string
      */
     private string $_user = '';
-    
+
     /**
      * URI user info - password.
      *
@@ -88,7 +88,7 @@ class Uri implements UriInterface
     {
         return $this->_scheme;
     }
-    
+
     /**
      * Scheme тохируулах (mutable setter).
      *
@@ -103,7 +103,7 @@ class Uri implements UriInterface
         if (!\in_array($schm, ['http', 'https'])) {
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP scheme');
         }
-        
+
         $this->_scheme = $schm;
     }
 
@@ -139,9 +139,9 @@ class Uri implements UriInterface
         } else {
             $authority = '';
         }
-        
+
         $authority .= $this->getHost();
-        
+
         $port = $this->getPort();
         if ($port !== null) {
             $authority .= ":$port";
@@ -163,7 +163,7 @@ class Uri implements UriInterface
         }
         return $info;
     }
-    
+
     /**
      * User info-г тохируулах (mutable setter).
      *
@@ -206,17 +206,17 @@ class Uri implements UriInterface
      *
      * @return void
      */
-    public function setHost(string $host) 
+    public function setHost(string $host)
     {
         if (\filter_var($host, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
             $host = "[$host]";
         }
-        
+
         $this->_host = \strtolower($host);
     }
-    
+
     /**
-     * Port-г буцаана. 
+     * Port-г буцаана.
      *
      * Default порт (80, 443) тохиолдолд null буцаана (PSR-7 requirement).
      *
@@ -232,10 +232,10 @@ class Uri implements UriInterface
                 return null;
             }
         }
-        
+
         return $this->_port;
     }
-    
+
     /**
      * Port тохируулах (mutable setter).
      *
@@ -249,7 +249,7 @@ class Uri implements UriInterface
         if ($port < 1 || $port > 65535) {
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP port');
         }
-        
+
         $this->_port = $port;
     }
 
@@ -262,7 +262,7 @@ class Uri implements UriInterface
     {
         return $this->_path;
     }
-    
+
     /**
      * Path тохируулах (mutable setter).
      *
@@ -287,7 +287,7 @@ class Uri implements UriInterface
     {
         return $this->_query;
     }
-    
+
     /**
      * Query тохируулах (mutable setter).
      *
@@ -312,7 +312,7 @@ class Uri implements UriInterface
     {
         return $this->_fragment;
     }
-    
+
     /**
      * Fragment тохируулах (mutable setter).
      *
@@ -430,29 +430,29 @@ class Uri implements UriInterface
         $path = $this->getPath();
         $query = $this->getQuery();
         $fragment = $this->getFragment();
-        
+
         $uri_reference = '';
         if ($scheme != '') {
             $uri_reference .= "$scheme:";
         }
-        
+
         if ($authority != '') {
             $uri_reference .= "//$authority";
         }
-        
+
         // Path нь хадгалсан утгаар нь шууд ашиглагдана (PSR-7 стандарт)
         $uri_reference .= $path;
-        
+
         if ($query != '') {
             // Query string нь хадгалсан утгаар нь шууд ашиглагдана
             $uri_reference .= '?' . $query;
         }
-        
+
         if ($fragment != '') {
             // Fragment нь хадгалсан утгаар нь шууд ашиглагдана
             $uri_reference .= '#' . $fragment;
         }
-        
+
         return $uri_reference;
     }
 }

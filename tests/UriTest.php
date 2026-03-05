@@ -32,7 +32,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $newUri = $uri->withScheme('https');
-        
+
         $this->assertNotSame($uri, $newUri);
         $this->assertEquals('', $uri->getScheme());
         $this->assertEquals('https', $newUri->getScheme());
@@ -42,13 +42,13 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $this->assertEquals('', $uri->getAuthority());
-        
+
         $uri->setHost('example.com');
         $this->assertEquals('example.com', $uri->getAuthority());
-        
+
         $uri->setPort(8080);
         $this->assertEquals('example.com:8080', $uri->getAuthority());
-        
+
         $uri->setUserInfo('user', 'pass');
         $this->assertEquals('user:pass@example.com:8080', $uri->getAuthority());
     }
@@ -57,10 +57,10 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $this->assertEquals('', $uri->getUserInfo());
-        
+
         $uri->setUserInfo('user');
         $this->assertEquals('user', $uri->getUserInfo());
-        
+
         $uri->setUserInfo('user', 'pass');
         $this->assertEquals('user:pass', $uri->getUserInfo());
     }
@@ -69,7 +69,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $newUri = $uri->withUserInfo('user', 'pass');
-        
+
         $this->assertNotSame($uri, $newUri);
         $this->assertEquals('user:pass', $newUri->getUserInfo());
     }
@@ -78,7 +78,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $this->assertEquals('', $uri->getHost());
-        
+
         $uri->setHost('example.com');
         $this->assertEquals('example.com', $uri->getHost());
     }
@@ -94,7 +94,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $newUri = $uri->withHost('example.com');
-        
+
         $this->assertNotSame($uri, $newUri);
         $this->assertEquals('example.com', $newUri->getHost());
     }
@@ -103,7 +103,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $this->assertNull($uri->getPort());
-        
+
         $uri->setPort(8080);
         $this->assertEquals(8080, $uri->getPort());
     }
@@ -114,7 +114,7 @@ class UriTest extends TestCase
         $uri->setScheme('http');
         $uri->setPort(80);
         $this->assertNull($uri->getPort());
-        
+
         $uri->setScheme('https');
         $uri->setPort(443);
         $this->assertNull($uri->getPort());
@@ -131,7 +131,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $newUri = $uri->withPort(8080);
-        
+
         $this->assertNotSame($uri, $newUri);
         $this->assertEquals(8080, $newUri->getPort());
     }
@@ -140,7 +140,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $this->assertEquals('', $uri->getPath());
-        
+
         $uri->setPath('/api/users');
         $this->assertEquals('/api/users', $uri->getPath());
     }
@@ -149,7 +149,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $newUri = $uri->withPath('/api/users');
-        
+
         $this->assertNotSame($uri, $newUri);
         $this->assertEquals('/api/users', $newUri->getPath());
     }
@@ -158,7 +158,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $this->assertEquals('', $uri->getQuery());
-        
+
         $uri->setQuery('id=1&name=test');
         $this->assertEquals('id=1&name=test', $uri->getQuery());
     }
@@ -167,7 +167,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $newUri = $uri->withQuery('id=1');
-        
+
         $this->assertNotSame($uri, $newUri);
         $this->assertEquals('id=1', $newUri->getQuery());
     }
@@ -176,7 +176,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $this->assertEquals('', $uri->getFragment());
-        
+
         $uri->setFragment('section');
         $this->assertEquals('section', $uri->getFragment());
     }
@@ -185,7 +185,7 @@ class UriTest extends TestCase
     {
         $uri = new Uri();
         $newUri = $uri->withFragment('section');
-        
+
         $this->assertNotSame($uri, $newUri);
         $this->assertEquals('section', $newUri->getFragment());
     }
@@ -198,7 +198,7 @@ class UriTest extends TestCase
         $uri->setPath('/api/users');
         $uri->setQuery('id=1');
         $uri->setFragment('top');
-        
+
         $expected = 'https://example.com/api/users?id=1#top';
         $this->assertEquals($expected, (string) $uri);
     }

@@ -1,24 +1,24 @@
 # codesaur/http-message
 
-**Цэвэр, минимал, объект хандалтат бүтэцтэй HTTP Message компонент (PSR-7)** 
+**Цэвэр, минимал, объект хандалтат бүтэцтэй HTTP Message компонент (PSR-7)**
 
-`codesaur/http-message` нь PHP-ийн PSR-7 стандартын дагуу **Request**, **Response**,  
-**ServerRequest**, **URI**, **Stream**, **UploadedFile**, **OutputBuffer** зэрэг HTTP  
+`codesaur/http-message` нь PHP-ийн PSR-7 стандартын дагуу **Request**, **Response**,
+**ServerRequest**, **URI**, **Stream**, **UploadedFile**, **OutputBuffer** зэрэг HTTP
 мессежийн бүрэлдэхүүнүүдийг хэрэгжүүлсэн бага жинтэй компонент юм.
 
 ---
 
 ## Онцлог
 
-- ✔ **PSR-7 MessageInterface, RequestInterface, ResponseInterface** бүрэн хэрэгжилт  
-- ✔ `ServerRequest::initFromGlobal()` - глобал орчноос request үүсгэх advanced parser  
-- ✔ `multipart/form-data` **бүрэн multipart parser** (RFC 7578 дагуу)  
-- ✔ `UploadedFile` - PHP upload файлыг PSR-7 хэлбэрт хөрвүүлнэ  
-- ✔ `Output` - response body-г output buffering-аар удирдах stream  
-- ✔ `Uri` - scheme, host, path, query, fragment зэрэг URI бүрэлдэхүүн  
-- ✔ Сервер болон CLI орчинд адил ажиллана  
-- ✔ 0 external dependency (зөвхөн PSR interface-ууд)  
-- ✔ Framework-agnostic тул codesaur, Laravel, Symfony, Slim болон бусад бүх PHP framework-тэй бүрэн нийцтэй  
+- **PSR-7 MessageInterface, RequestInterface, ResponseInterface** бүрэн хэрэгжилт
+- `ServerRequest::initFromGlobal()` - глобал орчноос request үүсгэх advanced parser
+- `multipart/form-data` **бүрэн multipart parser** (RFC 7578 дагуу)
+- `UploadedFile` - PHP upload файлыг PSR-7 хэлбэрт хөрвүүлнэ
+- `Output` - response body-г output buffering-аар удирдах stream
+- `Uri` - scheme, host, path, query, fragment зэрэг URI бүрэлдэхүүн
+- Сервер болон CLI орчинд адил ажиллана
+- 0 external dependency (зөвхөн PSR interface-ууд)
+- Framework-agnostic тул codesaur, Laravel, Symfony, Slim болон бусад бүх PHP framework-тэй бүрэн нийцтэй
 
 ---
 
@@ -50,7 +50,7 @@ composer require codesaur/http-message
 
 # Ашиглах жишээ
 
-## 1. ServerRequest үүсгэх (глобал $_SERVER, $_POST, $_FILES, …)
+## 1. ServerRequest үүсгэх (глобал $_SERVER, $_POST, $_FILES, ...)
 
 ```php
 use codesaur\Http\Message\ServerRequest;
@@ -169,46 +169,46 @@ $stream->close();
 
 # Дотоод ажиллагааны онцлох хэсгүүд
 
-## ✔ **Multipart/form-data Parser**
+## Multipart/form-data Parser
 
 `ServerRequest::parseFormData()` нь RFC 7578-д нийцсэн хүчирхэг multipart parser бөгөөд:
 
-- Олон түвшинтэй массив upload  
-- Нэг нэртэй олон file input  
-- Хоосон filename (“No file selected”)  
-- JSON + Raw body + urlencoded body fallback  
-- `UploadedFile` instance руу автоматаар хөрвүүлэлт  
+- Олон түвшинтэй массив upload
+- Нэг нэртэй олон file input
+- Хоосон filename ("No file selected")
+- JSON + Raw body + urlencoded body fallback
+- `UploadedFile` instance руу автоматаар хөрвүүлэлт
 
 зэрэг бүгдийг дэмжинэ.
 
 ---
 
-## ✔ **Stream - PSR-7 StreamInterface хэрэгжилт**
+## Stream - PSR-7 StreamInterface хэрэгжилт
 
 `Stream` класс нь PHP resource дээр суурилсан PSR-7 `StreamInterface` хэрэгжилт юм:
 
-- PHP `fopen()` буцаасан resource-д суурилсан  
-- Readable, writable, seekable stream-үүдийг дэмжинэ  
-- `php://temp`, `php://memory`, файл stream зэрэг бүх PHP stream-үүдтэй ажиллана  
-- Request body-д автоматаар ашиглагдана (`Message::getBody()`)  
-- `tell()`, `seek()`, `rewind()`, `eof()` зэрэг stream удирдлагын method-ууд  
+- PHP `fopen()` буцаасан resource-д суурилсан
+- Readable, writable, seekable stream-үүдийг дэмжинэ
+- `php://temp`, `php://memory`, файл stream зэрэг бүх PHP stream-үүдтэй ажиллана
+- Request body-д автоматаар ашиглагдана (`Message::getBody()`)
+- `tell()`, `seek()`, `rewind()`, `eof()` зэрэг stream удирдлагын method-ууд
 
 ---
 
-## ✔ **Output Buffer - StreamInterface хэрэгжилт**
+## Output Buffer - StreamInterface хэрэгжилт
 
 `Output` болон `OutputBuffer` нь response body-г дараах байдлаар удирддаг:
 
-- output buffering эхлүүлэх  
-- flush / clean / endFlush  
-- автомат whitespace-minify (`compress()`)  
-- String-cast -> body контентыг буцаана  
+- output buffering эхлүүлэх
+- flush / clean / endFlush
+- автомат whitespace-minify (`compress()`)
+- String-cast -> body контентыг буцаана
 
 ---
 
-## ↔ PSR-7 нийцтэй байдал
+## PSR-7 нийцтэй байдал
 
-Бүх withXXX() setter-үүд **immutable**, үргэлж clone буцаана.  
+Бүх withXXX() setter-үүд **immutable**, үргэлж clone буцаана.
 Бүх мессежийн компонентууд PSR-7-ийн дараах interface-уудтай нийцдэг:
 
 - `Psr\Http\Message\MessageInterface`
@@ -316,6 +316,6 @@ Coverage report үүсгэсний дараа:
 
 ## Зохиогч
 
-**Narankhuu**  
-codesaur@gmail.com  
+**Narankhuu**
+codesaur@gmail.com
 https://github.com/codesaur

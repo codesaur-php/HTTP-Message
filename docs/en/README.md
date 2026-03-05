@@ -1,23 +1,23 @@
 # codesaur/http-message
 
-**Clean, minimal, object-oriented HTTP Message component (PSR-7)** 
+**Clean, minimal, object-oriented HTTP Message component (PSR-7)**
 
-`codesaur/http-message` is a lightweight component that implements HTTP message components following PHP's PSR-7 standard, including **Request**, **Response**,  
+`codesaur/http-message` is a lightweight component that implements HTTP message components following PHP's PSR-7 standard, including **Request**, **Response**,
 **ServerRequest**, **URI**, **Stream**, **UploadedFile**, **OutputBuffer**, and more.
 
 ---
 
 ## Features
 
-- ✔ **PSR-7 MessageInterface, RequestInterface, ResponseInterface** full implementation  
-- ✔ `ServerRequest::initFromGlobal()` - advanced parser to create request from global environment  
-- ✔ `multipart/form-data` **full multipart parser** (RFC 7578 compliant)  
-- ✔ `UploadedFile` - converts PHP upload files to PSR-7 format  
-- ✔ `Output` - stream to manage response body via output buffering  
-- ✔ `Uri` - URI components including scheme, host, path, query, fragment  
-- ✔ Works identically in server and CLI environments  
-- ✔ 0 external dependencies (only PSR interfaces)  
-- ✔ Framework-agnostic, fully compatible with codesaur, Laravel, Symfony, Slim, and all other PHP frameworks  
+- **PSR-7 MessageInterface, RequestInterface, ResponseInterface** full implementation
+- `ServerRequest::initFromGlobal()` - advanced parser to create request from global environment
+- `multipart/form-data` **full multipart parser** (RFC 7578 compliant)
+- `UploadedFile` - converts PHP upload files to PSR-7 format
+- `Output` - stream to manage response body via output buffering
+- `Uri` - URI components including scheme, host, path, query, fragment
+- Works identically in server and CLI environments
+- 0 external dependencies (only PSR interfaces)
+- Framework-agnostic, fully compatible with codesaur, Laravel, Symfony, Slim, and all other PHP frameworks
 
 ---
 
@@ -49,7 +49,7 @@ composer require codesaur/http-message
 
 # Usage Examples
 
-## 1. Creating ServerRequest (from global $_SERVER, $_POST, $_FILES, …)
+## 1. Creating ServerRequest (from global $_SERVER, $_POST, $_FILES, ...)
 
 ```php
 use codesaur\Http\Message\ServerRequest;
@@ -168,44 +168,44 @@ $stream->close();
 
 # Internal Implementation Highlights
 
-## ✔ **Multipart/form-data Parser**
+## Multipart/form-data Parser
 
 `ServerRequest::parseFormData()` is a powerful multipart parser compliant with RFC 7578 that supports:
 
-- Multi-level array uploads  
-- Multiple file inputs with same name  
-- Empty filename ("No file selected")  
-- JSON + Raw body + urlencoded body fallback  
-- Automatic conversion to `UploadedFile` instances  
+- Multi-level array uploads
+- Multiple file inputs with same name
+- Empty filename ("No file selected")
+- JSON + Raw body + urlencoded body fallback
+- Automatic conversion to `UploadedFile` instances
 
 ---
 
-## ✔ **Stream - PSR-7 StreamInterface Implementation**
+## Stream - PSR-7 StreamInterface Implementation
 
 The `Stream` class is a PSR-7 `StreamInterface` implementation based on PHP resource:
 
-- Based on PHP `fopen()` returned resource  
-- Supports readable, writable, seekable streams  
-- Works with all PHP streams including `php://temp`, `php://memory`, file streams  
-- Automatically used for request body (`Message::getBody()`)  
-- Stream management methods like `tell()`, `seek()`, `rewind()`, `eof()`  
+- Based on PHP `fopen()` returned resource
+- Supports readable, writable, seekable streams
+- Works with all PHP streams including `php://temp`, `php://memory`, file streams
+- Automatically used for request body (`Message::getBody()`)
+- Stream management methods like `tell()`, `seek()`, `rewind()`, `eof()`
 
 ---
 
-## ✔ **Output Buffer - StreamInterface Implementation**
+## Output Buffer - StreamInterface Implementation
 
 `Output` and `OutputBuffer` manage response body as follows:
 
-- Start output buffering  
-- flush / clean / endFlush  
-- automatic whitespace-minify (`compress()`)  
-- String-cast -> returns body content  
+- Start output buffering
+- flush / clean / endFlush
+- automatic whitespace-minify (`compress()`)
+- String-cast -> returns body content
 
 ---
 
-## ↔ PSR-7 Compliance
+## PSR-7 Compliance
 
-All withXXX() setters are **immutable**, always returning a clone.  
+All withXXX() setters are **immutable**, always returning a clone.
 All message components comply with the following PSR-7 interfaces:
 
 - `Psr\Http\Message\MessageInterface`
@@ -313,5 +313,5 @@ This project is licensed under the MIT License.
 
 ## Author
 
-Narankhuu  
-https://github.com/codesaur  
+Narankhuu
+https://github.com/codesaur

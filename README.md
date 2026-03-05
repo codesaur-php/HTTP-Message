@@ -18,14 +18,14 @@
 
 Багц нь дараах үндсэн классуудаас бүрдэнэ:
 
-- **Message** - PSR-7 MessageInterface хэрэгжилт (headers, protocol, body)  
-- **Request** - PSR-7 RequestInterface  
-- **Response** - PSR-7 ResponseInterface  
-- **ServerRequest** - Глобал орчноос request сэргээдэг advanced implementation  
-- **Uri** - PSR-7 UriInterface  
-- **Stream** - PSR-7 StreamInterface хэрэгжилт  
-- **UploadedFile** - Upload хийгдсэн файлын metadata + moveTo()  
-- **Output** - StreamInterface хэрэгжилт (output buffering)  
+- **Message** - PSR-7 MessageInterface хэрэгжилт (headers, protocol, body)
+- **Request** - PSR-7 RequestInterface
+- **Response** - PSR-7 ResponseInterface
+- **ServerRequest** - Глобал орчноос request сэргээдэг advanced implementation
+- **Uri** - PSR-7 UriInterface
+- **Stream** - PSR-7 StreamInterface хэрэгжилт
+- **UploadedFile** - Upload хийгдсэн файлын metadata + moveTo()
+- **Output** - StreamInterface хэрэгжилт (output buffering)
 
 ### Дэлгэрэнгүй мэдээлэл
 
@@ -43,14 +43,14 @@ Clean, minimal, object-oriented HTTP Message component (PSR-7). A lightweight co
 
 The package consists of the following core classes:
 
-- **Message** - PSR-7 MessageInterface implementation (headers, protocol, body)  
-- **Request** - PSR-7 RequestInterface  
-- **Response** - PSR-7 ResponseInterface  
-- **ServerRequest** - Advanced implementation that reconstructs request from global environment  
-- **Uri** - PSR-7 UriInterface  
-- **Stream** - PSR-7 StreamInterface implementation  
-- **UploadedFile** - Uploaded file metadata + moveTo()  
-- **Output** - StreamInterface implementation (output buffering)  
+- **Message** - PSR-7 MessageInterface implementation (headers, protocol, body)
+- **Request** - PSR-7 RequestInterface
+- **Response** - PSR-7 ResponseInterface
+- **ServerRequest** - Advanced implementation that reconstructs request from global environment
+- **Uri** - PSR-7 UriInterface
+- **Stream** - PSR-7 StreamInterface implementation
+- **UploadedFile** - Uploaded file metadata + moveTo()
+- **Output** - StreamInterface implementation (output buffering)
 
 ### Documentation
 
@@ -126,8 +126,8 @@ This project is licensed under the MIT License.
 
 ## Author
 
-**Narankhuu**  
-codesaur@gmail.com  
+**Narankhuu**
+codesaur@gmail.com
 https://github.com/codesaur
 
 **codesaur ecosystem:** https://codesaur.net

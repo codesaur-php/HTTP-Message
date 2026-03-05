@@ -42,7 +42,7 @@ class ReasonPhrase
 
     /** @var string 103 Early Hints */
     const STATUS_103 = 'Early Hints';
-    
+
 
     // -------------------------------------------------------------
     // Successful (2xx)

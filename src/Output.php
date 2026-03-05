@@ -35,7 +35,7 @@ class Output implements StreamInterface
      * @var OutputBuffer
      */
     protected OutputBuffer $buffer;
-    
+
     /**
      * Output stream үүсэхэд output buffering автоматаар эхэлнэ.
      */
@@ -44,10 +44,10 @@ class Output implements StreamInterface
         $this->buffer = new OutputBuffer();
         $this->buffer->start();
     }
-    
+
     /**
      * Destructor.
-     * 
+     *
      * Output buffering script дуусахад PHP автоматаар flush хийдэг тул
      * энд гараар endFlush() дуудах шаардлагагүй.
      */
@@ -55,7 +55,7 @@ class Output implements StreamInterface
     {
         // PHP автомат flush хийнэ - endFlush() дуудах шаардлагагүй.
     }
-    
+
     /**
      * OutputBuffer обьектыг буцаана.
      *
@@ -65,10 +65,10 @@ class Output implements StreamInterface
     {
         return $this->buffer;
     }
-    
+
     /**
      * Stream-ийн бүх контентыг string хэлбэрээр буцаана.
-     * 
+     *
      * @return string
      *
      * @inheritdoc
@@ -200,7 +200,7 @@ class Output implements StreamInterface
     public function write(string $string): int
     {
         echo $string;
-        
+
         return \strlen($string);
     }
 

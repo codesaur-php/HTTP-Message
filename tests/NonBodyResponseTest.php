@@ -34,7 +34,7 @@ class NonBodyResponseTest extends TestCase
     {
         $response = new NonBodyResponse();
         $newResponse = $response->withStatus(301);
-        
+
         $this->assertNotSame($response, $newResponse);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(301, $newResponse->getStatusCode());
@@ -51,10 +51,10 @@ class NonBodyResponseTest extends TestCase
     {
         $response = new NonBodyResponse();
         $this->assertEquals('OK', $response->getReasonPhrase());
-        
+
         $response = $response->withStatus(204);
         $this->assertEquals('No Content', $response->getReasonPhrase());
-        
+
         $response = $response->withStatus(301);
         $this->assertEquals('Moved Permanently', $response->getReasonPhrase());
     }
@@ -63,14 +63,14 @@ class NonBodyResponseTest extends TestCase
     {
         $response = new NonBodyResponse();
         $newResponse = $response->withStatus(200, 'Custom OK');
-        
+
         $this->assertEquals('Custom OK', $newResponse->getReasonPhrase());
     }
 
     public function testGetBodyThrowsException(): void
     {
         $response = new NonBodyResponse();
-        
+
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('does not support body stream');
         $response->getBody();

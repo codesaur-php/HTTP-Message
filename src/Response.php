@@ -56,7 +56,7 @@ class Response extends Message implements ResponseInterface
      * @var int
      */
     protected int $status = StatusCodeInterface::STATUS_OK;
-    
+
     /**
      * Custom reason phrase.
      * Хэрэв хоосон байвал ReasonPhrase классын стандарт утгыг ашиглана.
@@ -64,7 +64,7 @@ class Response extends Message implements ResponseInterface
      * @var string
      */
     protected string $reasonPhrase = '';
-    
+
     /**
      * Response үүсэх үед body-г Output buffering stream болгон тохируулна.
      *
@@ -96,7 +96,7 @@ class Response extends Message implements ResponseInterface
     {
         $this->body = new Output();
     }
-    
+
     /**
      * HTTP хариуны статус кодыг буцаана.
      *
@@ -126,7 +126,7 @@ class Response extends Message implements ResponseInterface
         if (!\is_int($code)) {
             throw new \InvalidArgumentException(__CLASS__ . ': HTTP status code must be an integer');
         }
-        
+
         $status = "STATUS_$code";
         $reasonPhraseClass = ReasonPhrase::class;
 
@@ -134,7 +134,7 @@ class Response extends Message implements ResponseInterface
         if (!\defined("$reasonPhraseClass::$status")) {
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP status code for response');
         }
-        
+
         $clone = clone $this;
         $clone->status = (int) $code;
 
@@ -165,14 +165,14 @@ class Response extends Message implements ResponseInterface
         if (!empty($this->reasonPhrase)) {
             return $this->reasonPhrase;
         }
-        
+
         $status = "STATUS_$this->status";
         $reasonPhrase = ReasonPhrase::class;
 
         if (\defined("$reasonPhrase::$status")) {
             return \constant("$reasonPhrase::$status");
         }
-        
+
         return '';
     }
 }

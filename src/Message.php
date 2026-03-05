@@ -22,7 +22,7 @@ abstract class Message implements MessageInterface
 {
     /**
      * Дэмжигдэх HTTP протоколын хувилбарууд.
-     * 
+     *
      * @var string[]
      */
     const HTTP_PROTOCOL_VERSIONS = [
@@ -34,14 +34,14 @@ abstract class Message implements MessageInterface
         '3',
         '3.0'
     ];
-    
+
     /**
      * Message-ийн протоколын үндсэн хувилбар.
      *
      * @var string
      */
     protected string $protocolVersion = '1.1';
-    
+
     /**
      * HTTP header-үүдийг хадгалах массив.
      * Key нь header-ийн нэр (uppercase), value нь массив хэлбэрт утгууд.
@@ -49,7 +49,7 @@ abstract class Message implements MessageInterface
      * @var array
      */
     protected array $headers = [];
-    
+
     /**
      * Message body-г илэрхийлэх stream объект.
      *
@@ -233,7 +233,7 @@ abstract class Message implements MessageInterface
             $resource = \fopen('php://temp', 'r+');
             $this->body = new Stream($resource);
         }
-        
+
         return $this->body;
     }
 

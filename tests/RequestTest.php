@@ -22,10 +22,10 @@ class RequestTest extends TestCase
         $uri->setPath('/api/users');
         $uri->setQuery('id=1');
         $uri->setFragment('top');
-        
+
         $request = new Request();
         $request = $request->withUri($uri);
-        
+
         $this->assertEquals('/api/users?id=1#top', $request->getRequestTarget());
     }
 
@@ -33,7 +33,7 @@ class RequestTest extends TestCase
     {
         $request = new Request();
         $newRequest = $request->withRequestTarget('*');
-        
+
         $this->assertNotSame($request, $newRequest);
         $this->assertEquals('*', $newRequest->getRequestTarget());
     }
@@ -48,7 +48,7 @@ class RequestTest extends TestCase
     {
         $request = new Request();
         $newRequest = $request->withMethod('GET');
-        
+
         $this->assertNotSame($request, $newRequest);
         $this->assertEquals('', $request->getMethod());
         $this->assertEquals('GET', $newRequest->getMethod());
@@ -74,9 +74,9 @@ class RequestTest extends TestCase
         $uri = new Uri();
         $uri->setHost('example.com');
         $uri->setScheme('https');
-        
+
         $newRequest = $request->withUri($uri);
-        
+
         $this->assertNotSame($request, $newRequest);
         $this->assertSame($uri, $newRequest->getUri());
     }
@@ -85,13 +85,13 @@ class RequestTest extends TestCase
     {
         $request = new Request();
         $request = $request->withHeader('Host', 'original.com');
-        
+
         $uri = new Uri();
         $uri->setHost('new.com');
-        
+
         $newRequest = $request->withUri($uri, true);
         $this->assertEquals('original.com', $newRequest->getHeaderLine('Host'));
-        
+
         $newRequest2 = $request->withUri($uri, false);
         $this->assertEquals('new.com', $newRequest2->getHeaderLine('Host'));
     }

@@ -5,7 +5,7 @@ namespace codesaur\Http\Message\Example;
 /**
  * codesaur HTTP-Message Component - Жишээ файл
  *
- * Энэ жишээ нь ServerRequest класс ашиглан 
+ * Энэ жишээ нь ServerRequest класс ашиглан
  * HTTP хүсэлтийн глобал орчны мэдээллийг уншиж,
  * PSR-7 дагуу Request объект үүсгэхийг харуулна.
  *
@@ -131,7 +131,7 @@ $request->initFromGlobal();
 </head>
 <body>
     <div class="container">
-        <h1>📨 codesaur HTTP-Message Component</h1>
+        <h1>codesaur HTTP-Message Component</h1>
         <p>PSR-7 стандартын дагуу HTTP хүсэлтийн мэдээлэл</p>
 
         <h2>1. Хүсэлтийн үндсэн мэдээлэл</h2>

@@ -34,7 +34,7 @@ class OutputBuffer
     {
         \ob_start(null, $chunk_size, $flags);
     }
-    
+
     /**
      * Callback-тэй output buffering эхлүүлнэ.
      *
@@ -48,7 +48,7 @@ class OutputBuffer
     {
         \ob_start($output_callback, $chunk_size, $flags);
     }
-    
+
     /**
      * Output buffering-ийг compress() функц ашиглан эхлүүлнэ.
      * HTML-ийг whitespace багасгасан, шахсан хэлбэрт шилжүүлдэг.
@@ -59,7 +59,7 @@ class OutputBuffer
     {
         $this->startCallback([$this, 'compress']);
     }
-    
+
     /**
      * Буферийн одоогийн контентыг гаргаж (flush) буцаан хоосолно.
      *
@@ -71,7 +71,7 @@ class OutputBuffer
             \ob_flush();
         }
     }
-    
+
     /**
      * Буферийн контентыг устгаж буферийг хаана.
      *
@@ -83,7 +83,7 @@ class OutputBuffer
             \ob_end_clean();
         }
     }
-    
+
     /**
      * Буферийг flush хийж чацруулан хаана.
      *
@@ -95,7 +95,7 @@ class OutputBuffer
             \ob_end_flush();
         }
     }
-    
+
     /**
      * Буферийн уртыг буцаана.
      *
@@ -119,10 +119,10 @@ class OutputBuffer
         if (!\ob_get_level()) {
             return null;
         }
-        
+
         return \ob_get_contents();
     }
-    
+
     /**
      * HTML output-ийг шахах (whitespace compression).
      *

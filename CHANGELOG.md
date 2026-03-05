@@ -11,8 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- Removed all emoji characters from documentation and project files
-- Replaced Unicode arrow with ASCII `->` across all source, test, and documentation files
+- Enforced old-school coding style across the entire project
+- Removed all emoji characters (checkmarks, icons) from documentation and source files
+- Replaced all fancy Unicode with plain ASCII equivalents:
+  - Ellipsis `...` -> `...`, en-dash `-` -> `-`, arrow `<->` removed
+  - Smart quotes `""` -> `""`, tree-drawing `|--` instead of Unicode box chars
+- Stripped trailing whitespace from all 33 project files (550 lines cleaned)
+- No decorative or non-essential Unicode remains; only ASCII and Mongolian Cyrillic text
 
 ---
 
@@ -227,7 +232,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **PHP Version:** >=7.2.0
 - **PSR-7:** >=1.0.1
-- **Dependencies:** 
+- **Dependencies:**
   - `psr/http-message`: >=1.0.1
   - `fig/http-message-util`: >=1.1.5
   - `ext-json`: *

@@ -9,18 +9,18 @@ use Fig\Http\Message\StatusCodeInterface;
 /**
  * Body stream агуулаагүй HTTP хариу (Response)-ийн минимал хэрэгжилт.
  *
- * Энэ класс нь PSR-7-ийн ResponseInterface-ийг мөрдөх бөгөөд 
+ * Энэ класс нь PSR-7-ийн ResponseInterface-ийг мөрдөх бөгөөд
  * зөвхөн HTTP статус код, reason phrase, headers болон protocol-г удирдах зориулалттай.
- * 
+ *
  * **Үндсэн зорилго:**
  * Output buffer-тэй шууд `echo`, `print` эсвэл бусад PHP output функцүүд ашиглан
  * browser/клиент рүү шууд хэвлэх үед зориулсан класс юм. Body stream огт агуулаагүй,
  * учир нь контент нь output buffer-аас шууд browser руу дамжина.
  *
  * **{@see Response} классын ялгаа:**
- * - `Response`: Body stream агуулдаг (default: {@see Output} stream). 
+ * - `Response`: Body stream агуулдаг (default: {@see Output} stream).
  *   `$response->getBody()->write()` ашиглан body-д бичнэ.
- * - `NonBodyResponse`: Body stream огт байхгүй. 
+ * - `NonBodyResponse`: Body stream огт байхгүй.
  *   Шууд `echo`, `print` эсвэл output buffer-аар хэвлэнэ.
  *
  * **Хэрэглээ:**
@@ -29,7 +29,7 @@ use Fig\Http\Message\StatusCodeInterface;
  * $response = new NonBodyResponse();
  * $response = $response->withStatus(200);
  * echo "Hello World"; // Шууд browser руу хэвлэгдэнэ
- * 
+ *
  * // Redirect
  * $redirect = (new NonBodyResponse())
  *     ->withStatus(302)
@@ -62,7 +62,7 @@ class NonBodyResponse extends Message implements ResponseInterface
      * @var int
      */
     protected int $status = StatusCodeInterface::STATUS_OK;
-    
+
     /**
      * Хэрэв custom reason phrase тохируулсан бол энд хадгалагдана.
      * Хоосон бол ReasonPhrase классын тогтмолуудаас автоматаар уншина.
@@ -70,7 +70,7 @@ class NonBodyResponse extends Message implements ResponseInterface
      * @var string
      */
     protected string $reasonPhrase = '';
-    
+
     /**
      * HTTP хариуны статус кодыг буцаана.
      *
@@ -107,11 +107,11 @@ class NonBodyResponse extends Message implements ResponseInterface
                 __CLASS__ . ': Invalid HTTP status code for response'
             );
         }
-        
+
         $clone = clone $this;
         $clone->status = $code;
         $clone->reasonPhrase = $reasonPhrase;
-        
+
         return $clone;
     }
 
@@ -131,14 +131,14 @@ class NonBodyResponse extends Message implements ResponseInterface
         if (!empty($this->reasonPhrase)) {
             return $this->reasonPhrase;
         }
-        
+
         $status = "STATUS_$this->status";
         $reasonPhrase = ReasonPhrase::class;
 
         if (\defined("$reasonPhrase::$status")) {
             return \constant("$reasonPhrase::$status");
         }
-        
+
         return '';
     }
 
@@ -148,7 +148,7 @@ class NonBodyResponse extends Message implements ResponseInterface
      * NonBodyResponse нь body stream агуулаагүй тул exception шиднэ.
      * Энэ классын зорилго нь output buffer-тэй шууд `echo`, `print` ашиглан
      * browser руу хэвлэх тул body stream шаардлагагүй.
-     * 
+     *
      * Хэрэв body stream шаардлагатай бол `Response` классыг ашиглах хэрэгтэй.
      *
      * @return StreamInterface

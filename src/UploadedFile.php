@@ -25,42 +25,42 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
      * @var string|null
      */
     protected ?string $name;
-    
+
     /**
      * Клиентээс ирсэн MIME type (жишээ: image/png)
      *
      * @var string|null
      */
     protected ?string $type;
-    
+
     /**
      * Файлын хэмжээ (bytes)
      *
      * @var int|null
      */
     protected ?int $size;
-    
+
     /**
      * PHP upload error код
      *
      * @var int
      */
     protected int $error;
-    
+
     /**
      * PHP-ийн upload түр хавтас дахь файлын зам
      *
      * @var string
      */
     protected string $tmp_name;
-    
+
     /**
      * Файл аль хэдийн зөөгдсөн эсэхийг илэрхийлэх flag.
      *
      * @var bool
      */
     private bool $_moved = false;
-    
+
     /**
      * Upload хийгдсэн файлын metadata-г инициализац хийх.
      *
@@ -73,13 +73,13 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
     public function __construct(string $tmp_name, ?string $name, ?string $type, ?int $size, int $error)
     {
         $this->tmp_name = $tmp_name;
-        
+
         $this->name  = $name;
         $this->type  = $type;
         $this->size  = $size;
         $this->error = $error;
     }
-    
+
     /**
      * Клиентээс ирсэн эх filename-г буцаана.
      *
@@ -121,7 +121,7 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
     }
 
     /**
-     * Файлаас stream үүсгэх хэрэгжилт.  
+     * Файлаас stream үүсгэх хэрэгжилт.
      * support хийгдээгүй тул exception шиднэ.
      *
      * PSR-7 дагуу stream дэмжих боломжтой ч
@@ -163,11 +163,11 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
         if (empty($this->tmp_name)) {
             throw new \InvalidArgumentException('Upload file path not found!');
         }
-        
+
         if ($this->_moved) {
             throw new \RuntimeException(sprintf('Uploaded file already moved from %s!', $this->tmp_name));
         }
-                
+
         // Upload error шалгах
         switch ($this->error) {
             case \UPLOAD_ERR_OK:
@@ -191,7 +191,7 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
                     \sprintf('Error moving uploaded file %s to %s!', $this->tmp_name, $targetPath)
                 );
             }
-        } 
+        }
         // Web server mode
         else {
             if (!\copy($this->tmp_name, $targetPath)) {
@@ -206,7 +206,7 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
                 );
             }
         }
-        
+
         $this->_moved = true;
     }
 

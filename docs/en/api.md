@@ -113,7 +113,7 @@ Returns HTTP method (e.g., GET, POST).
 Returns a clone with updated HTTP method.
 
 **Parameters:**
-- `$method` (string): Method (GET, POST, PUT, DELETE…)
+- `$method` (string): Method (GET, POST, PUT, DELETE...)
 
 **Throws:** `\InvalidArgumentException` - If method is invalid
 
@@ -372,7 +372,7 @@ Returns port. Returns null for default ports (80, 443) (PSR-7 requirement).
 Set port (mutable setter).
 
 **Parameters:**
-- `$port` (int): Valid range: 1–65535
+- `$port` (int): Valid range: 1-65535
 
 **Throws:** `\InvalidArgumentException` - If port is invalid
 
@@ -597,7 +597,7 @@ Values used when serializing UploadedFile object to JSON.
 
 ## Output
 
-Output stream – StreamInterface implementation based on PHP's output buffering. Special stream that works on the principle of "directly printing HTTP response body to browser".
+Output stream - StreamInterface implementation based on PHP's output buffering. Special stream that works on the principle of "directly printing HTTP response body to browser".
 
 ### Constructor
 

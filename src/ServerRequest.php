@@ -12,7 +12,7 @@ use Psr\Http\Message\UploadedFileInterface;
  * (headers, cookies, URI, query, body, uploaded files, attributes, server params)
  * нэг цэгт цэгцтэйгээр агуулах бөгөөд immutable зарчмаар удирдана.
  *
- * `initFromGlobal()` нь PHP-ийн глобал хувьсагчдаас ($_SERVER, $_GET, $_POST…)
+ * `initFromGlobal()` нь PHP-ийн глобал хувьсагчдаас ($_SERVER, $_GET, $_POST...)
  * ServerRequest объект автоматаар угсарч авах зориулалттай.
  *
  * Дэмжинэ:
@@ -33,14 +33,14 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @var array
      */
     protected array $serverParams = [];
-    
+
     /**
      * Cookies (client-с ирсэн).
      *
      * @var array
      */
     protected array $cookies = [];
-    
+
     /**
      * Custom attributes - middleware болон router-д голчлон ашиглагддаг.
      * хэрэглэгчийн дурын нэмэлт мэдээлэл байна.
@@ -55,14 +55,14 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @var array
      */
     protected array $parsedBody = [];
-    
+
     /**
      * Uploaded files tree (PSR-7 UploadedFileInterface бүтэц).
      *
      * @var array
      */
     protected array $uploadedFiles = [];
-    
+
     /**
      * Query parameters (lazy parse).
      *
@@ -86,7 +86,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     {
         // SERVER PARAMS
         $this->serverParams = $_SERVER;
-        
+
         // HEADERS (normalize: HTTP_HOST -> SERVER['HTTP_HOST'])
         if (\function_exists('getallheaders')) {
             foreach (\getallheaders() as $key => $value) {
@@ -97,18 +97,18 @@ class ServerRequest extends Request implements ServerRequestInterface
                 }
             }
         }
-        
+
         // PROTOCOL
         if (isset($this->serverParams['SERVER_PROTOCOL'])) {
             $this->protocolVersion = \str_replace('HTTP/', '', $this->serverParams['SERVER_PROTOCOL']);
         }
-        
+
         // METHOD
         $this->method = \strtoupper($this->serverParams['REQUEST_METHOD']);
-                
+
         // COOKIES
         $this->cookies = $_COOKIE;
-        
+
         // BUILD URI
         $this->uri = new Uri();
         $https = $this->serverParams['HTTPS'] ?? 'off';
@@ -143,11 +143,11 @@ class ServerRequest extends Request implements ServerRequestInterface
         if (empty($path)) {
             $path = '/';
         }
-        
+
         // Path нь PHP серверээс аль хэдийн percent-encoded байх ёстой
         $this->uri->setPath($path);
         $this->requestTarget = $path;
-        
+
         // QUERY STRING
         if (!empty($this->serverParams['QUERY_STRING'])) {
             $query = $this->serverParams['QUERY_STRING'];
@@ -156,16 +156,16 @@ class ServerRequest extends Request implements ServerRequestInterface
             $this->requestTarget .= "?$query";
             \parse_str($query, $this->queryParams);
         }
-        
+
         // Fragment-ийг request target-д нэмэх
         $fragment = $this->uri->getFragment();
         if ($fragment != '') {
             $this->requestTarget .= "#$fragment";
         }
-        
+
         // UPLOADED FILES (normalize)
         $this->uploadedFiles = $this->getNormalizedUploadedFiles($_FILES);
-        
+
         // PARSED BODY
         if (($this->serverParams['CONTENT_LENGTH'] ?? 0) > 0) {
             if (empty($_POST)) {
@@ -188,10 +188,10 @@ class ServerRequest extends Request implements ServerRequestInterface
                 $this->parsedBody = $_POST;
             }
         }
-        
+
         return $this;
     }
-    
+
     /**
      * Серверийн талаас ирсэн $_SERVER массивын утгуудыг буцаана.
      *
@@ -204,7 +204,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     {
         return $this->serverParams;
     }
-    
+
     /**
      * Client талаас ирсэн бүх cookie утгуудыг буцаана.
      *
@@ -240,8 +240,8 @@ class ServerRequest extends Request implements ServerRequestInterface
      * Lazy-evaluation буюу анхны дуудалтын үед parse хийж,
      * дараагийн удаа кешлэгдсэн утгыг буцаана.
      *
-     * Жишээ:  
-     *   /product/view?id=10&lang=en  
+     * Жишээ:
+     *   /product/view?id=10&lang=en
      * -> ['id' => '10', 'lang' => 'en']
      *
      * @return array Query параметрийн массив
@@ -255,7 +255,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         if (!isset($this->uri)) {
             return [];
         }
-        
+
         // Query string нь аль хэдийн percent-encoded байх ёстой
         // parse_str() нь автоматаар decode хийнэ
         $query = $this->getUri()->getQuery();
@@ -357,7 +357,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         if (!isset($this->attributes[$name])) {
             return $default;
         }
-        
+
         return $this->attributes[$name];
     }
 
@@ -391,7 +391,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         }
         return $clone;
     }
-    
+
     /**
      * multipart/form-data body-г уншиж parse хийх дотоод функц.
      *
@@ -416,7 +416,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     private function parseFormData(string $input)
     {
         $boundary = \substr($input, 0, \strpos($input, "\r\n") ?: 0);
-        
+
         // Boundary олдохгүй бол form-urlencoded гэж үзээд parse_str ашиглана
         if (empty($boundary)) {
             \parse_str($input, $parsedBody);
@@ -427,7 +427,7 @@ class ServerRequest extends Request implements ServerRequestInterface
             }
             return;
         }
-        
+
         $index = 0;
         $datas = [];
         $varNamesEncoded = '';
@@ -435,7 +435,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         $tmp_dir = \ini_get('upload_tmp_dir') ?: \sys_get_temp_dir();
         $needle = '; filename=""';
         $length = \strlen($needle);
-        
+
         // Boundary-гаар хэсэглэх
         $parts = \array_slice(\explode($boundary, $input), 1);
         foreach ($parts as $part) {
@@ -449,7 +449,7 @@ class ServerRequest extends Request implements ServerRequestInterface
             if (!isset($raw_parts[1])) {
                 continue;
             }
-            
+
             list($raw_headers_inline, $body) = $raw_parts;
             $raw_headers = \explode("\r\n", $raw_headers_inline);
 
@@ -463,19 +463,19 @@ class ServerRequest extends Request implements ServerRequestInterface
             if (!isset($headers['content-disposition'])) {
                 continue;
             }
-            
+
             $index++;
-            
+
             // name="" болон filename=""-ийг регуляр илэрхийллээр салгах
             $matches = [];
             \preg_match('/^(.+); *name="([^"]+)"(; *filename="([^"]+)")?/', $headers['content-disposition'], $matches);
-            
+
             // $matches[2] = name, $matches[4] = filename (байвал)
             list(/*$content_header*/, /*$content_type*/, $name) = $matches;
-            
+
             $encodedNameIndex = \urlencode($name) . '=' . $index;
             $data = \substr($body, 0, \strlen($body) - 2);
-            
+
             // Файл upload хэсэг
             if (!empty($matches[4]) && isset($headers['content-type'])) {
                 $unique_tmp_name = \uniqid('php_') . '.tmp';
@@ -484,21 +484,21 @@ class ServerRequest extends Request implements ServerRequestInterface
                 if ($size === false) {
                     continue;
                 }
-                
+
                 $data = new UploadedFile($tmp_path, $matches[4], $headers['content-type'], $size, \UPLOAD_ERR_OK);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
                 }
                 $fileNamesEncoded .= $encodedNameIndex;
-                
-            // Файл upload field боловч файл ирээгүй (filename="" кейс)                
+
+            // Файл upload field боловч файл ирээгүй (filename="" кейс)
             } elseif (\substr($headers['content-disposition'], -$length) == $needle) {
                 $data = new UploadedFile('', null, null, null, \UPLOAD_ERR_NO_FILE);
                 if ($fileNamesEncoded != '') {
                     $fileNamesEncoded .= '&';
                 }
                 $fileNamesEncoded .= $encodedNameIndex;
-                
+
             // Энгийн текстэн form field
             } else {
                 if ($varNamesEncoded != '') {
@@ -506,22 +506,22 @@ class ServerRequest extends Request implements ServerRequestInterface
                 }
                 $varNamesEncoded .= $encodedNameIndex;
             }
-            
+
             // Ингэж индекс-утгыг datas массивт хадгална
             $datas[$index] = $data;
         }
-        
+
         // TEXT FIELDS - varNamesEncoded -> parsedBody
         \parse_str($varNamesEncoded, $parsedBody);
         $this->arrayTreeLeafs($parsedBody, $datas);
         $this->parsedBody = $parsedBody;
-        
+
         // FILE FIELDS - fileNamesEncoded -> uploadedFiles
         \parse_str($fileNamesEncoded, $uploadedFiles);
         $this->arrayTreeLeafs($uploadedFiles, $datas);
         $this->uploadedFiles = $uploadedFiles;
     }
-    
+
     /**
      * Мод бүтэцтэй массивын навчууд (leaf)-ын индекс утгыг бодит
      * $leafs массивын утгаар солих recursive туслах функц.
@@ -546,10 +546,10 @@ class ServerRequest extends Request implements ServerRequestInterface
             }
         }
     }
-    
+
     // Normalizing
     // Thank dakis for sharing excellent code
-    // see reference => https://stackoverflow.com/questions/52027412/files-key-used-for-building-a-psr-7-uploaded-files-list    
+    // see reference => https://stackoverflow.com/questions/52027412/files-key-used-for-building-a-psr-7-uploaded-files-list
     /**
      * $_FILES буюу upload бүтэцийг PSR-7 UploadedFileInterface мод бүтэц рүү
      * нормалайз хийдэг туслах функц.
@@ -578,10 +578,10 @@ class ServerRequest extends Request implements ServerRequestInterface
                 throw new \InvalidArgumentException('The structure of the uploaded files list is not valid.');
             }
         }
-        
+
         return $normalizedUploadedFiles;
     }
-    
+
     /**
      * "tmp_name" key агуулсан upload item-ийг PSR-7 UploadedFile эсвэл
      * түүнээс бүрдэх мод бүтцэд хөрвүүлнэ.
@@ -605,10 +605,10 @@ class ServerRequest extends Request implements ServerRequestInterface
             }
             return $this->normalizeFileUploadTmpNameItem($filename, $item);
         }
-        
+
         return new UploadedFile($filename, $item['name'] ?? null, $item['type'] ?? null, $item['size'] ?? null, $item['error'] ?? \UPLOAD_ERR_OK);
     }
-    
+
     /**
      * "tmp_name" key-д массив оноогдсон тохиолдолд (олон файл upload),
      * тухайн массивыг рекурсивээр гүйж, навч бүр дээр UploadedFile instance
@@ -635,7 +635,7 @@ class ServerRequest extends Request implements ServerRequestInterface
                 ) {
                     throw new \InvalidArgumentException('The structure of the items assigned to the keys "size" and "error" in the uploaded files list must be identical with the one of the  item assigned to the key "tmp_name". This restriction does not  apply to the leaf elements.');
                 }
-                
+
                 $filename = $currentElements['tmp_name'][$key];
                 $size = $currentElements['size'][$key];
                 $error = $currentElements['error'][$key];

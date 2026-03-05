@@ -28,19 +28,19 @@ use Fig\Http\Message\RequestMethodInterface;
 class Request extends Message implements RequestInterface
 {
     /**
-     * HTTP хүсэлтийн method (GET, POST, PUT, DELETE, …).
+     * HTTP хүсэлтийн method (GET, POST, PUT, DELETE, ...).
      *
      * @var string
      */
     protected string $method = '';
-    
+
     /**
-     * Хүсэлтийн URI объект (scheme, host, path, query…).
+     * Хүсэлтийн URI объект (scheme, host, path, query...).
      *
      * @var UriInterface|null
      */
     protected ?UriInterface $uri = null;
-    
+
     /**
      * Request target - тухайн хүсэлтийн зорилтот зам.
      *
@@ -50,7 +50,7 @@ class Request extends Message implements RequestInterface
      * @var string
      */
     protected string $requestTarget = '';
-    
+
     /**
      * Request target-ийг буцаана.
      *
@@ -68,7 +68,7 @@ class Request extends Message implements RequestInterface
         if (!empty($this->requestTarget)) {
             return $this->requestTarget;
         }
-        
+
         if (!isset($this->uri)) {
             return '/';
         }
@@ -77,13 +77,13 @@ class Request extends Message implements RequestInterface
         // PSR-7 стандартын дагуу хадгалсан утгыг шууд ашиглана
         $path = $this->getUri()->getPath();
         $requestTarget = '/' . \ltrim($path, '/');
-        
+
         // Query string нь аль хэдийн encoded байх ёстой
         $query = $this->getUri()->getQuery();
         if ($query != '') {
             $requestTarget .= '?' . $query;
         }
-        
+
         // Fragment нь аль хэдийн encoded байх ёстой
         $fragment = $this->getUri()->getFragment();
         if ($fragment != '') {
@@ -92,7 +92,7 @@ class Request extends Message implements RequestInterface
 
         return $requestTarget;
     }
-    
+
     /**
      * Request target-ийг шинэчилсэн клон объект буцаана.
      *
@@ -108,7 +108,7 @@ class Request extends Message implements RequestInterface
         $clone->requestTarget = $requestTarget;
         return $clone;
     }
-    
+
     /**
      * HTTP method-ийг буцаана (жишээ: GET, POST).
      *
@@ -120,13 +120,13 @@ class Request extends Message implements RequestInterface
     {
         return $this->method;
     }
-    
+
     /**
      * HTTP method-ийг шинэчилсэн клон буцаана.
      *
      * Method нь PSR-7-д заагдсан стандарт HTTP арга байх ёстой.
-     * 
-     * @param string $method  Method (GET, POST, PUT, DELETE…)
+     *
+     * @param string $method  Method (GET, POST, PUT, DELETE...)
      *
      * @throws \InvalidArgumentException Хэрэв method буруу бол
      *
@@ -142,12 +142,12 @@ class Request extends Message implements RequestInterface
         if (!\defined($commonHTTPmethod)) {
             throw new \InvalidArgumentException(__CLASS__ . ": Invalid HTTP method [$method]");
         }
-        
+
         $clone = clone $this;
         $clone->method = $uMethod;
         return $clone;
     }
-    
+
     /**
      * Request-ийн URI-г буцаана.
      *
@@ -162,7 +162,7 @@ class Request extends Message implements RequestInterface
         }
         return $this->uri;
     }
-    
+
     /**
      * Шинэ URI-тай request клон буцаана.
      *
@@ -181,12 +181,12 @@ class Request extends Message implements RequestInterface
     {
         $clone = clone $this;
         $clone->uri = $uri;
-        
+
         if ($preserveHost == false) {
             if ($uri->getHost() != '') {
                 $clone->setHeader('Host', $uri->getHost());
             }
-            
+
             return $clone;
         }
 

@@ -183,7 +183,7 @@ If your change affects usage or the public API:
 - Focus on what is best for the community
 - Show empathy towards other community members
 
-This project follows a friendly, inclusive open-source culture.  
+This project follows a friendly, inclusive open-source culture.
 We are committed to providing a welcoming and inspiring environment for all.
 
 ---
@@ -192,7 +192,7 @@ We are committed to providing a welcoming and inspiring environment for all.
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-For security-related issues, please follow the instructions in  
+For security-related issues, please follow the instructions in
 [SECURITY.md](SECURITY.md).
 
 ---

@@ -28,7 +28,7 @@ class OutputTest extends TestCase
         ob_start();
         $output = new Output();
         $bytes = $output->write('Hello World');
-        
+
         $this->assertEquals(11, $bytes);
         $content = ob_get_clean();
         $this->assertEquals('Hello World', $content);
@@ -38,7 +38,7 @@ class OutputTest extends TestCase
     {
         $output = new Output();
         $output->write('Test');
-        
+
         $size = $output->getSize();
         $this->assertIsInt($size);
         $this->assertGreaterThanOrEqual(4, $size);
@@ -100,7 +100,7 @@ class OutputTest extends TestCase
         ob_start();
         $output = new Output();
         $output->write('Test Content');
-        
+
         $contents = $output->getContents();
         $this->assertStringContainsString('Test Content', $contents);
         ob_end_clean();
@@ -111,7 +111,7 @@ class OutputTest extends TestCase
         ob_start();
         $output = new Output();
         $output->write('Test');
-        
+
         $string = (string) $output;
         $this->assertStringContainsString('Test', $string);
         ob_end_clean();
@@ -123,7 +123,7 @@ class OutputTest extends TestCase
         $output = new Output();
         $output->write('Test');
         $output->close();
-        
+
         // After close, the buffer created by Output should be cleaned
         // But other buffers might still exist
         $this->assertLessThanOrEqual($initialLevel, ob_get_level());
