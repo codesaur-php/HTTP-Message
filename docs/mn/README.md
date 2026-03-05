@@ -1,4 +1,4 @@
-# 📨 codesaur/http-message  
+# codesaur/http-message
 
 **Цэвэр, минимал, объект хандалтат бүтэцтэй HTTP Message компонент (PSR-7)** 
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 📌 Онцлог
+## Онцлог
 
 - ✔ **PSR-7 MessageInterface, RequestInterface, ResponseInterface** бүрэн хэрэгжилт  
 - ✔ `ServerRequest::initFromGlobal()` - глобал орчноос request үүсгэх advanced parser  
@@ -22,7 +22,7 @@
 
 ---
 
-## 📦 Суурилуулалт
+## Суурилуулалт
 
 ```bash
 composer require codesaur/http-message
@@ -30,7 +30,7 @@ composer require codesaur/http-message
 
 ---
 
-## 📁 Бүтэц
+## Бүтэц
 
 | Файл | Үүрэг |
 |------|-------|
@@ -48,7 +48,7 @@ composer require codesaur/http-message
 
 ---
 
-# 🧩 Ашиглах жишээ
+# Ашиглах жишээ
 
 ## 1. ServerRequest үүсгэх (глобал $_SERVER, $_POST, $_FILES, …)
 
@@ -167,7 +167,7 @@ $stream->close();
 
 ---
 
-# ⚙ Дотоод ажиллагааны онцлох хэсгүүд
+# Дотоод ажиллагааны онцлох хэсгүүд
 
 ## ✔ **Multipart/form-data Parser**
 
@@ -202,7 +202,7 @@ $stream->close();
 - output buffering эхлүүлэх  
 - flush / clean / endFlush  
 - автомат whitespace-minify (`compress()`)  
-- String-cast → body контентыг буцаана  
+- String-cast -> body контентыг буцаана  
 
 ---
 
@@ -221,7 +221,7 @@ $stream->close();
 
 ---
 
-## 🧪 Тест ажиллуулах
+## Тест ажиллуулах
 
 Энэ төсөл PHPUnit ашиглан бүрэн тест хийгдсэн. Тест ажиллуулах:
 
@@ -281,25 +281,25 @@ Coverage report үүсгэсний дараа:
 
 ---
 
-## 🚀 CI/CD (GitHub Actions)
+## CI/CD (GitHub Actions)
 
 Энэ төсөл GitHub Actions ашиглан автоматаар CI/CD хийгддэг:
 
-- ✅ **Олон PHP хувилбар дээр тест**: PHP 8.2, 8.3, 8.4
-- ✅ **Олон платформ дэмжлэг**: Ubuntu болон Windows
-- ✅ **Автомат тест ажиллуулалт**: Push болон Pull Request үед
-- ✅ **Code coverage**: Codecov руу автоматаар илгээгддэг
+- **Олон PHP хувилбар дээр тест**: PHP 8.2, 8.3, 8.4
+- **Олон платформ дэмжлэг**: Ubuntu болон Windows
+- **Автомат тест ажиллуулалт**: Push болон Pull Request үед
+- **Code coverage**: Codecov руу автоматаар илгээгддэг
 
 ---
 
-## 📚 Баримт Бичиг
+## Баримт бичиг
 
-- 📖 [API](api.md) - Бүх классуудын API documentation (PHPDoc-уудаас Cursor AI ашиглан автоматаар үүсгэсэн)
-- 🔍 [REVIEW](review.md) - Package-ийн бүрэн review (код чанар, архитектур, ашиглалтын боломж - Cursor AI ашиглан үүсгэсэн)
+- [API](api.md) - Бүх классуудын API documentation (PHPDoc-уудаас Cursor AI ашиглан автоматаар үүсгэсэн)
+- [REVIEW](review.md) - Package-ийн бүрэн review (код чанар, архитектур, ашиглалтын боломж - Cursor AI ашиглан үүсгэсэн)
 
 ---
 
-## 📝 PHPDoc ба код чанар
+## PHPDoc ба код чанар
 
 - Бүх класс, метод, property-д бүрэн PHPDoc тайлбар бичигдсэн
 - PSR-7 стандартын дагуу бүх interface-үүд бүрэн хэрэгжсэн
@@ -308,13 +308,14 @@ Coverage report үүсгэсний дараа:
 
 ---
 
-## 📄 Лиценз
+## Лиценз
 
 Энэ төсөл MIT лицензтэй.
 
 ---
 
-## 👨‍💻 Зохиогч
+## Зохиогч
 
-Narankhuu  
-https://github.com/codesaur  
+**Narankhuu**  
+codesaur@gmail.com  
+https://github.com/codesaur

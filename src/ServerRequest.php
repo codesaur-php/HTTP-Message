@@ -74,11 +74,11 @@ class ServerRequest extends Request implements ServerRequestInterface
      * PHP-ийн глобал хувьсагчдаас ServerRequest-ийг бүрэн угсарна.
      *
      * Доорх эх сурвалжаас мэдээлэл уншина:
-     *  - $_SERVER → serverParams, протокол, method, host, port, uri, query
-     *  - getallheaders() байвал → headers → serverParams дотор нэгтгэнэ
-     *  - $_COOKIE → cookies
-     *  - $_FILES → uploadedFiles (normalize хийж)
-     *  - php://input / $_POST → parsedBody
+     *  - $_SERVER -> serverParams, протокол, method, host, port, uri, query
+     *  - getallheaders() байвал -> headers -> serverParams дотор нэгтгэнэ
+     *  - $_COOKIE -> cookies
+     *  - $_FILES -> uploadedFiles (normalize хийж)
+     *  - php://input / $_POST -> parsedBody
      *
      * @return static Энэхүү ServerRequest-ийн өөрийн instance
      */
@@ -87,7 +87,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         // SERVER PARAMS
         $this->serverParams = $_SERVER;
         
-        // HEADERS (normalize: HTTP_HOST → SERVER['HTTP_HOST'])
+        // HEADERS (normalize: HTTP_HOST -> SERVER['HTTP_HOST'])
         if (\function_exists('getallheaders')) {
             foreach (\getallheaders() as $key => $value) {
                 $key = \strtoupper($key);
@@ -242,7 +242,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * Жишээ:  
      *   /product/view?id=10&lang=en  
-     * → ['id' => '10', 'lang' => 'en']
+     * -> ['id' => '10', 'lang' => 'en']
      *
      * @return array Query параметрийн массив
      */
@@ -511,12 +511,12 @@ class ServerRequest extends Request implements ServerRequestInterface
             $datas[$index] = $data;
         }
         
-        // TEXT FIELDS - varNamesEncoded → parsedBody
+        // TEXT FIELDS - varNamesEncoded -> parsedBody
         \parse_str($varNamesEncoded, $parsedBody);
         $this->arrayTreeLeafs($parsedBody, $datas);
         $this->parsedBody = $parsedBody;
         
-        // FILE FIELDS - fileNamesEncoded → uploadedFiles
+        // FILE FIELDS - fileNamesEncoded -> uploadedFiles
         \parse_str($fileNamesEncoded, $uploadedFiles);
         $this->arrayTreeLeafs($uploadedFiles, $datas);
         $this->uploadedFiles = $uploadedFiles;
@@ -529,10 +529,10 @@ class ServerRequest extends Request implements ServerRequestInterface
      * Жишээ:
      *  - $tree['user']['name'] = 1
      *  - $leafs[1] = "Bat"
-     *  → үр дүнд: $tree['user']['name'] = "Bat"
+     *  -> үр дүнд: $tree['user']['name'] = "Bat"
      *
      * @param array $tree  Олон түвшинтэй мод бүтэцтэй массив
-     * @param array $leafs Индекс → утга mapping бүхий массив
+     * @param array $leafs Индекс -> утга mapping бүхий массив
      *
      * @return void
      */
@@ -588,7 +588,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * - Хэрэв tmp_name нь массив бол олон файлын upload гэж үзээд
      *   normalizeFileUploadTmpNameItem() руу дамжуулна
-     * - Энгийн string бол ганц файл → UploadedFile instance үүсгэнэ
+     * - Энгийн string бол ганц файл -> UploadedFile instance үүсгэнэ
      *
      * @param array $item $_FILES['field'] бүтцийн нэг элемент
      *

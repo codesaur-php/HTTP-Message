@@ -130,16 +130,16 @@ class EdgeCaseTest extends TestCase
         $uri = new Uri();
         $uri->setHost('example.com');
         
-        // preserveHost = true, Host header байхгүй → Host header нэмнэ
+        // preserveHost = true, Host header байхгүй -> Host header нэмнэ
         $request = $request->withUri($uri, true);
         $this->assertEquals('example.com', $request->getHeaderLine('Host'));
         
-        // preserveHost = true, Host header байна → хадгална
+        // preserveHost = true, Host header байна -> хадгална
         $request = $request->withHeader('Host', 'original.com');
         $request = $request->withUri($uri, true);
         $this->assertEquals('original.com', $request->getHeaderLine('Host'));
         
-        // preserveHost = false → Host header солино
+        // preserveHost = false -> Host header солино
         $request = $request->withUri($uri, false);
         $this->assertEquals('example.com', $request->getHeaderLine('Host'));
     }
@@ -190,7 +190,7 @@ class EdgeCaseTest extends TestCase
         $response = new Response();
         $response = $response->withStatus(200, '');
         
-        // Хоосон reason phrase → стандарт утга ашиглана
+        // Хоосон reason phrase -> стандарт утга ашиглана
         $this->assertEquals('OK', $response->getReasonPhrase());
     }
 
@@ -200,22 +200,22 @@ class EdgeCaseTest extends TestCase
     {
         $uri = new Uri();
         
-        // HTTP default port 80 → null буцаана
+        // HTTP default port 80 -> null буцаана
         $uri->setScheme('http');
         $uri->setPort(80);
         $this->assertNull($uri->getPort());
         
-        // HTTPS default port 443 → null буцаана
+        // HTTPS default port 443 -> null буцаана
         $uri->setScheme('https');
         $uri->setPort(443);
         $this->assertNull($uri->getPort());
         
-        // HTTP port 8080 → null буцаана (special case)
+        // HTTP port 8080 -> null буцаана (special case)
         $uri->setScheme('http');
         $uri->setPort(8080);
         $this->assertNull($uri->getPort());
         
-        // Бусад порт → port буцаана
+        // Бусад порт -> port буцаана
         $uri->setPort(8081);
         $this->assertEquals(8081, $uri->getPort());
     }

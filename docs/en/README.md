@@ -1,4 +1,4 @@
-# 📨 codesaur/http-message  
+# codesaur/http-message
 
 **Clean, minimal, object-oriented HTTP Message component (PSR-7)** 
 
@@ -7,7 +7,7 @@
 
 ---
 
-## 📌 Features
+## Features
 
 - ✔ **PSR-7 MessageInterface, RequestInterface, ResponseInterface** full implementation  
 - ✔ `ServerRequest::initFromGlobal()` - advanced parser to create request from global environment  
@@ -21,7 +21,7 @@
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 composer require codesaur/http-message
@@ -29,7 +29,7 @@ composer require codesaur/http-message
 
 ---
 
-## 📁 Structure
+## Structure
 
 | File | Purpose |
 |------|---------|
@@ -47,7 +47,7 @@ composer require codesaur/http-message
 
 ---
 
-# 🧩 Usage Examples
+# Usage Examples
 
 ## 1. Creating ServerRequest (from global $_SERVER, $_POST, $_FILES, …)
 
@@ -166,7 +166,7 @@ $stream->close();
 
 ---
 
-# ⚙ Internal Implementation Highlights
+# Internal Implementation Highlights
 
 ## ✔ **Multipart/form-data Parser**
 
@@ -199,7 +199,7 @@ The `Stream` class is a PSR-7 `StreamInterface` implementation based on PHP reso
 - Start output buffering  
 - flush / clean / endFlush  
 - automatic whitespace-minify (`compress()`)  
-- String-cast → returns body content  
+- String-cast -> returns body content  
 
 ---
 
@@ -218,7 +218,7 @@ All message components comply with the following PSR-7 interfaces:
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
 This project is fully tested using PHPUnit. To run tests:
 
@@ -278,25 +278,25 @@ After generating coverage report:
 
 ---
 
-## 🚀 CI/CD (GitHub Actions)
+## CI/CD (GitHub Actions)
 
 This project uses GitHub Actions for automated CI/CD:
 
-- ✅ **Tests on multiple PHP versions**: PHP 8.2, 8.3, 8.4
-- ✅ **Multi-platform support**: Ubuntu and Windows
-- ✅ **Automatic test execution**: On push and Pull Request
-- ✅ **Code coverage**: Automatically sent to Codecov
+- **Tests on multiple PHP versions**: PHP 8.2, 8.3, 8.4
+- **Multi-platform support**: Ubuntu and Windows
+- **Automatic test execution**: On push and Pull Request
+- **Code coverage**: Automatically sent to Codecov
 
 ---
 
-## 📚 Documentation
+## Documentation
 
-- 📖 [API](api.md) - API documentation for all classes (automatically generated from PHPDoc using Cursor AI)
-- 🔍 [REVIEW](review.md) - Complete package review (code quality, architecture, usage possibilities - generated using Cursor AI)
+- [API](api.md) - API documentation for all classes (automatically generated from PHPDoc using Cursor AI)
+- [REVIEW](review.md) - Complete package review (code quality, architecture, usage possibilities - generated using Cursor AI)
 
 ---
 
-## 📝 PHPDoc and Code Quality
+## PHPDoc and Code Quality
 
 - Complete PHPDoc documentation for all classes, methods, and properties
 - All interfaces fully implemented according to PSR-7 standard
@@ -305,13 +305,13 @@ This project uses GitHub Actions for automated CI/CD:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 Narankhuu  
 https://github.com/codesaur  

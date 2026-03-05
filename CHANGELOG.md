@@ -6,10 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [3.0.1] - 2026-03-05
+[3.0.1]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.0...v3.0.1
+
+### Changed
+
+- Removed all emoji characters from documentation and project files
+- Replaced Unicode arrow with ASCII `->` across all source, test, and documentation files
+
+---
+
 ## [3.0.0] - 2026-01-08
 [3.0.0]: https://github.com/codesaur-php/HTTP-Message/compare/v2.0.0...v3.0.0
 
-### ✨ Added
+### Added
 
 - **Documentation Improvements**
   - Comprehensive bilingual documentation structure (Mongolian & English)
@@ -36,7 +46,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Enhanced composer.json scripts for better developer experience
   - Improved test coverage reporting configuration
 
-### 🔧 Improved
+### Improved
 
 - **Documentation Quality**
   - Enhanced README with better structure and examples
@@ -49,7 +59,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Improved project maintainability
   - Enhanced developer onboarding experience
 
-### 📝 Changed
+### Changed
 
 - Documentation files moved from root to `docs/` directory
 - README structure improved for better readability
@@ -60,7 +70,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [2.0.0] - 2025-12-17
 [2.0.0]: https://github.com/codesaur-php/HTTP-Message/compare/v1.0...v2.0.0
 
-### ✨ Added
+### Added
 
 - **New Classes**
   - `Stream` - Full PSR-7 StreamInterface implementation based on PHP resources
@@ -121,7 +131,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Enhanced README.md with detailed examples
   - Complete PHPDoc for all classes, methods, and properties
 
-### 🔧 Improved
+### Improved
 
 - **PSR-7 Compliance**
   - Upgraded from PSR-7 v1.0.1 to PSR-7 v2.0
@@ -141,7 +151,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Improved stream handling efficiency
   - Better memory management
 
-### 📝 Changed
+### Changed
 
 - **PHP Version Requirement**
   - Upgraded from PHP >=7.2.0 to PHP >=8.2.1
@@ -153,7 +163,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Updated `fig/http-message-util` requirement
 
 - **Class Renaming/Fixing**
-  - `ReasonPrhaseInterface` → `ReasonPhrase` (fixed typo, changed from interface to class)
+  - `ReasonPrhaseInterface` -> `ReasonPhrase` (fixed typo, changed from interface to class)
 
 - **Removed**
   - `RequestMethods` class removed (functionality integrated elsewhere)
@@ -168,7 +178,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [1.0] - 2021-03-02
 [1.0]: https://github.com/codesaur-php/HTTP-Message/releases/tag/v1.0
 
-### ✨ Added
+### Added
 
 - **Core PSR-7 Implementation**
   - `Message` (abstract) - Base implementation of PSR-7 MessageInterface
@@ -213,7 +223,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Basic usage examples
   - License file (MIT)
 
-### 📋 Specifications
+### Specifications
 
 - **PHP Version:** >=7.2.0
 - **PSR-7:** >=1.0.1
@@ -222,7 +232,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - `fig/http-message-util`: >=1.1.5
   - `ext-json`: *
 
-### 🎯 Initial Features
+### Initial Features
 
 - Basic PSR-7 compliance
 - Core HTTP message components
@@ -234,8 +244,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ---
 
 **Legend:**
-- ✨ Added - New features
-- 🔧 Improved - Enhancements to existing features
-- 📝 Changed - Changes in existing functionality
-- 🗑️ Removed - Removed features
-- 🔒 Security - Security-related changes
+- Added - New features
+- Improved - Enhancements to existing features
+- Changed - Changes in existing functionality
+- Removed - Removed features
+- Security - Security-related changes

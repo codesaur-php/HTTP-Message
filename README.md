@@ -29,9 +29,9 @@
 
 ### Дэлгэрэнгүй мэдээлэл
 
-- 📖 [Бүрэн танилцуулга](docs/mn/README.md) - Суурилуулалт, хэрэглээ, жишээнүүд
-- 📚 [API тайлбар](docs/mn/api.md) - Бүх метод, exception-үүдийн тайлбар
-- 🔍 [Шалгалтын тайлан](docs/mn/review.md) - Код шалгалтын тайлан
+- [Бүрэн танилцуулга](docs/mn/README.md) - Суурилуулалт, хэрэглээ, жишээнүүд
+- [API тайлбар](docs/mn/api.md) - Бүх метод, exception-үүдийн тайлбар
+- [Шалгалтын тайлан](docs/mn/review.md) - Код шалгалтын тайлан
 
 ---
 
@@ -54,9 +54,9 @@ The package consists of the following core classes:
 
 ### Documentation
 
-- 📖 [Full Documentation](docs/en/README.md) - Installation, usage, examples
-- 📚 [API Reference](docs/en/api.md) - Complete API documentation
-- 🔍 [Review](docs/en/review.md) - Code review report
+- [Full Documentation](docs/en/README.md) - Installation, usage, examples
+- [API Reference](docs/en/api.md) - Complete API documentation
+- [Review](docs/en/review.md) - Code review report
 
 ---
 
@@ -113,12 +113,12 @@ composer test-coverage
 
 ## Changelog
 
-- 📝 [CHANGELOG.md](CHANGELOG.md) - Full version history
+- [CHANGELOG.md](CHANGELOG.md) - Full version history
 
 ## Contributing & Security
 
-- 🤝 [Contributing Guide](.github/CONTRIBUTING.md)
-- 🔐 [Security Policy](.github/SECURITY.md)
+- [Contributing Guide](.github/CONTRIBUTING.md)
+- [Security Policy](.github/SECURITY.md)
 
 ## License
 
@@ -127,7 +127,7 @@ This project is licensed under the MIT License.
 ## Author
 
 **Narankhuu**  
-📧 codesaur@gmail.com  
-🌐 https://github.com/codesaur
+codesaur@gmail.com  
+https://github.com/codesaur
 
-🦖 **codesaur ecosystem:** https://codesaur.net
+**codesaur ecosystem:** https://codesaur.net

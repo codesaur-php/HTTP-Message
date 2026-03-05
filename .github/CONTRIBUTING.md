@@ -1,6 +1,6 @@
 # Contributing to codesaur/http-message
 
-First of all, thank you for taking the time to contribute ❤️  
+First of all, thank you for taking the time to contribute.
 Contributions of any kind are welcome and greatly appreciated.
 
 ---
@@ -9,11 +9,11 @@ Contributions of any kind are welcome and greatly appreciated.
 
 You can contribute to this project in several ways:
 
-- 🐛 **Reporting bugs** - Help us identify and fix issues
-- 💡 **Suggesting features** - Propose new features or improvements
-- 📚 **Improving documentation** - Enhance docs, examples, or comments
-- 🔧 **Submitting code** - Fix bugs or implement new features via pull requests
-- ✅ **Writing tests** - Improve test coverage and quality
+- **Reporting bugs** - Help us identify and fix issues
+- **Suggesting features** - Propose new features or improvements
+- **Improving documentation** - Enhance docs, examples, or comments
+- **Submitting code** - Fix bugs or implement new features via pull requests
+- **Writing tests** - Improve test coverage and quality
 
 ---
 
@@ -105,10 +105,10 @@ composer test
 
 ### Before Submitting
 
-- ✅ All tests pass locally
-- ✅ Code follows project conventions
-- ✅ Documentation is updated (if needed)
-- ✅ Commit messages are clear and descriptive
+- All tests pass locally
+- Code follows project conventions
+- Documentation is updated (if needed)
+- Commit messages are clear and descriptive
 
 ### PR Requirements
 
@@ -167,10 +167,10 @@ refactor: simplify message body handling
 
 If your change affects usage or the public API:
 
-- 📝 Update `README.md` with new features or changed behavior
-- 📚 Update files under `docs/` if they exist
-- 📋 Update `CHANGELOG.md` for notable changes
-- 💬 Add or update code comments for complex logic
+- Update `README.md` with new features or changed behavior
+- Update files under `docs/` if they exist
+- Update `CHANGELOG.md` for notable changes
+- Add or update code comments for complex logic
 
 ---
 
@@ -207,6 +207,6 @@ If you have questions or need help:
 
 ---
 
-Thank you for helping improve the **codesaur ecosystem** 🦖
+Thank you for helping improve the **codesaur ecosystem**
 
 Your contributions make this project better for everyone!

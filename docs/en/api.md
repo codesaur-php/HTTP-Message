@@ -1,16 +1,16 @@
-# 📚 API Documentation
+# API Documentation
 
 This documentation is compiled from PHPDoc comments for all classes in the `codesaur/http-message` package.
 
 ---
 
-## 📦 Namespace
+## Namespace
 
 All classes are located in the `codesaur\Http\Message` namespace.
 
 ---
 
-## 🔷 Message (Abstract)
+## Message (Abstract)
 
 Base abstract implementation of HTTP Message. Base template for implementing all core functions of PSR-7 standard MessageInterface.
 
@@ -91,7 +91,7 @@ Returns a cloned object with new body set.
 
 ---
 
-## 🔷 Request
+## Request
 
 PSR-7 standard HTTP Request object implementation.
 
@@ -129,7 +129,7 @@ Returns a request clone with new URI.
 
 ---
 
-## 🔷 Response
+## Response
 
 PSR-7 standard HTTP Response (server response) object implementation.
 
@@ -160,7 +160,7 @@ Returns reason phrase (response text description). Returns custom value if provi
 
 ---
 
-## 🔷 NonBodyResponse
+## NonBodyResponse
 
 Minimal implementation of HTTP response (Response) without body stream.
 
@@ -230,7 +230,7 @@ Returns body stream. NonBodyResponse doesn't contain body stream, so throws exce
 
 ---
 
-## 🔷 ServerRequest
+## ServerRequest
 
 Full implementation of PSR-7 ServerRequest (server-side HTTP request) object.
 
@@ -238,11 +238,11 @@ Full implementation of PSR-7 ServerRequest (server-side HTTP request) object.
 
 #### `initFromGlobal(): static`
 Fully constructs ServerRequest from PHP global variables. Reads information from the following sources:
-- `$_SERVER` → serverParams, protocol, method, host, port, uri, query
-- `getallheaders()` if available → headers → integrated into serverParams
-- `$_COOKIE` → cookies
-- `$_FILES` → uploadedFiles (normalized)
-- `php://input` / `$_POST` → parsedBody
+- `$_SERVER` -> serverParams, protocol, method, host, port, uri, query
+- `getallheaders()` if available -> headers -> integrated into serverParams
+- `$_COOKIE` -> cookies
+- `$_FILES` -> uploadedFiles (normalized)
+- `php://input` / `$_POST` -> parsedBody
 
 **Returns:** This ServerRequest's own instance
 
@@ -319,7 +319,7 @@ Returns immutably cloned object with one attribute removed.
 
 ---
 
-## 🔷 Uri
+## Uri
 
 PSR-7 UriInterface implementation. Designed to manage URI component parts:
 - Scheme (http, https)
@@ -420,7 +420,7 @@ Returns URI in full format (scheme://authority/path?query#fragment).
 
 ---
 
-## 🔷 Stream
+## Stream
 
 PSR-7 StreamInterface implementation - based on file resource. StreamInterface implementation based on PHP resource (returned by fopen()). Used for request body.
 
@@ -532,7 +532,7 @@ Returns stream metadata.
 
 ---
 
-## 🔷 UploadedFile
+## UploadedFile
 
 PSR-7 UploadedFileInterface implementation. Designed to manage uploaded file metadata and temporary file path (tmp_name).
 
@@ -595,7 +595,7 @@ Values used when serializing UploadedFile object to JSON.
 
 ---
 
-## 🔷 Output
+## Output
 
 Output stream – StreamInterface implementation based on PHP's output buffering. Special stream that works on the principle of "directly printing HTTP response body to browser".
 
@@ -682,7 +682,7 @@ Output stream has no metadata concept, always returns null.
 
 ---
 
-## 🔷 OutputBuffer
+## OutputBuffer
 
 Wrapper class for PHP output buffering. Provides more organized, object-oriented way to use PHP's output buffer functions like ob_start(), ob_flush(), ob_get_contents().
 
@@ -738,7 +738,7 @@ Compresses HTML output (whitespace compression).
 
 ---
 
-## 🔷 ReasonPhrase
+## ReasonPhrase
 
 Utility class containing standard reason phrases (value descriptions) for each HTTP status code. Centralized all common status text descriptions from PSR-7 and HTTP/1.1, HTTP/2 RFC standards as constants.
 
@@ -760,7 +760,7 @@ $reason = ReasonPhrase::STATUS_404; // "Not Found"
 
 ---
 
-## 📝 PSR-7 Interface Compliance
+## PSR-7 Interface Compliance
 
 All classes comply with the following PSR-7 interfaces:
 

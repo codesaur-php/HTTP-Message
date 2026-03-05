@@ -170,8 +170,8 @@ class Request extends Message implements RequestInterface
      * @param bool $preserveHost  true бол Host header-ийг хадгална.
      *
      * Host header удирдлага:
-     *   - preserveHost = false → URI host-оор Host header-ийг солино.
-     *   - preserveHost = true → зөвхөн Host header байхгүй үед тохируулна.
+     *   - preserveHost = false -> URI host-оор Host header-ийг солино.
+     *   - preserveHost = true -> зөвхөн Host header байхгүй үед тохируулна.
      *
      * @return RequestInterface
      *

@@ -250,7 +250,7 @@ class FullRequestResponseTest extends TestCase
         $request = $request->withUri($uri)->withMethod('GET');
         
         // User info-д : тэмдэгт байвал зөвхөн password-ийг encode хийнэ
-        // user:pass:word → user:pass%3Aword (зөвхөн password дахь : encode хийгдэнэ)
+        // user:pass:word -> user:pass%3Aword (зөвхөн password дахь : encode хийгдэнэ)
         $expectedUri = 'https://user:pass%3Aword@api.example.com:8443/api/v1/users/123?include=posts,comments&fields=id,name,email#profile';
         $this->assertEquals($expectedUri, (string) $request->getUri());
     }
