@@ -239,10 +239,12 @@ Full implementation of PSR-7 ServerRequest (server-side HTTP request) object.
 #### `initFromGlobal(): static`
 Fully constructs ServerRequest from PHP global variables. Reads information from the following sources:
 - `$_SERVER` -> serverParams, protocol, method, host, port, uri, query
-- `getallheaders()` if available -> headers -> integrated into serverParams
+- `getallheaders()` if available -> PSR-7 headers (`$this->headers`) and serverParams (`HTTP_*` format)
 - `$_COOKIE` -> cookies
 - `$_FILES` -> uploadedFiles (normalized)
 - `php://input` / `$_POST` -> parsedBody
+
+All HTTP headers from `getallheaders()` are registered in the PSR-7 `$this->headers` array via `setHeader()`, ensuring that `getHeaderLine()`, `getHeader()`, `hasHeader()` correctly read all headers.
 
 **Returns:** This ServerRequest's own instance
 

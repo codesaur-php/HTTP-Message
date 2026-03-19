@@ -63,6 +63,15 @@ var_dump($request->getQueryParams());
 
 // Uploaded files
 var_dump($request->getUploadedFiles());
+
+// PSR-7 headers уншиж ашиглах
+$contentType = $request->getHeaderLine('Content-Type');
+$csrfToken = $request->getHeaderLine('X-CSRF-TOKEN');
+$accept = $request->getHeaderLine('Accept');
+
+if ($request->hasHeader('Authorization')) {
+    $auth = $request->getHeaderLine('Authorization');
+}
 ```
 
 ---

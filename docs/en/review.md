@@ -96,12 +96,13 @@ Message (abstract)
 **Features:**
 - Automatically constructs ServerRequest object from PHP global variables (`$_SERVER`, `$_GET`, `$_POST`, `$_FILES`)
 - Properly parses headers, cookies, URI, query, body, uploaded files, server params
+- All HTTP headers from `getallheaders()` are registered in the PSR-7 `$this->headers` array via `setHeader()`, ensuring that `getHeaderLine()`, `getHeader()`, `hasHeader()` correctly read all headers
 - Very useful function for web development
 
 **Code quality:**
 - Properly constructs URI, separates path, query, fragment
 - Correctly identifies HTTPS
-- Normalizes headers
+- Normalizes headers and registers them in both PSR-7 headers and serverParams (`HTTP_*` format)
 
 ### 7. Immutable Principle
 
@@ -312,7 +313,7 @@ Package is suitable for the following use cases:
 
 **Production Ready:**
 - Package is ready for production use
-- Tests exist (146 tests, 338 assertions)
+- Tests exist (147 tests, 340 assertions)
 - Code coverage: 67.05% lines, 72.88% methods
 - CI/CD pipeline exists
 - Documentation is complete

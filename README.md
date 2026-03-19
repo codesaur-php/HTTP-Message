@@ -88,6 +88,10 @@ $request = (new ServerRequest())->initFromGlobal();
 // Query params
 var_dump($request->getQueryParams());
 
+// PSR-7 headers унших / Read PSR-7 headers
+$contentType = $request->getHeaderLine('Content-Type');
+$csrfToken = $request->getHeaderLine('X-CSRF-TOKEN');
+
 // Response үүсгэх / Create Response
 $response = (new Response())
     ->withStatus(200)

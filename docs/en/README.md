@@ -62,6 +62,15 @@ var_dump($request->getQueryParams());
 
 // Uploaded files
 var_dump($request->getUploadedFiles());
+
+// Reading PSR-7 headers
+$contentType = $request->getHeaderLine('Content-Type');
+$csrfToken = $request->getHeaderLine('X-CSRF-TOKEN');
+$accept = $request->getHeaderLine('Accept');
+
+if ($request->hasHeader('Authorization')) {
+    $auth = $request->getHeaderLine('Authorization');
+}
 ```
 
 ---

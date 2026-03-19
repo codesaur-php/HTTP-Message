@@ -96,12 +96,13 @@ Message (abstract)
 **Онцлог:**
 - PHP-ийн глобал хувьсагчдаас (`$_SERVER`, `$_GET`, `$_POST`, `$_FILES`) ServerRequest объект автоматаар угсарна
 - Headers, cookies, URI, query, body, uploaded files, server params зэрэг бүгдийг зөв parse хийнэ
+- `getallheaders()` ашиглан бүх HTTP header-үүдийг PSR-7 `$this->headers` массивд бүртгэдэг тул `getHeaderLine()`, `getHeader()`, `hasHeader()` зэрэг функцүүд бүх header-ийг зөв уншина
 - Веб хөгжүүлэлтэд маш хэрэгтэй функц
 
 **Код чанар:**
 - URI-г зөв бүтээж, path, query, fragment-ийг салгана
 - HTTPS-ийг зөв тодорхойлно
-- Headers-ийг normalize хийнэ
+- Headers-ийг normalize хийж PSR-7 болон serverParams (`HTTP_*` формат) хоёуланд нь бүртгэнэ
 
 ### 7. Immutable зарчим
 
@@ -312,7 +313,7 @@ Package нь дараах use case-үүдэд тохиромжтой:
 
 **Production Ready:**
 - Package нь production орчинд ашиглахад бэлэн
-- Тестүүд байна (146 тест, 338 assertion)
+- Тестүүд байна (147 тест, 340 assertion)
 - Code coverage: 67.05% lines, 72.88% methods
 - CI/CD pipeline байна
 - Documentation бүрэн байна

@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [3.0.2] - 2026-03-19
+[3.0.2]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.1...v3.0.2
+
+### Fixed
+
+- **ServerRequest::initFromGlobal() PSR-7 header bug засварлав**
+  - `getallheaders()` loop нь зөвхөн `$this->serverParams`-д header-үүдийг хадгалж байсан бөгөөд `$this->headers`-д нэмдэггүй байсан
+  - Үүнээс болж PSR-7 стандартын `getHeaderLine()`, `getHeader()`, `hasHeader()` функцүүд `Host`-ээс бусад ямар ч HTTP header уншиж чаддаггүй байсан
+  - Жишээ: `$request->getHeaderLine('X-CSRF-TOKEN')`, `$request->getHeaderLine('Content-Type')`, `$request->getHeaderLine('Accept')` зэрэг бүгд хоосон string буцааж байсан
+  - Засвар: `getallheaders()` loop дотор `$this->setHeader($key, $value)` нэмснээр бүх header-үүд PSR-7 `$this->headers` массивд бүртгэгдэх болсон
+
+---
+
 ## [3.0.1] - 2026-03-05
 [3.0.1]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.0...v3.0.1
 

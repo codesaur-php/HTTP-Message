@@ -90,10 +90,13 @@ class ServerRequest extends Request implements ServerRequestInterface
         // HEADERS (normalize: HTTP_HOST -> SERVER['HTTP_HOST'])
         if (\function_exists('getallheaders')) {
             foreach (\getallheaders() as $key => $value) {
-                $key = \strtoupper($key);
-                $key = 'HTTP_' . \str_replace('-', '_', $key);
-                if (!isset($this->serverParams[$key])) {
-                    $this->serverParams[$key] = $value;
+                // PSR-7 headers (getHeaderLine, hasHeader, getHeader ажиллахын тулд)
+                $this->setHeader($key, $value);
+
+                // serverParams (HTTP_* формат хадгалах)
+                $serverKey = 'HTTP_' . \str_replace('-', '_', \strtoupper($key));
+                if (!isset($this->serverParams[$serverKey])) {
+                    $this->serverParams[$serverKey] = $value;
                 }
             }
         }
