@@ -28,56 +28,56 @@ class Uri implements UriInterface
      *
      * @var string
      */
-    private string $_scheme = '';
+    private string $scheme = '';
 
     /**
      * URI host (домен эсвэл IPv6 хаяг).
      *
      * @var string
      */
-    private string $_host = '';
+    private string $host = '';
 
     /**
      * URI port (1-65535).
      *
      * @var int|null
      */
-    private ?int $_port = null;
+    private ?int $port = null;
 
     /**
      * URI path хэсэг.
      *
      * @var string
      */
-    private string $_path = '';
+    private string $path = '';
 
     /**
      * URI query string (? дараах хэсэг).
      *
      * @var string
      */
-    private string $_query = '';
+    private string $query = '';
 
     /**
      * URI fragment (# дараах хэсэг).
      *
      * @var string
      */
-    private string $_fragment = '';
+    private string $fragment = '';
 
     /**
      * URI user info - username.
      *
      * @var string
      */
-    private string $_user = '';
+    private string $user = '';
 
     /**
      * URI user info - password.
      *
      * @var string
      */
-    private string $_password = '';
+    private string $password = '';
 
     /**
      * URI-ийн scheme-г буцаана (http эсвэл https).
@@ -86,7 +86,7 @@ class Uri implements UriInterface
      */
     public function getScheme(): string
     {
-        return $this->_scheme;
+        return $this->scheme;
     }
 
     /**
@@ -104,7 +104,7 @@ class Uri implements UriInterface
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP scheme');
         }
 
-        $this->_scheme = $schm;
+        $this->scheme = $schm;
     }
 
     /**
@@ -157,9 +157,9 @@ class Uri implements UriInterface
      */
     public function getUserInfo(): string
     {
-        $info = $this->_user;
-        if (!empty($this->_password)) {
-            $info .= ":$this->_password";
+        $info = $this->user;
+        if (!empty($this->password)) {
+            $info .= ":$this->password";
         }
         return $info;
     }
@@ -178,12 +178,12 @@ class Uri implements UriInterface
      */
     public function setUserInfo(string $user, ?string $password = null)
     {
-        $this->_user = $user;
+        $this->user = $user;
 
         if (!empty($password)) {
-            $this->_password = $password;
+            $this->password = $password;
         } else {
-            $this->_password = '';
+            $this->password = '';
         }
     }
 
@@ -194,7 +194,7 @@ class Uri implements UriInterface
      */
     public function getHost(): string
     {
-        return $this->_host;
+        return $this->host;
     }
 
     /**
@@ -212,7 +212,7 @@ class Uri implements UriInterface
             $host = "[$host]";
         }
 
-        $this->_host = \strtolower($host);
+        $this->host = \strtolower($host);
     }
 
     /**
@@ -224,16 +224,16 @@ class Uri implements UriInterface
      */
     public function getPort(): ?int
     {
-        if (!empty($this->_port)) {
+        if (!empty($this->port)) {
             $scheme = $this->getScheme();
-            if (($scheme == 'https' && $this->_port == 443)
-                || ($scheme == 'http' && ($this->_port == 80 || $this->_port == 8080))
+            if (($scheme == 'https' && $this->port == 443)
+                || ($scheme == 'http' && ($this->port == 80 || $this->port == 8080))
             ) {
                 return null;
             }
         }
 
-        return $this->_port;
+        return $this->port;
     }
 
     /**
@@ -250,7 +250,7 @@ class Uri implements UriInterface
             throw new \InvalidArgumentException(__CLASS__ . ': Invalid HTTP port');
         }
 
-        $this->_port = $port;
+        $this->port = $port;
     }
 
     /**
@@ -260,7 +260,7 @@ class Uri implements UriInterface
      */
     public function getPath(): string
     {
-        return $this->_path;
+        return $this->path;
     }
 
     /**
@@ -275,7 +275,7 @@ class Uri implements UriInterface
      */
     public function setPath(string $path)
     {
-        $this->_path = $path;
+        $this->path = $path;
     }
 
     /**
@@ -285,7 +285,7 @@ class Uri implements UriInterface
      */
     public function getQuery(): string
     {
-        return $this->_query;
+        return $this->query;
     }
 
     /**
@@ -300,7 +300,7 @@ class Uri implements UriInterface
      */
     public function setQuery(string $query)
     {
-        $this->_query = $query;
+        $this->query = $query;
     }
 
     /**
@@ -310,7 +310,7 @@ class Uri implements UriInterface
      */
     public function getFragment(): string
     {
-        return $this->_fragment;
+        return $this->fragment;
     }
 
     /**
@@ -325,7 +325,7 @@ class Uri implements UriInterface
      */
     public function setFragment(string $fragment)
     {
-        $this->_fragment = $fragment;
+        $this->fragment = $fragment;
     }
 
     /**

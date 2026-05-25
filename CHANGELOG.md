@@ -6,16 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [3.0.3] - 2026-05-25
+[3.0.3]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.2...v3.0.3
+
+### Changed
+
+- **Dropped underscore prefix from private properties to comply with PSR-12 naming**
+  - `src/Uri.php`: `$_scheme`, `$_host`, `$_port`, `$_path`, `$_query`, `$_fragment`, `$_user`, `$_password` -> names without underscore
+  - `src/UploadedFile.php`: `$_moved` -> `$moved`
+  - No public API changes; rename is internal-only and does not affect downstream user code
+  - All 147 PHPUnit tests pass
+
+---
+
 ## [3.0.2] - 2026-03-19
 [3.0.2]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.1...v3.0.2
 
 ### Fixed
 
-- **ServerRequest::initFromGlobal() PSR-7 header bug засварлав**
-  - `getallheaders()` loop нь зөвхөн `$this->serverParams`-д header-үүдийг хадгалж байсан бөгөөд `$this->headers`-д нэмдэггүй байсан
-  - Үүнээс болж PSR-7 стандартын `getHeaderLine()`, `getHeader()`, `hasHeader()` функцүүд `Host`-ээс бусад ямар ч HTTP header уншиж чаддаггүй байсан
-  - Жишээ: `$request->getHeaderLine('X-CSRF-TOKEN')`, `$request->getHeaderLine('Content-Type')`, `$request->getHeaderLine('Accept')` зэрэг бүгд хоосон string буцааж байсан
-  - Засвар: `getallheaders()` loop дотор `$this->setHeader($key, $value)` нэмснээр бүх header-үүд PSR-7 `$this->headers` массивд бүртгэгдэх болсон
+- **Fixed ServerRequest::initFromGlobal() PSR-7 header bug**
+  - The `getallheaders()` loop was only storing headers in `$this->serverParams` and never adding them to `$this->headers`
+  - As a result, the PSR-7 standard methods `getHeaderLine()`, `getHeader()`, and `hasHeader()` could not read any HTTP header other than `Host`
+  - Example: `$request->getHeaderLine('X-CSRF-TOKEN')`, `$request->getHeaderLine('Content-Type')`, `$request->getHeaderLine('Accept')` all returned an empty string
+  - Fix: added `$this->setHeader($key, $value)` inside the `getallheaders()` loop so every header is registered in the PSR-7 `$this->headers` array
 
 ---
 

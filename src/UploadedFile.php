@@ -59,7 +59,7 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
      *
      * @var bool
      */
-    private bool $_moved = false;
+    private bool $moved = false;
 
     /**
      * Upload хийгдсэн файлын metadata-г инициализац хийх.
@@ -164,7 +164,7 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
             throw new \InvalidArgumentException('Upload file path not found!');
         }
 
-        if ($this->_moved) {
+        if ($this->moved) {
             throw new \RuntimeException(sprintf('Uploaded file already moved from %s!', $this->tmp_name));
         }
 
@@ -207,7 +207,7 @@ class UploadedFile implements UploadedFileInterface, \JsonSerializable
             }
         }
 
-        $this->_moved = true;
+        $this->moved = true;
     }
 
     /**
