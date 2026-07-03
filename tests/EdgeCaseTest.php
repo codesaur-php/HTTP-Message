@@ -210,10 +210,10 @@ class EdgeCaseTest extends TestCase
         $uri->setPort(443);
         $this->assertNull($uri->getPort());
 
-        // HTTP port 8080 -> null буцаана (special case)
+        // HTTP port 8080 -> default port биш тул 8080 буцаана
         $uri->setScheme('http');
         $uri->setPort(8080);
-        $this->assertNull($uri->getPort());
+        $this->assertEquals(8080, $uri->getPort());
 
         // Бусад порт -> port буцаана
         $uri->setPort(8081);
@@ -408,6 +408,49 @@ class EdgeCaseTest extends TestCase
         } catch (\Exception $e) {
             $this->fail('Should not throw exception with minimal globals: ' . $e->getMessage());
         }
+
+        // Restore
+        $_SERVER = $originalServer;
+        $_GET = $originalGet;
+        $_POST = $originalPost;
+        $_FILES = $originalFiles;
+        $_COOKIE = $originalCookie;
+    }
+
+    public function testServerRequestNonStandardPortUri(): void
+    {
+        // HTTP_HOST нь "host:port" хэлбэртэй ирэхэд port давхардахгүй байх ёстой
+        $originalServer = $_SERVER;
+        $originalGet = $_GET;
+        $originalPost = $_POST;
+        $originalFiles = $_FILES;
+        $originalCookie = $_COOKIE;
+
+        $_SERVER = [
+            'REQUEST_METHOD' => 'GET',
+            'SERVER_PROTOCOL' => 'HTTP/1.1',
+            'SERVER_PORT' => 8080,
+            'HTTPS' => 'off',
+            'HTTP_HOST' => 'localhost:8080',
+            'REQUEST_URI' => '/app'
+        ];
+        $_GET = [];
+        $_POST = [];
+        $_FILES = [];
+        $_COOKIE = [];
+
+        $request = (new ServerRequest())->initFromGlobal();
+        $uri = $request->getUri();
+
+        // Host нь port агуулахгүй, port нь тусдаа хадгалагдана
+        $this->assertEquals('localhost', $uri->getHost());
+        $this->assertEquals(8080, $uri->getPort());
+
+        // URI string-д port яг нэг удаа орно
+        $this->assertEquals('http://localhost:8080/app', (string) $uri);
+
+        // Host header нь эх HTTP_HOST утгаараа (port-той) хадгалагдана
+        $this->assertEquals('localhost:8080', $request->getHeaderLine('Host'));
 
         // Restore
         $_SERVER = $originalServer;

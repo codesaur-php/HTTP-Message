@@ -136,6 +136,17 @@ class UriTest extends TestCase
         $this->assertEquals(8080, $newUri->getPort());
     }
 
+    public function testWithPortNull(): void
+    {
+        $uri = (new Uri())->withPort(8080);
+        $this->assertEquals(8080, $uri->getPort());
+
+        // PSR-7: null өгвөл port-г устгана
+        $newUri = $uri->withPort(null);
+        $this->assertNotSame($uri, $newUri);
+        $this->assertNull($newUri->getPort());
+    }
+
     public function testGetPath(): void
     {
         $uri = new Uri();

@@ -124,8 +124,13 @@ class ServerRequest extends Request implements ServerRequestInterface
             $this->uri->setScheme('http');
         }
         $this->uri->setPort($port);
-        $this->uri->setHost($this->serverParams['HTTP_HOST']);
-        $this->setHeader('Host', $this->uri->getHost());
+
+        // HTTP_HOST нь "host:port" хэлбэртэй байж болно (жишээ: localhost:8080).
+        // Port-г Uri-д давхар хадгалахгүйн тулд зөвхөн host хэсгийг нь салгаж авна.
+        $httpHost = (string) $this->serverParams['HTTP_HOST'];
+        $hostOnly = \parse_url("http://$httpHost", \PHP_URL_HOST) ?: $httpHost;
+        $this->uri->setHost($hostOnly);
+        $this->setHeader('Host', $httpHost);
 
         // REQUEST_URI нь path, query string, fragment агуулж болно
         $request_uri = $this->serverParams['REQUEST_URI'] ?? '';

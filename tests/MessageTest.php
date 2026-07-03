@@ -140,6 +140,29 @@ class MessageTest extends TestCase
         $this->assertEquals(['application/json'], $newRequest->getHeader('Content-Type'));
     }
 
+    public function testHeaderNameCasePreserved(): void
+    {
+        // PSR-7: getHeaders() нь header нэрний анхны бичиглэлийг хадгалах ёстой
+        $request = (new Request())->withHeader('Content-Type', 'application/json');
+        $this->assertArrayHasKey('Content-Type', $request->getHeaders());
+
+        // Case-insensitive хайлт хэвээр ажиллана
+        $this->assertTrue($request->hasHeader('content-type'));
+        $this->assertEquals(['application/json'], $request->getHeader('CONTENT-TYPE'));
+    }
+
+    public function testWithHeaderRejectsCRLFInjection(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Request())->withHeader('X-Custom', "value\r\nInjected-Header: evil");
+    }
+
+    public function testWithHeaderRejectsInvalidName(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Request())->withHeader("X-Bad\r\nHeader", 'value');
+    }
+
     public function testWithoutHeader(): void
     {
         $request = new Request();

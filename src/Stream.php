@@ -38,13 +38,24 @@ class Stream implements StreamInterface
     /**
      * Stream-ийн бүх контентыг string хэлбэрээр буцаана.
      *
+     * PSR-7 шаардлагын дагуу боломжтой бол эхлэл рүү seek хийж,
+     * бүх контентыг уншина. Алдаа гарвал exception шидэхгүй,
+     * хоосон string буцаана.
+     *
      * @return string Stream-ийн контент
      *
      * @inheritdoc
      */
     public function __toString(): string
     {
-        return $this->getContents();
+        try {
+            if ($this->isSeekable()) {
+                $this->rewind();
+            }
+            return $this->getContents();
+        } catch (\Throwable $e) {
+            return '';
+        }
     }
 
     /**

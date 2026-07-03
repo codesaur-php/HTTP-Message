@@ -44,11 +44,19 @@ abstract class Message implements MessageInterface
 
     /**
      * HTTP header-үүдийг хадгалах массив.
-     * Key нь header-ийн нэр (uppercase), value нь массив хэлбэрт утгууд.
+     * Key нь header-ийн анхны бичиглэлтэй нэр, value нь массив хэлбэрт утгууд.
      *
      * @var array
      */
     protected array $headers = [];
+
+    /**
+     * Header-ийн uppercase нэрийг анхны бичиглэлтэй нэр рүү буулгах map.
+     * Case-insensitive хайлт хийхэд ашиглана.
+     *
+     * @var array<string,string>
+     */
+    protected array $headerNames = [];
 
     /**
      * Message body-г илэрхийлэх stream объект.
@@ -110,7 +118,7 @@ abstract class Message implements MessageInterface
      */
     public function hasHeader(string $name): bool
     {
-        return isset($this->headers[\strtoupper($name)]);
+        return isset($this->headerNames[\strtoupper($name)]);
     }
 
     /**
@@ -125,7 +133,11 @@ abstract class Message implements MessageInterface
      */
     public function getHeader(string $name): array
     {
-        return $this->headers[\strtoupper($name)] ?? [];
+        $normalized = \strtoupper($name);
+        if (!isset($this->headerNames[$normalized])) {
+            return [];
+        }
+        return $this->headers[$this->headerNames[$normalized]];
     }
 
     /**
@@ -144,20 +156,76 @@ abstract class Message implements MessageInterface
     }
 
     /**
+     * Header-ийн нэрийг шалгах туслах функц.
+     *
+     * RFC 7230 token дүрмээр header нэр зөвшөөрөгдсөн тэмдэгтүүдээс
+     * бүрдэх ёстой (CRLF injection-с хамгаална).
+     *
+     * @param string $name Header-ийн нэр
+     *
+     * @throws \InvalidArgumentException Нэр хоосон эсвэл буруу тэмдэгттэй бол
+     *
+     * @return void
+     */
+    protected function validateHeaderName(string $name)
+    {
+        if (!\preg_match("/^[a-zA-Z0-9!#$%&'*+.^_`|~-]+$/", $name)) {
+            throw new \InvalidArgumentException(__CLASS__ . ": Invalid header name [$name]");
+        }
+    }
+
+    /**
+     * Header-ийн утгуудыг шалгах туслах функц.
+     *
+     * Утга нь string байх ёстой бөгөөд CR, LF, NUL тэмдэгт агуулж
+     * болохгүй (header injection-с хамгаална).
+     *
+     * @param array $values Header-ийн утгууд
+     *
+     * @throws \InvalidArgumentException Утга буруу төрөлтэй эсвэл хориотой тэмдэгттэй бол
+     *
+     * @return void
+     */
+    protected function validateHeaderValues(array $values)
+    {
+        foreach ($values as $value) {
+            if (!\is_string($value) && !\is_numeric($value)) {
+                throw new \InvalidArgumentException(__CLASS__ . ': Header value must be a string');
+            }
+            if (\preg_match("/[\r\n\0]/", (string) $value)) {
+                throw new \InvalidArgumentException(__CLASS__ . ': Header value must not contain CR, LF or NUL characters');
+            }
+        }
+    }
+
+    /**
      * Header-ийг шууд дотооддоо тохируулдаг туслах функц.
+     *
+     * Нэрний анхны бичиглэлийг хадгалж, case-insensitive хайлтад
+     * зориулж headerNames map-д бүртгэнэ.
      *
      * @param string       $name  Header-ийн нэр
      * @param string|array $value Header-ийн утга(ууд)
+     *
+     * @throws \InvalidArgumentException Нэр эсвэл утга буруу бол
      *
      * @return void
      */
     protected function setHeader($name, $value)
     {
-        if (\is_array($value)) {
-            $this->headers[\strtoupper($name)] = $value;
-        } else {
-            $this->headers[\strtoupper($name)] = [$value];
+        $values = \is_array($value) ? \array_values($value) : [$value];
+
+        $this->validateHeaderName($name);
+        $this->validateHeaderValues($values);
+
+        $normalized = \strtoupper($name);
+        if (isset($this->headerNames[$normalized])) {
+            // Өмнө нь өөр бичиглэлээр орсон header байвал устгана
+            unset($this->headers[$this->headerNames[$normalized]]);
         }
+
+        $this->headerNames[$normalized] = $name;
+        $this->headers[$name] = $values;
     }
 
     /**
@@ -185,12 +253,16 @@ abstract class Message implements MessageInterface
     public function withAddedHeader(string $name, $value): MessageInterface
     {
         $clone = clone $this;
-        if ($clone->hasHeader($name)) {
-            if (\is_array($value)) {
-                $clone->headers[\strtoupper($name)] = \array_merge($clone->headers[\strtoupper($name)], $value);
-            } else {
-                $clone->headers[\strtoupper($name)][] = $value;
-            }
+        $normalized = \strtoupper($name);
+        if (isset($clone->headerNames[$normalized])) {
+            $values = \is_array($value) ? \array_values($value) : [$value];
+
+            $clone->validateHeaderName($name);
+            $clone->validateHeaderValues($values);
+
+            // Анх бүртгэгдсэн бичиглэлтэй нэр дээр нь утгуудыг нэмнэ
+            $original = $clone->headerNames[$normalized];
+            $clone->headers[$original] = \array_merge($clone->headers[$original], $values);
         } else {
             $clone->setHeader($name, $value);
         }
@@ -209,8 +281,12 @@ abstract class Message implements MessageInterface
     public function withoutHeader(string $name): MessageInterface
     {
         $clone = clone $this;
-        if ($clone->hasHeader($name)) {
-            unset($clone->headers[\strtoupper($name)]);
+        $normalized = \strtoupper($name);
+        if (isset($clone->headerNames[$normalized])) {
+            unset(
+                $clone->headers[$clone->headerNames[$normalized]],
+                $clone->headerNames[$normalized]
+            );
         }
         return $clone;
     }

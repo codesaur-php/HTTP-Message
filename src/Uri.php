@@ -158,7 +158,7 @@ class Uri implements UriInterface
     public function getUserInfo(): string
     {
         $info = $this->user;
-        if (!empty($this->password)) {
+        if ($this->password !== '') {
             $info .= ":$this->password";
         }
         return $info;
@@ -179,12 +179,7 @@ class Uri implements UriInterface
     public function setUserInfo(string $user, ?string $password = null)
     {
         $this->user = $user;
-
-        if (!empty($password)) {
-            $this->password = $password;
-        } else {
-            $this->password = '';
-        }
+        $this->password = $password ?? '';
     }
 
     /**
@@ -227,7 +222,7 @@ class Uri implements UriInterface
         if (!empty($this->port)) {
             $scheme = $this->getScheme();
             if (($scheme == 'https' && $this->port == 443)
-                || ($scheme == 'http' && ($this->port == 80 || $this->port == 8080))
+                || ($scheme == 'http' && $this->port == 80)
             ) {
                 return null;
             }
@@ -367,12 +362,18 @@ class Uri implements UriInterface
     /**
      * Immutable: Port-г өөрчилсөн шинэ URI instance буцаана.
      *
+     * PSR-7 шаардлагын дагуу null өгвөл port-г устгана.
+     *
      * @inheritdoc
      */
     public function withPort(?int $port): UriInterface
     {
         $clone = clone $this;
-        $clone->setPort((int) $port);
+        if ($port === null) {
+            $clone->port = null;
+        } else {
+            $clone->setPort($port);
+        }
         return $clone;
     }
 

@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [3.0.4] - 2026-07-03
+[3.0.4]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.3...v3.0.4
+
+### Fixed
+
+- **Uri::withPort(null) now removes the port as required by PSR-7**
+  - Previously `null` was cast to `0` which triggered an `InvalidArgumentException`
+- **Removed non-standard 8080 default-port special case in Uri::getPort()**
+  - Port 8080 is not a default HTTP port; `http://example.com:8080` previously lost its port when converted to string
+- **ServerRequest::initFromGlobal() no longer duplicates the port in generated URIs**
+  - `HTTP_HOST` may arrive as `host:port` (e.g. `localhost:8081`); it was stored as the URI host unchanged, so `(string) $uri` produced `http://localhost:8081:8081/...`
+  - The 8080 special case above was masking this bug for port 8080 only; any other non-standard port was already affected
+  - Fix: the host part is now extracted from `HTTP_HOST` before being stored, while the `Host` header keeps the original `host:port` value
+  - Verified against the Raptor framework: full test suite (836 tests) passes and redirect URL generation is correct on ports 80, 443, 8080 and 8081
+- **Stream::__toString() now rewinds to the beginning before reading (PSR-7 requirement)**
+  - Also no longer throws: on failure it returns an empty string instead
+- **Message headers now preserve the original header name casing (PSR-7 requirement)**
+  - `getHeaders()` returns names exactly as they were set (e.g. `Content-Type` instead of `CONTENT-TYPE`)
+  - Case-insensitive lookups (`hasHeader()`, `getHeader()`, `getHeaderLine()`) keep working via an internal name map
+- **Uri user info no longer drops a password of "0"**
+  - Replaced `empty()` checks with strict comparisons in `setUserInfo()`/`getUserInfo()`
+
+### Security
+
+- **Added header name/value validation to prevent CRLF header injection**
+  - Header names must be valid RFC 7230 tokens
+  - Header values must not contain CR, LF or NUL characters
+  - Invalid input throws `InvalidArgumentException`
+
+### Changed
+
+- Removed the author phone number from `composer.json`
+
+---
+
 ## [3.0.3] - 2026-05-25
 [3.0.3]: https://github.com/codesaur-php/HTTP-Message/compare/v3.0.2...v3.0.3
 
